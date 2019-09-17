@@ -1,12 +1,12 @@
 import Koa, {BaseContext} from 'koa';
-import bodyParser from 'koa-bodyparser';
-import cors from 'koa-cors';
+import middlewares from './middlewares';
+import routes from './routes';
 import config from './config';
 
 const app = new Koa();
 
-app.use(bodyParser());
-app.use(cors());
+app.use(middlewares());
+app.use(routes());
 
 app.use(async (ctx: BaseContext) => {
     ctx.body = 'Hello World!';
