@@ -59,3 +59,31 @@ typings/
 
 # next.js build output
 .next
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# add by cjp
+/.git
+/.idea
+/hfcatv-activity-service/node_modules
+/hfcatv-activity-service/dist
+/hfcatv-activity-service/logs
+/hfcatv-activity-admin/node_modules
+/hfcatv-activity-admin/dist
+/hfcatv-activity-applet/node_modules
+/hfcatv-activity-applet/miniprogram_dist
