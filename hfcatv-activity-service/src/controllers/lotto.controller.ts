@@ -1,6 +1,6 @@
 import {BaseContext} from 'koa';
 
-export default class UserController {
+export default class LottoController {
     async getLottos(ctx: BaseContext, next: any) {
         await next();
     }
