@@ -1,19 +1,19 @@
-import {BaseContext} from 'koa';
+import {Context} from "koa";
 
 export default class LottoController {
-    async getLottos(ctx: BaseContext, next: any) {
+    async getLottos(ctx: Context, next: Function) {
         await next();
     }
 
-    async getPageLottos(ctx: BaseContext, next: any) {
+    async getPageLottos(ctx: Context, next: Function) {
         await next();
     }
 
-    async receiveLotto(ctx: BaseContext, next: any) {
+    async receiveLotto(ctx: Context, next: Function) {
         await next();
     }
 
-    async excuteLotto(ctx: BaseContext, next: any){
+    async excuteLotto(ctx: Context, next: Function){
         await next();
     }
 };

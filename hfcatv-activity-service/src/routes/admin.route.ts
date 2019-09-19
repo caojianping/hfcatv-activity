@@ -1,8 +1,8 @@
-import {BaseContext} from "koa";
+import {Context} from "koa";
 import Router from 'koa-router';
 
 export default (router: Router) => {
-    router
-        .post("/account/login", async (ctx: BaseContext, next: any) => await next())
-        .post("/account/password", async (ctx: BaseContext, next: any) => await next());
-}
+    return router
+        .post("/account/login", async (ctx: Context, next: Function) => await next())
+        .post("/account/password", async (ctx: Context, next: Function) => await next());
+};

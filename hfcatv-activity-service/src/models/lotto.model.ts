@@ -37,7 +37,7 @@ const LottoSchema: Schema = new Schema({
         default: 0
     },
     acceptInfo: {
-        type: mongoose.Schema.Types.Mixed,
+        type: Schema.Types.Mixed,
         required: false
     },
     failCause: {
