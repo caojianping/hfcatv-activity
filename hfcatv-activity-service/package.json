@@ -15,10 +15,12 @@
     "koa-bodyparser": "^4.2.1",
     "koa-compose": "^4.1.0",
     "koa-cors": "0.0.16",
+    "koa-helmet": "^5.1.0",
     "koa-json": "^2.0.2",
     "koa-logger": "^3.2.1",
     "koa-router": "^7.4.0",
-    "mongoose": "^5.7.1"
+    "mongoose": "^5.7.1",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.27",
@@ -27,11 +29,13 @@
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-compose": "^3.2.4",
     "@types/koa-cors": "0.0.0",
+    "@types/koa-helmet": "^3.1.2",
     "@types/koa-json": "^2.0.18",
     "@types/koa-logger": "^3.1.1",
     "@types/koa-router": "^7.0.42",
     "@types/mongoose": "^5.5.17",
     "@types/node": "^12.7.5",
+    "@types/uuid": "^3.4.5",
     "@types/validator": "^10.11.3",
     "nodemon": "^1.19.2",
     "ts-node": "^8.4.1",

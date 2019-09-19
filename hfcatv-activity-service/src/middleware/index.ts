@@ -2,15 +2,20 @@ import compose from "koa-compose";
 import bodyParser from "koa-bodyparser";
 import json from "koa-json";
 import cors from "koa-cors";
+import helmet from "koa-helmet";
 import logger from "koa-logger";
-import exceptionMiddleware from "./exception.middleware";
+
+import exception from "./exception";
+import response from "./response";
 
 export default function middlewares() {
     return compose([
-        bodyParser(),
-        json(),
-        cors(),
+        exception(),
+        response(),
         logger(),
-        exceptionMiddleware()
+        json(),
+        bodyParser(),
+        helmet(),
+        cors()
     ]);
 };

@@ -1,13 +1,16 @@
 import Koa from "koa";
 import config from "config";
-import middlewares from "./middlewares";
+import middleware from "./middleware";
 import routes from "./routes";
 import Database from "./db";
 
 Database.connect();
 
 const app = new Koa();
-app.use(middlewares());
+app.use(middleware());
 app.use(routes());
 
-app.listen(config.get<number>("port"));
+const port = config.get<number>("port");
+app.listen(port, ()=>{
+    console.log(`Koa server listen on port ${port}.`);
+});
