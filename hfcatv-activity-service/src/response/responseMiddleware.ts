@@ -7,7 +7,7 @@ export default () => async (ctx: Context, next: Function) => {
     };
 
     ctx.failure = function failure<T>(code?: number, message?: string) {
-        ctx.failure = ResponseResult.failure<T>(code, message);
+        ctx.body = ResponseResult.failure<T>(code, message);
     };
 
     await next();

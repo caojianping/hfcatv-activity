@@ -1,45 +1,28 @@
-import {Document, Schema, Model, model} from "mongoose";
+import {Schema, Model, model} from "mongoose";
+import {BaseDocument} from "../interfaces";
 
-export interface ManagerDocument extends Document {
+export interface ManagerDocument extends BaseDocument {
     username: string;
     password: string;
-    createTime?: Date;
-    updateTime?: Date;
-    isDelete: boolean;
 }
 
 const ManagerSchema: Schema = new Schema({
-    /**
-     * 用户名
-     */
     username: {
         type: "String",
         required: true
     },
-    /**
-     * 密码
-     */
     password: {
         type: "String",
         required: true
     },
-    /**
-     * 创建时间
-     */
     createTime: {
         type: "Date",
         default: new Date()
     },
-    /**
-     * 更新时间
-     */
     updateTime: {
         type: "Date",
         required: false
     },
-    /**
-     * 是否删除
-     */
     isDelete: {
         type: "Boolean",
         default: false

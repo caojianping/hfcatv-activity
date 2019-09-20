@@ -1,12 +1,10 @@
-import {Document, Schema, Model, model} from "mongoose";
+import {Schema, Model, model} from "mongoose";
+import {BaseDocument} from "../interfaces";
 
-export interface UserDocument extends Document {
+export interface UserDocument extends BaseDocument {
     userId: string;
     nickname: string;
     lottoCount: number;
-    createTime?: Date;
-    updateTime?: Date;
-    isDelete: boolean;
 }
 
 const UserSchema: Schema = new Schema({

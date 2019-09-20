@@ -1,17 +1,14 @@
-import {Document, Schema, Model, model} from "mongoose";
+import {Schema, Model, model} from "mongoose";
+import {BaseDocument} from "../interfaces";
 
-export interface LottoDocument extends Document {
+export interface LottoDocument extends BaseDocument {
     userId: string;
-    awardType: number;
-    awardDesc: string;
-    awardAmount: number;
-    awardState: number;
+    award: any;
+    status: number;
     acceptInfo: any;
     failCause: string;
     simulateName: string;
-    createTime?: Date;
-    updateTime?: Date;
-    isDelete: boolean;
+    handler: any;
 }
 
 const LottoSchema: Schema = new Schema({
@@ -19,19 +16,11 @@ const LottoSchema: Schema = new Schema({
         type: "String",
         required: true
     },
-    awardType: {
-        type: "Number",
-        default: 1
+    award: {
+        type: Schema.Types.ObjectId,
+        ref: "award"
     },
-    awardDesc: {
-        type: "String",
-        required: false
-    },
-    awardAmount: {
-        type: "Number",
-        required: false
-    },
-    awardState: {
+    status: {
         type: "Number",
         enum: [-3, -2, -1, 0, 1, 2, 3],
         default: 0
@@ -47,6 +36,10 @@ const LottoSchema: Schema = new Schema({
     simulateName: {
         type: "String",
         required: false
+    },
+    handler: {
+        type: Schema.Types.ObjectId,
+        ref: "manager"
     },
     createTime: {
         type: "Date",

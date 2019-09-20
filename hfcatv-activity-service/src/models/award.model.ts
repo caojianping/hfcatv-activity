@@ -1,14 +1,13 @@
-import {Document, Schema, Model, model} from "mongoose";
+import {Schema, Model, model} from "mongoose";
+import {BaseDocument} from "../interfaces";
 
-export interface AwardDocument extends Document {
+export interface AwardDocument extends BaseDocument {
     name: string;
     type: number;
     desc: string;
+    amount: number;
     stock: number;
     weight: number;
-    createTime?: Date;
-    updateTime?: Date;
-    isDelete: boolean;
 }
 
 const AwardSchema: Schema = new Schema({
@@ -18,15 +17,19 @@ const AwardSchema: Schema = new Schema({
     },
     type: {
         type: "Number",
-        default: 1
+        required: true
     },
     desc: {
         type: "String",
         required: false
     },
-    stock: {
+    amount: {
         type: "Number",
         required: false
+    },
+    stock: {
+        type: "Number",
+        required: true
     },
     weight: {
         type: "Number",

@@ -1,10 +1,11 @@
-export default class BusinessError extends Error {
-    errCode: number;
-    errMsg?: string;
+export default class BusinessError implements Error {
+    code: number;
+    message: string;
+    name: string;
+    stack: string;
 
-    constructor(errCode: number, errMsg?: string) {
-        super(errMsg);
-        this.errCode = errCode;
-        this.errMsg = errMsg;
+    constructor(code: number, message: string) {
+        this.code = code;
+        this.message = message;
     }
 }
