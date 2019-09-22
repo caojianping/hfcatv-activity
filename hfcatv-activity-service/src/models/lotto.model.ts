@@ -1,58 +1,48 @@
-import {Schema, Model, model} from "mongoose";
+import {Schema, PaginateModel, model} from "mongoose";
+import mongoosePaginate from "mongoose-paginate";
 import {BaseDocument} from "../interfaces";
 
 export interface LottoDocument extends BaseDocument {
-    userId: string;
-    award: any;
-    status: number;
-    acceptInfo: any;
-    failCause: string;
-    simulateName: string;
-    handler: any;
+    _id: any;           // 抽奖编号
+    user: any;          // 抽奖用户
+    activity: any;      // 抽奖活动
+    award: any;         // 抽奖奖品
+    handler: any;       // 处理人
 }
 
 const LottoSchema: Schema = new Schema({
-    userId: {
-        type: "String",
-        required: true
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: "user"
+    },
+    activity: {
+        type: Schema.Types.ObjectId,
+        ref: "activity"
     },
     award: {
         type: Schema.Types.ObjectId,
         ref: "award"
-    },
-    status: {
-        type: "Number",
-        enum: [-3, -2, -1, 0, 1, 2, 3],
-        default: 0
-    },
-    acceptInfo: {
-        type: Schema.Types.Mixed,
-        required: false
-    },
-    failCause: {
-        type: "String",
-        required: false
-    },
-    simulateName: {
-        type: "String",
-        required: false
     },
     handler: {
         type: Schema.Types.ObjectId,
         ref: "manager"
     },
     createTime: {
-        type: "Date",
+        type: Schema.Types.Date,
+        required: true,
         default: new Date()
     },
     updateTime: {
-        type: "Date",
+        type: Schema.Types.Date,
         required: false
     },
     isDelete: {
-        type: "Boolean",
+        type: Schema.Types.Boolean,
+        required: true,
         default: false
     }
 }, {_id: true});
 
-export const LottoModel: Model<LottoDocument> = model("lotto", LottoSchema, "lotto");
+LottoSchema.plugin(mongoosePaginate);
+
+export const LottoModel: PaginateModel<LottoDocument> = model("lotto", LottoSchema, "lotto");

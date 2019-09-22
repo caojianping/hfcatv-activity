@@ -1,38 +1,50 @@
-import {Schema, Model, model} from "mongoose";
+import {Schema, PaginateModel, model} from "mongoose";
+import mongoosePaginate from "mongoose-paginate";
 import {BaseDocument} from "../interfaces";
 
 export interface UserDocument extends BaseDocument {
-    userId: string;
-    nickname: string;
-    lottoCount: number;
+    _id: any;               // 用户编号
+    openId: string;         // 微信编号
+    nickname: string;       // 昵称
+    lottoCount: number;     // 抽奖次数
 }
 
 const UserSchema: Schema = new Schema({
-    userId: {
-        type: "String",
+    openId: {
+        type: Schema.Types.String,
         required: true
     },
     nickname: {
-        type: "String",
+        type: Schema.Types.String,
         required: true
     },
     lottoCount: {
-        type: "Number",
+        type: Schema.Types.Number,
+        required: true,
         default: 0,
         min: 0
     },
     createTime: {
-        type: "Date",
+        type: Schema.Types.Date,
+        required: true,
         default: new Date()
     },
     updateTime: {
-        type: "Date",
+        type: Schema.Types.Date,
         required: false
     },
     isDelete: {
-        type: "Boolean",
+        type: Schema.Types.Boolean,
+        required: true,
         default: false
     }
 }, {_id: true});
 
-export const UserModel: Model<UserDocument> = model("user", UserSchema, "user");
+UserSchema.plugin(mongoosePaginate);
+
+UserSchema.pre("findOneAndUpdate", function (next) {
+    this.setOptions({runValidators: true});
+    next();
+});
+
+export const UserModel: PaginateModel<UserDocument> = model("user", UserSchema, "user");

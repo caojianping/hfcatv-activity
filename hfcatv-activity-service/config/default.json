@@ -17,5 +17,6 @@
     "overwrite": true,
     "httpOnly": true,
     "signed": false
-  }
+  },
+  "salt": 10
 }

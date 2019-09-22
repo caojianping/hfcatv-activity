@@ -1,4 +1,4 @@
-import AwardService from "../services/award.service";
+import {AwardService} from "../services";
 import {AwardType} from "../common/enums";
 import Database from "../db";
 
@@ -10,26 +10,17 @@ const awardService = new AwardService();
 
 // awardService.addAwards([
 //     {
-//         name: "参与奖",
-//         type: AwardType.Nothing,
-//         desc: "谢谢参与",
-//         stock: 9999,
-//         weight: 0.8
+//         name: "谢谢参与",
+//         type: AwardType.Nothing
 //     },
 //     {
-//         name: "一等奖",
-//         type: AwardType.MemberCard,
-//         desc: "爱奇艺视频会员",
-//         stock: 9999,
-//         weight: 0.05
+//         name: "爱奇艺视频会员",
+//         type: AwardType.MemberCard
 //     },
 //     {
-//         name: "二等奖",
-//         type: AwardType.RedPacket,
-//         desc: "1-5元现金红包",
-//         stock: 9999,
-//         weight: 0.15
+//         name: "1-5元现金红包",
+//         type: AwardType.RedPacket
 //     }
 // ]);
 
-// awardService.updateAward({type: AwardType.Nothing}, {$set:{name: "参与奖"}});
+// awardService.updateAward({type: AwardType.Nothing}, {name: "谢谢参与123"});
