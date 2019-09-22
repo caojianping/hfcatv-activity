@@ -5,12 +5,11 @@ Database.connect();
 
 const userService = new UserService();
 
-// userService.model.remove({});
-
-async function test() {
+async function addUsers() {
     await userService.addUser("abcdefghijklmn01", "曹剑平");
-    // await userService.addUser("abcdefghijklmn01", "曹剑平");
     await userService.addUser("abcdefghijklmn02", "张婉婉");
 }
 
-test();
+async function removeUsers() {
+    await userService.model.remove({});
+}

@@ -1,15 +1,23 @@
 import {Schema, PaginateModel, model} from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
+import {ActivityStatus, AwardRank} from "../common/enums";
 import {BaseDocument} from "../interfaces";
-import {ActivityStatus} from "../common/enums";
+import {AwardDocument} from "./award.model";
+
+export interface ActivityAwardDocument {
+    award: AwardDocument;       // 奖品
+    rank: AwardRank;            // 级别
+    stock: number;              // 库存
+    weight: number;             // 权重
+}
 
 export interface ActivityDocument extends BaseDocument {
-    _id: any;               // 活动编号
-    title: string;          // 活动标题
-    startTime: Date;        // 开始时间
-    endTime: Date;          // 结束时间
-    awards: Array<any>;     // 奖品列表
-    status: ActivityStatus; // 活动状态：未开始、进行中、已结束
+    _id: any;                               // 活动编号
+    title: string;                          // 活动标题
+    startTime: Date;                        // 开始时间
+    endTime: Date;                          // 结束时间
+    awards: Array<ActivityAwardDocument>;   // 奖品列表
+    status: ActivityStatus;                 // 活动状态
 }
 
 const ActivitySchema: Schema = new Schema({

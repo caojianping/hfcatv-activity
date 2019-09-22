@@ -1,5 +1,5 @@
-import BaseService from "./base.service";
 import {ManagerDocument, ManagerModel} from "../models";
+import BaseService from "./base.service";
 
 export default class ManagerService extends BaseService {
     constructor() {
@@ -7,11 +7,11 @@ export default class ManagerService extends BaseService {
     }
 
     async getManager(username: string): Promise<ManagerDocument> {
-        if (!username) return Promise.reject("管理员名称不可以为空");
+        if (!username) return Promise.reject("管理员姓名不可以为空");
 
-        let doc = await this.model.findOne({username: username});
-        console.log("ManagerService.getManager doc:", doc);
-        return doc;
+        let manager = await this.model.findOne({username: username});
+        console.log("ManagerService.getManager manager:", manager);
+        return manager;
     }
 
     async addManager(username: string, password: string): Promise<ManagerDocument> {
@@ -21,9 +21,9 @@ export default class ManagerService extends BaseService {
         let result = await this.isExist({username: username});
         if (result.status) return Promise.reject("该管理员已经存在");
         else {
-            let doc = await this.model.create({username: username, password: password});
-            console.log("ManagerService.addManager doc:", doc);
-            return doc;
+            let manager = await this.model.create({username: username, password: password});
+            console.log("ManagerService.addManager manager:", manager);
+            return manager;
         }
     }
 
@@ -37,8 +37,8 @@ export default class ManagerService extends BaseService {
         let data: ManagerDocument = result.data;
         data["password"] = password;
         data["updateTime"] = new Date();
-        let doc = await data.save();
-        console.log("ManagerService.setPassword doc:", doc);
-        return doc;
+        let manager = await data.save();
+        console.log("ManagerService.setPassword manager:", manager);
+        return manager;
     }
 };

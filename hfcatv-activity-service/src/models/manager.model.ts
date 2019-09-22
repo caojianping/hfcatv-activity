@@ -1,7 +1,7 @@
 import {Schema, PaginateModel, model} from "mongoose";
+import mongoosePaginate from "mongoose-paginate";
 import bcrypt from "bcrypt";
 import config from "config";
-import mongoosePaginate from "mongoose-paginate";
 import {BaseDocument} from "../interfaces";
 
 export interface ManagerDocument extends BaseDocument {

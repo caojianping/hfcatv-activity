@@ -1,5 +1,5 @@
-import BaseService from "./base.service";
 import {UserDocument, UserModel} from "../models";
+import BaseService from "./base.service";
 
 export default class UserService extends BaseService {
     constructor() {
@@ -9,17 +9,17 @@ export default class UserService extends BaseService {
     async getUserById(id: string): Promise<UserDocument> {
         if (!id) return Promise.reject("用户编号不可以为空");
 
-        let doc = await this.model.findById(id);
-        console.log("UserService.getUserById doc:", doc);
-        return doc;
+        let user = await this.model.findById(id);
+        console.log("UserService.getUserById user:", user);
+        return user;
     }
 
     async getUserByOpenId(openId: string): Promise<UserDocument> {
         if (!openId) return Promise.reject("微信编号不可以为空");
 
-        let doc = await this.model.findOne({openId: openId});
-        console.log("UserService.getUserByOpenId doc:", doc);
-        return doc;
+        let user = await this.model.findOne({openId: openId});
+        console.log("UserService.getUserByOpenId user:", user);
+        return user;
     }
 
     async addUser(openId: string, nickname: string): Promise<UserDocument> {
@@ -29,9 +29,9 @@ export default class UserService extends BaseService {
         let result = await this.isExist({openId: openId});
         if (result.status) return Promise.reject("该用户已经存在");
         else {
-            let doc = await this.model.create({openId: openId, nickname: nickname, lottoCount: 3});
-            console.log("UserService.addUser doc:", doc);
-            return doc;
+            let user = await this.model.create({openId: openId, nickname: nickname, lottoCount: 3});
+            console.log("UserService.addUser user:", user);
+            return user;
         }
     }
 
@@ -41,19 +41,40 @@ export default class UserService extends BaseService {
 
         conditions["isDelete"] = false;
         update["updateTime"] = new Date();
-        let doc = await this.model.findOneAndUpdate(conditions, {$set: update}, {new: true});
-        console.log("UserService.updateUser doc:", doc);
-        return doc;
+        let user = await this.model.findOneAndUpdate(conditions, {$set: update}, {new: true});
+        console.log("UserService.updateUser user:", user);
+        return user;
+    }
+
+    async getLottoCount(id: string): Promise<number> {
+        if (!id) return Promise.reject("用户编号不可以为空");
+
+        let user = await this.model.findById(id);
+        if (!user) return Promise.reject("该用户不存在");
+        return user.lottoCount;
     }
 
     async setLottoCount(openId: string, lottoCount: number): Promise<UserDocument> {
         if (!openId) return Promise.reject("微信编号不可以为空");
         if (lottoCount <= 0) return Promise.reject("无效的抽奖次数");
 
-        let doc = await this.model.findOneAndUpdate({openId: openId},
+        let user = await this.model.findOneAndUpdate({openId: openId},
             {$set: {lottoCount: lottoCount, updateTime: new Date()}},
             {new: true});
-        console.log("UserService.setLottoCount doc:", doc);
-        return doc;
+        console.log("UserService.setLottoCount user:", user);
+        return user;
+    }
+
+    async reduceLottoCount(id: string): Promise<UserDocument> {
+        if (!id) return Promise.reject("用户编号不可以为空");
+
+        let user = await this.model.findByIdAndUpdate(id,
+            {
+                $inc: {lottoCount: -1},
+                $set: {updateTime: new Date()}
+            },
+            {new: true});
+        console.log("UserService.reduceLottoCount user:", user);
+        return user;
     }
 };

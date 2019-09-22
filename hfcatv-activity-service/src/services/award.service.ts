@@ -1,5 +1,6 @@
-import BaseService from "./base.service";
 import {AwardDocument, AwardModel} from "../models";
+import BaseService from "./base.service";
+import {AwardType} from "../common/enums";
 
 export default class AwardService extends BaseService {
     constructor() {
@@ -7,17 +8,18 @@ export default class AwardService extends BaseService {
     }
 
     async getAwards(): Promise<Array<AwardDocument>> {
-        let docs = await this.model.find();
-        console.log("AwardService.getAwards docs:", docs);
-        return docs;
+        let awards = await this.model.find();
+        console.log("AwardService.getAwards awards:", awards);
+        return awards;
     }
-    
-    async addAward(award: any): Promise<AwardDocument> {
-        if (!award) return Promise.reject("奖品数据不可以为空");
 
-        let doc = await this.model.create(award);
-        console.log("AwardService.addAward doc:", doc);
-        return doc;
+    async addAward(name: string, type: AwardType): Promise<AwardDocument> {
+        if (!name) return Promise.reject("奖品名称不可以为空");
+        if (type <= 0) return Promise.reject("无效的奖品类型");
+
+        let award = await this.model.create({name: name, type: type});
+        console.log("AwardService.addAward award:", award);
+        return award;
     }
 
     async addAwards(awards: Array<any>): Promise<Array<AwardDocument>> {
@@ -34,8 +36,8 @@ export default class AwardService extends BaseService {
 
         conditions["isDelete"] = false;
         update["updateTime"] = new Date();
-        let doc = await this.model.findOneAndUpdate(conditions, {$set: update}, {new: true});
-        console.log("AwardService.updateAward doc:", doc);
-        return doc;
+        let award = await this.model.findOneAndUpdate(conditions, {$set: update}, {new: true});
+        console.log("AwardService.updateAward award:", award);
+        return award;
     }
 };

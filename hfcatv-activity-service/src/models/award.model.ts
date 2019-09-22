@@ -1,7 +1,7 @@
 import {Schema, PaginateModel, model} from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
-import {BaseDocument} from "../interfaces";
 import {AwardType} from "../common/enums";
+import {BaseDocument} from "../interfaces";
 
 export interface AwardDocument extends BaseDocument {
     _id: any;           // 奖品编号
