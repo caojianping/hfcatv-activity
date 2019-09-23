@@ -1,4 +1,4 @@
-import ErrorType from "./ErrorType";
+import ErrorType from "./errorType";
 import BusinessError from "./businessError";
 import ErrorMiddleware from "./errorMiddleware";
 
