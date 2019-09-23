@@ -1,3 +1,4 @@
+import {BusinessError, ErrorType} from "../error";
 import {ManagerDocument, ManagerModel} from "../models";
 import BaseService from "./base.service";
 
@@ -6,39 +7,35 @@ export default class ManagerService extends BaseService {
         super(ManagerModel);
     }
 
-    async getManager(username: string): Promise<ManagerDocument> {
-        if (!username) return Promise.reject("管理员姓名不可以为空");
+    async getManager(id: string): Promise<ManagerDocument | null> {
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员编号]`));
+        return await this.model.findById(id);
+    }
 
-        let manager = await this.model.findOne({username: username});
-        console.log("ManagerService.getManager manager:", manager);
-        return manager;
+    async getManagerByUsername(username: string): Promise<ManagerDocument | null> {
+        if (!username) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员姓名]`));
+        return await this.model.findOne({username: username});
     }
 
     async addManager(username: string, password: string): Promise<ManagerDocument> {
-        if (!username) return Promise.reject("管理员名称不可以为空");
-        if (!password) return Promise.reject("管理员密码不可以为空");
+        if (!username) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员姓名]`));
+        if (!password) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员密码]`));
 
         let result = await this.isExist({username: username});
-        if (result.status) return Promise.reject("该管理员已经存在");
-        else {
-            let manager = await this.model.create({username: username, password: password});
-            console.log("ManagerService.addManager manager:", manager);
-            return manager;
-        }
+        if (result.status) return Promise.reject(new BusinessError(ErrorType.DataExist.code, `${ErrorType.DataExist.message}:[管理员]`));
+        return await this.model.create({username: username, password: password});
     }
 
     async setPassword(conditions: any, password: string): Promise<ManagerDocument> {
-        if (!conditions) return Promise.reject("查询条件不可以为空");
-        if (!password) return Promise.reject("管理员密码不可以为空");
+        if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
+        if (!password) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员密码]`));
 
         let result = await this.isExist(conditions);
-        if (!result.status) return Promise.reject("暂无该管理员信息");
+        if (!result.status) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[管理员]`));
 
         let data: ManagerDocument = result.data;
         data["password"] = password;
         data["updateTime"] = new Date();
-        let manager = await data.save();
-        console.log("ManagerService.setPassword manager:", manager);
-        return manager;
+        return await data.save();
     }
 };

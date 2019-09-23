@@ -77,4 +77,9 @@ const LottoSchema: Schema = new Schema({
 
 LottoSchema.plugin(mongoosePaginate);
 
+LottoSchema.pre("findOneAndUpdate", function (next) {
+    this.setOptions({runValidators: true});
+    next();
+});
+
 export const LottoModel: PaginateModel<LottoDocument> = model("lotto", LottoSchema, "lotto");

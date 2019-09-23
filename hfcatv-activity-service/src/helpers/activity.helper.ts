@@ -5,7 +5,7 @@ export default class ActivityHelper {
         let sms = startTime.getTime(),
             ems = endTime.getTime(),
             nms = new Date().getTime();
-        if (nms < sms) return ActivityStatus.Unstart;
+        if (nms < sms) return ActivityStatus.UnStarted;
         else if (nms >= sms && nms < ems) return ActivityStatus.Processing;
         else return ActivityStatus.Finished;
     }

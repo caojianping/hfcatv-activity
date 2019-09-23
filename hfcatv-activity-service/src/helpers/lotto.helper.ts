@@ -1,6 +1,6 @@
+import {ActivityAwardDocument, AwardDocument} from "../models";
 import ActivityService from "../services/activity.service";
 import LottoService from "../services/lotto.service";
-import {ActivityAwardDocument, AwardDocument} from "../models";
 
 export default class LottoHelper {
     static async getRandomAward(activityId: string): Promise<AwardDocument> {
@@ -35,7 +35,7 @@ export default class LottoHelper {
         return temp[0].item;
     }
 
-    static getRandomRedPacket(min: number, max: number) {
+    static getRandomRedPacket(min: number, max: number): number {
         let num = Math.random() * (max - min) + min;
         return parseFloat(String(num));
     }

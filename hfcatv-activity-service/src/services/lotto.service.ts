@@ -1,16 +1,13 @@
-import {
-    AwardDocument,
-    LottoDocument,
-    LottoModel,
-    RedPacketInfo,
-    GoodsInfo,
-    MemberCardInfo,
-} from "../models";
-import BaseService from "./base.service";
-import ActivityService from "./activity.service";
-import UserService from "./user.service";
-import LottoHelper from "../helpers/lotto.helper";
+import {BusinessError, ErrorType} from "../error";
 import {AwardType, GoodsStatus, RedPacketStatus} from "../common/enums";
+import {
+    AwardDocument, LottoModel, UserDocument,
+    RedPacketInfo, GoodsInfo, MemberCardInfo
+} from "../models";
+import {LottoHelper} from "../helpers";
+import BaseService from "./base.service";
+import UserService from "./user.service";
+import ActivityService from "./activity.service";
 
 export default class LottoService extends BaseService {
     private activityService: ActivityService = new ActivityService();
@@ -20,22 +17,21 @@ export default class LottoService extends BaseService {
         super(LottoModel);
     }
 
-    async getLottoCount(activityId: string, awardId: string) {
-        if (!activityId) return Promise.reject("活动编号不可以为空");
-        if (!awardId) return Promise.reject("奖品编号不可以为空");
-
+    async getLottoCount(activityId: string, awardId: string): Promise<number> {
+        if (!activityId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
+        if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
         return await this.model.count({activity: activityId, award: awardId});
     }
 
-    async addLotto(userId: string, activityId: string): Promise<LottoDocument> {
-        if (!userId) return Promise.reject("用户编号不可以为空");
-        if (!activityId) return Promise.reject("活动编号不可以为空");
+    async addLotto(userId: string, activityId: string): Promise<UserDocument | null> {
+        if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
+        if (!activityId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 
         let isFinished = await this.activityService.isFinished(activityId);
-        if (isFinished) return Promise.reject("该活动已经结束");
+        if (isFinished) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[活动已经结束]`));
 
         let lottoCount = await this.userService.getLottoCount(userId);
-        if (lottoCount <= 0) return Promise.reject("您的抽奖机会已经用完啦");
+        if (lottoCount <= 0) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[您的抽奖机会已经用完啦]`));
 
         let attachInfo: RedPacketInfo | GoodsInfo | MemberCardInfo | undefined;
         let award: AwardDocument = await LottoHelper.getRandomAward(activityId),
@@ -65,10 +61,7 @@ export default class LottoService extends BaseService {
             award: award._id,
             attachInfo: attachInfo
         });
-        console.log("LottoService.addLotto lotto:", lotto);
-
-        let user = await this.userService.reduceLottoCount(userId);
-        console.log("LottoService.addLotto user:", user);
-        return lotto;
+        if (!lotto) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[抽奖数据创建失败]`));
+        return await this.userService.setLottoCount(userId, -1);
     }
 };

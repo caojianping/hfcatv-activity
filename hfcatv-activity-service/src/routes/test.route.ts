@@ -15,6 +15,6 @@ export default (router: Router) => {
             throw new Error("这是一个系统异常");
         })
         .get("/action04", async (ctx: Context, next: Function) => {
-            throw new BusinessError(ErrorType.Unauthorized.code, ErrorType.Unauthorized.message);
-        })
+            throw new BusinessError(ErrorType.Others.code, ErrorType.Others.message);
+        });
 };

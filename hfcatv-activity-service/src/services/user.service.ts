@@ -1,3 +1,4 @@
+import {BusinessError, ErrorType} from "../error";
 import {UserDocument, UserModel} from "../models";
 import BaseService from "./base.service";
 
@@ -6,75 +7,58 @@ export default class UserService extends BaseService {
         super(UserModel);
     }
 
-    async getUserById(id: string): Promise<UserDocument> {
-        if (!id) return Promise.reject("用户编号不可以为空");
-
-        let user = await this.model.findById(id);
-        console.log("UserService.getUserById user:", user);
-        return user;
+    async getUser(id: string): Promise<UserDocument | null> {
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
+        return await this.model.findById(id);
     }
 
-    async getUserByOpenId(openId: string): Promise<UserDocument> {
-        if (!openId) return Promise.reject("微信编号不可以为空");
+    async getUserByOpenId(openId: string): Promise<UserDocument | null> {
+        if (!openId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信编号]`));
+        return await this.model.findOne({openId: openId});
+    }
+
+    async getUserIdByOpenId(openId: string): Promise<string> {
+        if (!openId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信编号]`));
 
         let user = await this.model.findOne({openId: openId});
-        console.log("UserService.getUserByOpenId user:", user);
-        return user;
+        if (!user) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[用户]`));
+        return user._id;
     }
 
-    async addUser(openId: string, nickname: string): Promise<UserDocument> {
-        if (!openId) return Promise.reject("微信编号不可以为空");
-        if (!nickname) return Promise.reject("昵称不可以为空");
+    async addUser(openId: string, nickname: string): Promise<UserDocument | null> {
+        if (!openId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信编号]`));
+        if (!nickname) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[昵称]`));
 
         let result = await this.isExist({openId: openId});
-        if (result.status) return Promise.reject("该用户已经存在");
-        else {
-            let user = await this.model.create({openId: openId, nickname: nickname, lottoCount: 3});
-            console.log("UserService.addUser user:", user);
-            return user;
-        }
+        if (result.status) return Promise.reject(new BusinessError(ErrorType.DataExist.code, `${ErrorType.DataExist.message}:[用户]`));
+        return await this.model.create({openId: openId, nickname: nickname, lottoCount: 3});
     }
 
     async updateUser(conditions: any, update: any): Promise<UserDocument> {
-        if (!conditions) return Promise.reject("查询条件不可以为空");
-        if (!update) return Promise.reject("更新数据不可以为空");
+        if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
+        if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
 
         conditions["isDelete"] = false;
         update["updateTime"] = new Date();
-        let user = await this.model.findOneAndUpdate(conditions, {$set: update}, {new: true});
-        console.log("UserService.updateUser user:", user);
-        return user;
+        return await this.model.findOneAndUpdate(conditions, {$set: update}, {new: true});
     }
 
+
     async getLottoCount(id: string): Promise<number> {
-        if (!id) return Promise.reject("用户编号不可以为空");
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
 
         let user = await this.model.findById(id);
-        if (!user) return Promise.reject("该用户不存在");
+        if (!user) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[用户信息]`));
         return user.lottoCount;
     }
 
-    async setLottoCount(openId: string, lottoCount: number): Promise<UserDocument> {
-        if (!openId) return Promise.reject("微信编号不可以为空");
-        if (lottoCount <= 0) return Promise.reject("无效的抽奖次数");
-
-        let user = await this.model.findOneAndUpdate({openId: openId},
-            {$set: {lottoCount: lottoCount, updateTime: new Date()}},
-            {new: true});
-        console.log("UserService.setLottoCount user:", user);
-        return user;
-    }
-
-    async reduceLottoCount(id: string): Promise<UserDocument> {
-        if (!id) return Promise.reject("用户编号不可以为空");
-
-        let user = await this.model.findByIdAndUpdate(id,
+    async setLottoCount(id: string, delta: number): Promise<UserDocument> {
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
+        return await this.model.findByIdAndUpdate(id,
             {
-                $inc: {lottoCount: -1},
+                $inc: {lottoCount: delta},
                 $set: {updateTime: new Date()}
             },
             {new: true});
-        console.log("UserService.reduceLottoCount user:", user);
-        return user;
     }
 };

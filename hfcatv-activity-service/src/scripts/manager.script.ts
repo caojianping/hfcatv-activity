@@ -10,9 +10,8 @@ async function addManager() {
 }
 
 async function getManager() {
-    let manager = await managerService.getManager("caojianping"),
-        result = manager.validatePassword("888999");
-    console.log("result:", result);
+    let manager = await managerService.getManagerByUsername("caojianping");
+    manager && manager.validatePassword("888999");
 }
 
 async function setPassword() {
@@ -22,3 +21,5 @@ async function setPassword() {
 async function removeManagers() {
     await managerService.model.remove({});
 }
+
+getManager();

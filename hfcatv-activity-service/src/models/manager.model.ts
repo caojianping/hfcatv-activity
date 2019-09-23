@@ -59,6 +59,11 @@ ManagerSchema.pre("save", function (this: ManagerDocument, next: Function) {
     });
 });
 
+ManagerSchema.pre("findOneAndUpdate", function (next) {
+    this.setOptions({runValidators: true});
+    next();
+});
+
 ManagerSchema.methods.validatePassword = function (this: ManagerDocument, password: string) {
     return bcrypt.compareSync(password, this.password);
 };
