@@ -8,4 +8,13 @@ export default class ActivityController {
         let activity = await activityService.getActivity();
         ctx.success(activity);
     }
+
+    async addActivity(ctx: Context, next: Function) {
+    }
+
+    async updateActivity(ctx: Context, next: Function) {
+    }
+
+    async removeActivity(ctx: Context, next: Function) {
+    }
 };

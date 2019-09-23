@@ -17,6 +17,15 @@ export default class UserService extends BaseService {
         return await this.model.findOne({openId: openId});
     }
 
+    async getUserByConditions(openId: string, nickname: string): Promise<UserDocument | null>{
+        if (!openId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信编号]`));
+        if (!nickname) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[昵称]`));
+
+        let result = await this.isExist({openId: openId});
+        if (result.status) return result.data;
+        return await this.model.create({openId: openId, nickname: nickname, lottoCount: 3});
+    }
+
     async getUserIdByOpenId(openId: string): Promise<string> {
         if (!openId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信编号]`));
 

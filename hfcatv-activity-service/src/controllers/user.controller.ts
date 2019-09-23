@@ -5,15 +5,15 @@ import {UserService} from "../services";
 const userService = new UserService();
 
 export default class UserController {
-    async addUser(ctx: Context, next: Function) {
-        let body = ctx.request.body || {},
+    async getUser(ctx: Context, next: Function) {
+        let body = ctx.params,
             {openId, nickname} = body,
-            user = await userService.addUser(openId, nickname);
-        if (!user) throw new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[用户数据创建失败]`);
+            user = await userService.getUserByConditions(openId, nickname);
+        if (!user) throw new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[用户]`);
 
         ctx.success({
-            openId: openId,
-            nickname: nickname,
+            openId: user.openId,
+            nickname: user.nickname,
             lottoCount: user.lottoCount
         });
     }

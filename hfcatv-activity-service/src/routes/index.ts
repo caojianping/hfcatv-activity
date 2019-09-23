@@ -1,4 +1,4 @@
-import Router from "koa-router";/**/
+import Router from "koa-router";
 import compose from "koa-compose";
 import apiRoute from "./api.route";
 import adminRoute from "./admin.route";

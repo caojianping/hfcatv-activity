@@ -7,8 +7,9 @@ const lottoController = new LottoController();
 
 export default (router: Router) => {
     return router
-        .get("/activity/lastest", activityController.getActivity)
-        .post("/user/add", userController.addUser)
-        .post("/lotto/exec", lottoController.addLotto)
-        .post("/lotto/list/:page/:limit", lottoController.getLottos);
+        .get("/activity/detail", activityController.getActivity)
+        .post("/user/detail", userController.getUser)
+        .post("/lotto/exec", lottoController.execLotto)
+        .post("/lotto/list/:page/:limit", lottoController.getLottos)
+        .post("/lotto/receive", lottoController.receiveLotto);
 };

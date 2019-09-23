@@ -7,7 +7,7 @@ const lottoService = new LottoService();
 const userService = new UserService();
 
 export default class LottoController {
-    async addLotto(ctx: Context, next: Function) {
+    async execLotto(ctx: Context, next: Function) {
         console.log("111", ctx.request.body);
         let {openId, activityId} = ctx.request.body,
             userId = await userService.getUserIdByOpenId(openId),
@@ -38,5 +38,12 @@ export default class LottoController {
                     limit: limit
                 });
         ctx.success(result);
+    }
+
+    async receiveLotto(ctx: Context, next: Function) {
+    }
+
+    async setStatus(ctx: Context, next: Function) {
+
     }
 };
