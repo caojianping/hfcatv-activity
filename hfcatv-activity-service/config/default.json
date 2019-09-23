@@ -1,22 +1,22 @@
 {
-  "port": 9000,
-  "mongodb": {
-    "user": "admin",
-    "password": "Cjp_1990",
-    "host": "47.96.11.15",
-    "port": 27017,
-    "database": "hfcatv_activity"
-  },
-  "redis": {
-    "host": "47.96.11.15",
-    "port": 6379
-  },
-  "session": {
-    "key": "hfcatv_activity_service",
-    "maxAge": 86400000,
-    "overwrite": true,
-    "httpOnly": true,
-    "signed": false
-  },
-  "salt": 10
+    "port": 80,
+    "mongodb": {
+        "user": "admin",
+        "password": "Cjp_1990",
+        "host": "47.96.11.15",
+        "port": 27017,
+        "database": "hfcatv_activity"
+    },
+    "redis": {
+        "host": "47.96.11.15",
+        "port": 6379
+    },
+    "session": {
+        "key": "hfcatv_activity_service",
+        "maxAge": 86400000,
+        "overwrite": true,
+        "httpOnly": true,
+        "signed": false
+    },
+    "salt": 10
 }
