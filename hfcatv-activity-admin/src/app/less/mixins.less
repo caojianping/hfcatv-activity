@@ -1,0 +1,50 @@
+// 参数混入：字体样式
+.font-styles (@font-size: 14px, @font-weight: normal, @line-height: 1.5, @color: #333, @text-align: left) {
+    font-size: @font-size;
+    font-weight: @font-weight;
+    line-height: @line-height;
+    color: @color;
+    text-align: @text-align;
+}
+
+// 参数混入：文本内容过长显示省略号
+.text-ellipse(@width) {
+    width: @width;
+    white-space: nowrap;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
+
+// 参数混入：盒模型计算规则
+.box-sizing(@box-sizing: border-box) {
+    -webkit-box-sizing: @box-sizing;
+    -moz-box-sizing: @box-sizing;
+    box-sizing: @box-sizing;
+}
+
+// 参数混入：外阴影效果
+.box-shadow(@shadow) {
+    -webkit-box-shadow: @shadow;
+    -moz-box-shadow: @shadow;
+    box-shadow: @shadow;
+}
+
+// 参数混入：过渡效果
+.transition(...) {
+    @props: ~`"@{arguments}".replace(/[\[\]]/g, '')`;
+    -webkit-transition: @props;
+    -moz-transition: @props;
+    -ms-transition: @props;
+    -o-transition: @props;
+    transition: @props;
+}
+
+// 参数混入：转换效果
+.transform(@transform) {
+    -webkit-transform: @transform;
+    -moz-transform: @transform;
+    -ms-transform: @transform;
+    -o-transform: @transform;
+    transform: @transform;
+}

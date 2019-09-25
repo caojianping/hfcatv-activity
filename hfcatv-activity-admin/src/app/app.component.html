@@ -1,54 +1,62 @@
-<nz-layout class="app-layout">
-  <nz-sider class="menu-sidebar"
-            nzCollapsible
-            nzWidth="256px"
-            nzBreakpoint="md"
-            [(nzCollapsed)]="isCollapsed"
-            [nzTrigger]="null">
-    <div class="sidebar-logo">
-      <a href="https://ng.ant.design/" target="_blank">
-        <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
-        <h1>Ant Design Of Angular</h1>
-      </a>
+<nz-layout *ngIf="isLoginPath" style="background-color: #f5f5f5;">
+    <div nz-row nzType="flex" nzJustify="center" nzAlign="middle">
+        <div nz-col [nzXs]="{span: 20}" [nzSm]="{span:16}" [nzMd]="{span:12}"
+             [nzLg]="{span:10}" [nzXl]="{span:8}" [nzXXl]="{span:6}">
+            <router-outlet></router-outlet>
+        </div>
     </div>
-    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-      <li nz-submenu nzOpen nzTitle="Dashboard" nzIcon="dashboard">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a routerLink="/welcome">Welcome</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a>Monitor</a>
-          </li>
-          <li nz-menu-item nzMatchRouter>
-            <a>Workplace</a>
-          </li>
+</nz-layout>
+
+<nz-layout *ngIf="!isLoginPath" class="app-layout">
+    <nz-sider class="menu-sidebar"
+              nzCollapsible nzWidth="256px" nzBreakpoint="md"
+              [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
+        <div class="sidebar-logo">
+            <a href="/">
+                <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
+                <h1>HFCATV CMS</h1>
+            </a>
+        </div>
+        <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+            <li nz-submenu nzOpen nzTitle="产品管理" nzIcon="dashboard">
+                <ul>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/award">菜单一</a>
+                    </li>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/activity">菜单二</a>
+                    </li>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/lotto">菜单三</a>
+                    </li>
+                </ul>
+            </li>
+            <li nz-submenu nzOpen nzTitle="用户中心" nzIcon="form">
+                <ul>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/manager">菜单四</a>
+                    </li>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/welcome">其他</a>
+                    </li>
+                </ul>
+            </li>
         </ul>
-      </li>
-      <li nz-submenu nzOpen nzTitle="Form" nzIcon="form">
-        <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a>Basic Form</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </nz-sider>
-  <nz-layout>
-    <nz-header>
-      <div class="app-header">
-        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
-            <i class="trigger"
-               nz-icon
-               [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
-            ></i>
-        </span>
-      </div>
-    </nz-header>
-    <nz-content>
-      <div class="inner-content">
-        <router-outlet></router-outlet>
-      </div>
-    </nz-content>
-  </nz-layout>
+    </nz-sider>
+
+    <nz-layout>
+        <nz-header>
+            <div class="app-header">
+                <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+                    <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+                </span>
+            </div>
+        </nz-header>
+
+        <nz-content>
+            <div class="inner-content">
+                <router-outlet></router-outlet>
+            </div>
+        </nz-content>
+    </nz-layout>
 </nz-layout>
