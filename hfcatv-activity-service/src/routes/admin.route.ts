@@ -12,6 +12,9 @@ export default (router: Router) => {
 		.post("/account/login", managerController.login)
 		.post("/account/setPassword", managerController.setPassword)
 
+		.get("/token/status", managerController.getTokenStatus)
+		.get("/token/refresh", managerController.refreshTokenStatus)
+
 		.get("/award/list/:page/:limit", awardController.getPageAwards)
 		.post("/award/add", awardController.addAward)
 		.post("/award/update", awardController.updateAward)

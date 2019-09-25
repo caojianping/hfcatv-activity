@@ -1,5 +1,5 @@
-import {UserService, ActivityService, LottoService} from "../services";
-import Database from "../db";
+import {UserService, ActivityService, LottoService} from "../src/services";
+import Database from "../src/db";
 
 Database.connect();
 

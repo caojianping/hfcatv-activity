@@ -1,8 +1,8 @@
-import {Utils} from "../common/utils";
-import {AwardDocument} from "../models";
-import {ActivityHelper} from "../helpers";
-import {AwardService, ActivityService} from "../services";
-import Database from "../db";
+import {Utils} from "../src/common/utils";
+import {AwardDocument} from "../src/models";
+import {ActivityHelper} from "../src/helpers";
+import {AwardService, ActivityService} from "../src/services";
+import Database from "../src/db";
 
 Database.connect();
 

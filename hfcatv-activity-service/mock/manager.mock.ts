@@ -1,5 +1,5 @@
-import {ManagerService} from "../services";
-import Database from "../db";
+import {ManagerService} from "../src/services";
+import Database from "../src/db";
 
 Database.connect();
 

@@ -1,5 +1,5 @@
-import {UserService} from "../services";
-import Database from "../db";
+import {UserService} from "../src/services";
+import Database from "../src/db";
 
 Database.connect();
 

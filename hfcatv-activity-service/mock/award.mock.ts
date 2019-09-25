@@ -1,6 +1,6 @@
-import {AwardService} from "../services";
-import {AwardType} from "../common/enums";
-import Database from "../db";
+import {AwardService} from "../src/services";
+import {AwardType} from "../src/common/enums";
+import Database from "../src/db";
 
 Database.connect();
 

@@ -8,19 +8,19 @@ import logger from "koa-logger";
 import jwt from "koa-jwt";
 import config from "config";
 
-import {ErrorMiddleware} from "../error";
-import {ResponseMiddleware} from "../response";
-import AuthMiddleware from "./auth.middleware";
+import {error} from "../error";
+import {response} from "../response";
+import auth from "./auth.middleware";
 
 const secret = config.get<string>("jwt.secret");
 
 export default function middlewares() {
 	return compose([
-		ErrorMiddleware(),
-		ResponseMiddleware(),
-		AuthMiddleware(),
+		error(),
+		response(),
+		auth(),
 		jwt({secret: secret})
-			.unless({path: [/^\/admin\/account\/login/, /^\/api/]}),
+			.unless({path: [/^\/admin\/account\/login/, /^\/admin\/token\/status/, /^\/api/]}),
 		logger(),
 		json(),
 		bodyParser(),

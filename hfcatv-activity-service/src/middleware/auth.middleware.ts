@@ -5,7 +5,11 @@ import {TokenHelper, ManagerToken} from "../helpers";
 export default () => async (ctx: Context, next: Function) => {
 	let path = ctx.path;
 	console.log("AuthMiddleware path:", path);
-	if (path.indexOf("/api") === 0 || path.indexOf("/admin/account/login") === 0) {
+	if (
+		path.indexOf("/api") === 0 ||
+		path.indexOf("/admin/account/login") === 0 ||
+		path.indexOf("/admin/token/status") === 0
+	) {
 		await next();
 	} else {
 		let token = ctx.header.authorization,
