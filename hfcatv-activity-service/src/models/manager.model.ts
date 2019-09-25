@@ -65,7 +65,9 @@ ManagerSchema.pre("findOneAndUpdate", function (next) {
 });
 
 ManagerSchema.methods.validatePassword = function (this: ManagerDocument, password: string) {
-    return bcrypt.compareSync(password, this.password);
+    let result = bcrypt.compareSync(password, this.password);
+	console.log("validatePassword:", password, this.password, result);
+	return result;
 };
 
 export const ManagerModel: PaginateModel<ManagerDocument> = model("manager", ManagerSchema, "manager");

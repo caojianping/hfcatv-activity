@@ -1,7 +1,9 @@
+import {TokenHelper, ManagerToken} from "./token.helper";
 import ActivityHelper from "./activity.helper";
 import LottoHelper from "./lotto.helper";
 
 export {
-    ActivityHelper,
-    LottoHelper
+	TokenHelper, ManagerToken,
+	ActivityHelper,
+	LottoHelper
 }

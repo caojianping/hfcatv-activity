@@ -5,9 +5,9 @@ import UserController from "./user.controller";
 import LottoController from "./lotto.controller";
 
 export {
-    ManagerController,
-    AwardController,
-    ActivityController,
-    UserController,
-    LottoController
+	ManagerController,
+	AwardController,
+	ActivityController,
+	UserController,
+	LottoController
 };
