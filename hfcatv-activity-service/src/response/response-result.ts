@@ -3,8 +3,9 @@ import ResponseCode from "./response-code";
 import ResponseOptions from "./response-options";
 
 function getOptions(options?: number | ResponseOptions, message?: string): ResponseOptions {
+    console.log("getOptions 111:", options, message);
 	let tcode, tmessage;
-	if (options !== undefined) {
+	if (options === undefined) {
 		tcode = ResponseCode.Unknown;
 		tmessage = "操作失败";
 	} else if (typeof options === "number") {
@@ -17,6 +18,7 @@ function getOptions(options?: number | ResponseOptions, message?: string): Respo
 	}
 	tcode = tcode === undefined ? ResponseCode.Unknown : tcode;
 	tmessage = tmessage || "操作失败";
+    console.log("getOptions 222:", tcode, tmessage);
 	return <ResponseOptions>{code: tcode, message: tmessage};
 }
 

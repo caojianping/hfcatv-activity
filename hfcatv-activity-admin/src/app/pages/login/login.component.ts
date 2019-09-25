@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ManagerService} from "../../services";
 
 @Component({
 	selector: 'app-login',
@@ -7,23 +8,29 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 	styleUrls: ['./login.component.less']
 })
 export class LoginComponent implements OnInit {
-	validateForm: FormGroup;
+	loginForm: FormGroup;
 
-	constructor(private fb: FormBuilder) {
+	constructor(
+	    private formBuilder: FormBuilder,
+        private managerService: ManagerService
+    ) {
 	}
 
 	ngOnInit(): void {
-		this.validateForm = this.fb.group({
+		this.loginForm = this.formBuilder.group({
 			username: [null, [Validators.required]],
 			password: [null, [Validators.required]],
 			remember: [true]
 		});
 	}
 
-	submitForm(): void {
-		for (const i in this.validateForm.controls) {
-			this.validateForm.controls[i].markAsDirty();
-			this.validateForm.controls[i].updateValueAndValidity();
-		}
+	login(formData: any): void {
+		// for (const i in this.validateForm.controls) {
+		// 	this.validateForm.controls[i].markAsDirty();
+		// 	this.validateForm.controls[i].updateValueAndValidity();
+		// }
+        console.log("login:", formData);
+        this.managerService.login(formData.username, formData.password)
+            .subscribe(data=>console.log("login 999:", data));
 	}
 }

@@ -1,6 +1,6 @@
 <div class="login">
     <h1 class="login-title">某某公司测试CMS系统</h1>
-    <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
+    <form nz-form [formGroup]="loginForm" class="login-form" (ngSubmit)="login(loginForm.value)">
         <nz-form-item>
             <nz-form-control nzErrorTip="Please input your username!">
                 <nz-input-group nzPrefixIcon="user">
@@ -28,4 +28,3 @@
         </nz-form-item>
     </form>
 </div>
-  
