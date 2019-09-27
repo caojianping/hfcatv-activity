@@ -1,15 +1,29 @@
 <app-layout>
-    <nz-table #awardTable [nzData]="awards">
+    <nz-table #awardTable
+              [nzData]="awardPageResult.docs"
+              [nzTotal]="awardPageResult.total"
+              [nzPageIndex]="awardPageResult.page"
+              [nzPageSize]="awardPageResult.limit"
+              [nzPaginationPosition]="'both'"
+              [nzLoading]="isLoading"
+              [nzPageSizeOptions]="[2,5,10,20,30]"
+              [nzShowSizeChanger]="true"
+              (nzPageIndexChange)="fetchPageAwards()"
+              (nzPageSizeChange)="fetchPageAwards()">
         <thead>
         <tr>
-            <th>名称</th>
-            <th>类型</th>
+            <th>奖品名称</th>
+            <th>奖品类型</th>
+            <th>创建时间</th>
+            <th>更新时间</th>
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let data of awardTable.data">
-            <td>{{ data.name }}</td>
-            <td>{{ data.type }}</td>
+        <tr *ngFor="let award of awardPageResult.docs">
+            <td>{{award.name}}</td>
+            <td>{{award.type}}</td>
+            <td>{{award.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>{{award.updateTime | date:"yyyy/MM/dd hh:mm"}}</td>
         </tr>
         </tbody>
     </nz-table>

@@ -19,15 +19,15 @@ export default function middlewares() {
 		error(),
 		response(),
 		auth(),
-		jwt({secret: secret})
-			.unless({
-				path: [
-					/^\/api/,
-					/^\/admin\/account\/login/,
-					/^\/admin\/account\/logout/,
-					/^\/admin\/token\/status/
-				]
-			}),
+		// jwt({secret: secret})
+		// 	.unless({
+		// 		path: [
+		// 			/^\/api/,
+		// 			/^\/admin\/account\/login/,
+		// 			/^\/admin\/account\/logout/,
+		// 			/^\/admin\/token\/status/
+		// 		]
+		// 	}),
 		logger(),
 		json(),
 		bodyParser(),

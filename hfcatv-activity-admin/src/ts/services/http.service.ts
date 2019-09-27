@@ -55,6 +55,7 @@ export default class HttpService {
 		if (error.error instanceof ErrorEvent) {
 			message = error.error.message;
 		}
+        console.log("http message:", message);
 		return throwError(message);
 	}
 }

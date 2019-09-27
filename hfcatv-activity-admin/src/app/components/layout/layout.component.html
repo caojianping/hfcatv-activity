@@ -12,23 +12,20 @@
             <li nz-submenu nzOpen nzTitle="产品管理" nzIcon="dashboard">
                 <ul>
                     <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/award">菜单一</a>
+                        <a routerLink="/award">奖品管理</a>
                     </li>
                     <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/activity">菜单二</a>
+                        <a routerLink="/activity">活动管理</a>
                     </li>
                     <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/lotto">菜单三</a>
+                        <a routerLink="/lotto">中奖管理</a>
                     </li>
                 </ul>
             </li>
             <li nz-submenu nzOpen nzTitle="用户中心" nzIcon="form">
                 <ul>
                     <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/manager">菜单四</a>
-                    </li>
-                    <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/welcome">其他</a>
+                        <a routerLink="/manager">管理员</a>
                     </li>
                 </ul>
             </li>
@@ -41,6 +38,21 @@
                 <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
                     <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
                 </span>
+
+                <a class="username" nz-dropdown [nzDropdownMenu]="menu">
+                    {{username}}
+                    <i nz-icon nzType="down"></i>
+                </a>
+                <nz-dropdown-menu #menu="nzDropdownMenu">
+                    <ul nz-menu nzSelectable>
+                        <li nz-menu-item>
+                            <span (click)="logout">退出登录</span>
+                        </li>
+                        <li nz-menu-item>
+                            <a routerLink="/manager">修改密码</a>
+                        </li>
+                    </ul>
+                </nz-dropdown-menu>
             </div>
         </nz-header>
 

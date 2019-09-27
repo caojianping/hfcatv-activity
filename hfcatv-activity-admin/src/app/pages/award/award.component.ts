@@ -1,30 +1,49 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import {Component, OnInit} from "@angular/core";
+import {NzMessageService} from "ng-zorro-antd";
+import {AwardDocument, PaginateResult} from "../../../ts/interfaces";
+import {AwardService} from "../../../ts/services";
 
 @Component({
-  selector: 'app-award',
-  templateUrl: './award.component.html',
-  styleUrls: ['./award.component.less']
+    selector: "app-award",
+    templateUrl: "./award.component.html",
+    styleUrls: ["./award.component.less"]
 })
 export class AwardComponent implements OnInit {
-  awards: Array<any> = [
-    {name: '测试一', type: 1},
-    {name: '测试二', type: 2},
-    {name: '测试三', type: 3},
-    {name: '测试四', type: 4},
-    {name: '测试五', type: 5}
-  ];
+    isLoading: boolean = false;
+    awardPageResult: PaginateResult<AwardDocument> = {
+        docs: [],
+        total: 0,
+        limit: 10,
+        page: 1
+    };
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-  ) {
-    this.route.url.subscribe(url => {
-      console.log("Award:", url);
-    });
-  }
+    constructor(
+        private message: NzMessageService,
+        private awardService: AwardService
+    ) {
+    }
 
-  ngOnInit() {
-  }
+    fetchPageAwards() {
+        console.log("abc:", arguments);
+        const self = this;
+        const {awardService, awardPageResult, message} = self;
+        self.isLoading = true;
+        awardService.getPageAwards(awardPageResult.page, awardPageResult.limit)
+            .subscribe({
+                next(result: PaginateResult<AwardDocument>) {
+                    console.log("getPageAwards result:", result);
+                    self.isLoading = false;
+                    self.awardPageResult = result;
+                },
+                error(err: any) {
+                    console.log("getPageAwards err:", err);
+                    self.isLoading = false;
+                    message.error(err);
+                }
+            })
+    }
 
+    ngOnInit() {
+        this.fetchPageAwards();
+    }
 }

@@ -16,7 +16,7 @@ export default class BaseService {
 
 	async softDelete(id: string): Promise<boolean> {
 		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[文档编号]`));
-		return await this.model.findByIdAndUpdate(id, {isDelete: true}, {new: true});
+		return !!(await this.model.findByIdAndUpdate(id, {isDelete: true}, {new: true}));
 	}
 
 	async isExist(conditions: any): Promise<any> {

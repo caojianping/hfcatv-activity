@@ -2,30 +2,33 @@ import {Injectable} from "@angular/core";
 import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router} from "@angular/router";
 import {Observable} from "rxjs";
 import {ManagerService} from "../../ts/services";
+import TokenHelper from "../../ts/helpers/token.helper";
 
 @Injectable({
-	providedIn: "root"
+    providedIn: "root"
 })
 export class AuthGuard implements CanActivate {
-	constructor(
-		private managerService: ManagerService,
-		private router: Router
-	) {
-	}
+    constructor(
+        private managerService: ManagerService,
+        private router: Router
+    ) {
+    }
 
-	canActivate(
-		next: ActivatedRouteSnapshot,
-		state: RouterStateSnapshot
-	): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-		console.log("AuthGuard url:", state, state.url);
-		return this.checkLogin(state.url);
-	}
+    canActivate(
+        next: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot
+    ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+        console.log("AuthGuard url:", state.url);
+        return this.checkStatus(state.url);
+    }
 
-	checkLogin(url: string): boolean {
-		if (this.managerService.loginStatus) return true;
+    checkStatus(url: string): boolean {
+        let token = TokenHelper.getToken();
+        console.log("AuthGuard token:", token, this.managerService.loginStatus);
+        if (token && this.managerService.loginStatus) return true;
 
-		this.managerService.redirectUrl = url;
-		this.router.navigateByUrl("/login");
-		return false;
-	}
+        this.managerService.redirectUrl = url;
+        this.router.navigateByUrl("/login");
+        return false;
+    }
 }
