@@ -1,3 +1,4 @@
 export const Constants = {
-    TOKEN: "TOKEN"
+    TOKEN: "TOKEN",
+    TWO_HOURS: 7200000
 };

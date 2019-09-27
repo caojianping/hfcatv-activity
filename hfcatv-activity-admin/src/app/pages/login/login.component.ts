@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ManagerService} from "../../services";
 
@@ -12,6 +13,7 @@ export class LoginComponent implements OnInit {
 
 	constructor(
 	    private formBuilder: FormBuilder,
+        private router: Router,
         private managerService: ManagerService
     ) {
 	}
@@ -29,8 +31,12 @@ export class LoginComponent implements OnInit {
 		// 	this.validateForm.controls[i].markAsDirty();
 		// 	this.validateForm.controls[i].updateValueAndValidity();
 		// }
-        console.log("login:", formData);
+        console.log("login 111:", formData);
         this.managerService.login(formData.username, formData.password)
-            .subscribe(data=>console.log("login 999:", data));
+            .subscribe((data: any)=>{
+                console.log("login 444:", data);
+                // Token.setToken(data.token);
+                // this.router.navigate(["/award"]);
+            });
 	}
 }

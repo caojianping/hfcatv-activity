@@ -5,20 +5,22 @@ import {AwardComponent} from "./pages/award/award.component";
 import {ActivityComponent} from "./pages/activity/activity.component";
 import {LottoComponent} from "./pages/lotto/lotto.component";
 import {ManagerComponent} from "./pages/manager/manager.component";
+import {AuthGuard} from "./guard/auth.guard";
 
 const routes: Routes = [
-	{path: '', pathMatch: "full", redirectTo: "/test"},
-	{path: "test", loadChildren: () => import("./pages/test/test.module").then(m => m.TestModule)},
-	{path: "login", component: LoginComponent},
-	{path: "award", component: AwardComponent},
-	{path: "activity", component: ActivityComponent},
-	{path: "lotto", component: LottoComponent},
-	{path: "manager", component: ManagerComponent},
+    // {path: '', pathMatch: "full", redirectTo: "/test"},
+    // {path: "test", loadChildren: () => import("./pages/test/test.module").then(m => m.TestModule)},
+    {path: '', pathMatch: "full", redirectTo: "/award"},
+    {path: "login", component: LoginComponent},
+    {path: "award", component: AwardComponent, canActivate: [AuthGuard]},
+    {path: "activity", component: ActivityComponent, canActivate: [AuthGuard]},
+    {path: "lotto", component: LottoComponent, canActivate: [AuthGuard]},
+    {path: "manager", component: ManagerComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({
-	imports: [RouterModule.forRoot(routes)],
-	exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule]
 })
 export class AppRoutingModule {
 }
