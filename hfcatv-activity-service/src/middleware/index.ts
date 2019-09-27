@@ -20,7 +20,14 @@ export default function middlewares() {
 		response(),
 		auth(),
 		jwt({secret: secret})
-			.unless({path: [/^\/admin\/account\/login/, /^\/admin\/token\/status/, /^\/api/]}),
+			.unless({
+				path: [
+					/^\/api/,
+					/^\/admin\/account\/login/,
+					/^\/admin\/account\/logout/,
+					/^\/admin\/token\/status/
+				]
+			}),
 		logger(),
 		json(),
 		bodyParser(),

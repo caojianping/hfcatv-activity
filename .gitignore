@@ -83,7 +83,11 @@ typings/
 /hfcatv-activity-service/node_modules
 /hfcatv-activity-service/dist
 /hfcatv-activity-service/logs
+/hfcatv-activity-service/package-lock.json
+
 /hfcatv-activity-admin/node_modules
 /hfcatv-activity-admin/dist
+/hfcatv-activity-admin/package-lock.json
+
 /hfcatv-activity-applet/node_modules
 /hfcatv-activity-applet/miniprogram_dist

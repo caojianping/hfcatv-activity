@@ -1,5 +1,5 @@
 import {Context} from "koa";
-import BusinessError from "./businessError";
+import BusinessError from "./business-error";
 
 export default () => async (ctx: Context, next: Function) => {
     try {

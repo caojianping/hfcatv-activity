@@ -8,6 +8,7 @@ export default () => async (ctx: Context, next: Function) => {
 	if (
 		path.indexOf("/api") === 0 ||
 		path.indexOf("/admin/account/login") === 0 ||
+		path.indexOf("/admin/account/logout") === 0 ||
 		path.indexOf("/admin/token/status") === 0
 	) {
 		await next();

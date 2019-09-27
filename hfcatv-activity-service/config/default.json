@@ -1,5 +1,5 @@
 {
-    "port": 4201,
+    "port": 80,
     "mongodb": {
         "user": "admin",
         "password": "Cjp_1990",

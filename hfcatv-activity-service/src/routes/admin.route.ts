@@ -10,6 +10,7 @@ const lottoController = new LottoController();
 export default (router: Router) => {
 	return router
 		.post("/account/login", managerController.login)
+		.get("/account/logout", managerController.logout)
 		.post("/account/setPassword", managerController.setPassword)
 
 		.get("/token/status", managerController.getTokenStatus)

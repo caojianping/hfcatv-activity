@@ -1,9 +1,9 @@
-import ErrorType from "./errorType";
-import BusinessError from "./businessError";
-import error from "./errorMiddleware";
+import ErrorType from "./error-type";
+import BusinessError from "./business-error";
+import error from "./error-middleware";
 
 export {
-    ErrorType,
-    BusinessError,
+	ErrorType,
+	BusinessError,
 	error
 };
