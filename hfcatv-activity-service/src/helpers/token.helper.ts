@@ -22,10 +22,10 @@ export class ManagerToken {
 
 export class TokenHelper {
 	static createToken(data: any): any {
-		const exp = Math.floor(Date.now() / 1000) + 60;
+		const exp = Math.floor(Date.now() / 1000) + 7200;
 		return jwt.sign({data: data, exp: exp}, secret);
 	}
-
+	
 	static async checkToken(token: string): Promise<ManagerToken | boolean> {
 		if (!token) return false;
 

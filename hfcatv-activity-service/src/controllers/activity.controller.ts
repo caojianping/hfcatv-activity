@@ -1,6 +1,6 @@
 import {Context} from "koa";
 import {ErrorType} from "../error";
-import {ActivityDocument} from "../models";
+import {ActivityDocument} from "../interfaces";
 import {ActivityService} from "../services";
 
 const activityService = new ActivityService();

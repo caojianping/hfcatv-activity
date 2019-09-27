@@ -1,4 +1,4 @@
-import {ActivityAwardDocument, AwardDocument} from "../models";
+import {ActivityAwardDocument, AwardDocument} from "../interfaces";
 import ActivityService from "../services/activity.service";
 import LottoService from "../services/lotto.service";
 

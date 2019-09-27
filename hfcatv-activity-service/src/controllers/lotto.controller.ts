@@ -1,6 +1,6 @@
 import {Context} from "koa";
 import {ErrorType} from "../error";
-import {LottoDocument} from "../models";
+import {LottoDocument} from "../interfaces";
 import {LottoService, UserService} from "../services";
 
 const lottoService = new LottoService();

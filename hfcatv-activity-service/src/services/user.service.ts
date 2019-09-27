@@ -1,5 +1,6 @@
 import {BusinessError, ErrorType} from "../error";
-import {UserDocument, UserModel} from "../models";
+import {UserDocument} from "../interfaces";
+import {UserModel} from "../models";
 import BaseService from "./base.service";
 
 export default class UserService extends BaseService {

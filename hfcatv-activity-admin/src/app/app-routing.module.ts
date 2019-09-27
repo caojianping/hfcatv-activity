@@ -8,19 +8,17 @@ import {ManagerComponent} from "./pages/manager/manager.component";
 import {AuthGuard} from "./guard/auth.guard";
 
 const routes: Routes = [
-    // {path: '', pathMatch: "full", redirectTo: "/test"},
-    // {path: "test", loadChildren: () => import("./pages/test/test.module").then(m => m.TestModule)},
-    {path: '', pathMatch: "full", redirectTo: "/award"},
-    {path: "login", component: LoginComponent},
-    {path: "award", component: AwardComponent, canActivate: [AuthGuard]},
-    {path: "activity", component: ActivityComponent, canActivate: [AuthGuard]},
-    {path: "lotto", component: LottoComponent, canActivate: [AuthGuard]},
-    {path: "manager", component: ManagerComponent, canActivate: [AuthGuard]}
+	{path: '', pathMatch: "full", redirectTo: "/award"},
+	{path: "login", component: LoginComponent},
+	{path: "award", component: AwardComponent, canActivate: [AuthGuard]},
+	{path: "activity", component: ActivityComponent, canActivate: [AuthGuard]},
+	{path: "lotto", component: LottoComponent, canActivate: [AuthGuard]},
+	{path: "manager", component: ManagerComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule]
+	imports: [RouterModule.forRoot(routes)],
+	exports: [RouterModule]
 })
 export class AppRoutingModule {
 }

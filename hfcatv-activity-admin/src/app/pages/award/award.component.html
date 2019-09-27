@@ -1,14 +1,16 @@
-<nz-table #awardTable [nzData]="awards">
-  <thead>
-  <tr>
-    <th>名称</th>
-    <th>类型</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let data of awardTable.data">
-    <td>{{ data.name }}</td>
-    <td>{{ data.type }}</td>
-  </tr>
-  </tbody>
-</nz-table>
+<app-layout>
+    <nz-table #awardTable [nzData]="awards">
+        <thead>
+        <tr>
+            <th>名称</th>
+            <th>类型</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of awardTable.data">
+            <td>{{ data.name }}</td>
+            <td>{{ data.type }}</td>
+        </tr>
+        </tbody>
+    </nz-table>
+</app-layout>

@@ -1,6 +1,6 @@
 import {Context} from "koa";
 import {ErrorType} from "../error";
-import {ManagerDocument} from "../models";
+import {ManagerDocument} from "../interfaces";
 import {TokenHelper, ManagerToken} from "../helpers";
 import {ManagerService} from "../services";
 
@@ -29,12 +29,12 @@ export default class ManagerController {
 		delete ctx.state.user
 		ctx.success(true);
 	}
-	
+
 	async setPassword(ctx: Context, next: Function) {
 		let managerId = ctx.state.managerId,
 			password = ctx.request.body.password,
 			result = await managerService.setPassword({_id: managerId}, password);
-		result ? ctx.success(true) : ctx.failure(false);
+		ctx.success(!!result);
 	}
 
 	async getTokenStatus(ctx: Context, next: Function) {

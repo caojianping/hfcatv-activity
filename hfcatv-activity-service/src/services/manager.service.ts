@@ -1,5 +1,6 @@
 import {BusinessError, ErrorType} from "../error";
-import {ManagerDocument, ManagerModel} from "../models";
+import {ManagerDocument} from "../interfaces";
+import {ManagerModel} from "../models";
 import BaseService from "./base.service";
 
 export default class ManagerService extends BaseService {

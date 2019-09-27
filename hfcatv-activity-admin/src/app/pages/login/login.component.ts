@@ -1,21 +1,24 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ManagerService} from "../../services";
+import {Component, OnInit} from "@angular/core";
+import {Router} from "@angular/router";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {NzMessageService} from "ng-zorro-antd";
+import {ManagerService} from "../../../ts/services";
 
 @Component({
-	selector: 'app-login',
-	templateUrl: './login.component.html',
-	styleUrls: ['./login.component.less']
+	selector: "app-login",
+	templateUrl: "./login.component.html",
+	styleUrls: ["./login.component.less"]
 })
 export class LoginComponent implements OnInit {
 	loginForm: FormGroup;
 
 	constructor(
-	    private formBuilder: FormBuilder,
-        private router: Router,
-        private managerService: ManagerService
-    ) {
+		private formBuilder: FormBuilder,
+		private router: Router,
+		private message: NzMessageService,
+		private managerService: ManagerService
+	) {
+		console.log("login component router:", this.router, this.message);
 	}
 
 	ngOnInit(): void {
@@ -31,12 +34,19 @@ export class LoginComponent implements OnInit {
 		// 	this.validateForm.controls[i].markAsDirty();
 		// 	this.validateForm.controls[i].updateValueAndValidity();
 		// }
-        console.log("login 111:", formData);
-        this.managerService.login(formData.username, formData.password)
-            .subscribe((data: any)=>{
-                console.log("login 444:", data);
-                // Token.setToken(data.token);
-                // this.router.navigate(["/award"]);
-            });
+		const {router, message, managerService} = this;
+		managerService.login(formData.username, formData.password)
+			.subscribe({
+				next(data: any) {
+					if (managerService.loginStatus) {
+						let redirectUrl = managerService.redirectUrl ?
+							router.parseUrl(managerService.redirectUrl) : "/award";
+						router.navigateByUrl(redirectUrl);
+					}
+				},
+				error(err: any) {
+					message.error(err);
+				}
+			});
 	}
 }

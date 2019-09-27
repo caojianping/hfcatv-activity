@@ -1,0 +1,53 @@
+<nz-layout class="app-layout">
+    <nz-sider class="menu-sidebar"
+              nzCollapsible nzWidth="256px" nzBreakpoint="md"
+              [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
+        <div class="sidebar-logo">
+            <a href="/">
+                <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
+                <h1>HFCATV CMS</h1>
+            </a>
+        </div>
+        <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+            <li nz-submenu nzOpen nzTitle="产品管理" nzIcon="dashboard">
+                <ul>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/award">菜单一</a>
+                    </li>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/activity">菜单二</a>
+                    </li>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/lotto">菜单三</a>
+                    </li>
+                </ul>
+            </li>
+            <li nz-submenu nzOpen nzTitle="用户中心" nzIcon="form">
+                <ul>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/manager">菜单四</a>
+                    </li>
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/welcome">其他</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nz-sider>
+
+    <nz-layout>
+        <nz-header>
+            <div class="app-header">
+                <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+                    <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+                </span>
+            </div>
+        </nz-header>
+
+        <nz-content>
+            <div class="app-content">
+                <ng-content></ng-content>
+            </div>
+        </nz-content>
+    </nz-layout>
+</nz-layout>

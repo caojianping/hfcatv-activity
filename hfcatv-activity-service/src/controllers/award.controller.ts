@@ -1,6 +1,6 @@
 import {Context} from "koa";
 import {ErrorType} from "../error";
-import {AwardDocument} from "../models";
+import {AwardDocument} from "../interfaces";
 import {AwardService} from "../services";
 
 const awardService = new AwardService();

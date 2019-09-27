@@ -1,9 +1,7 @@
 import {BusinessError, ErrorType} from "../error";
 import {AwardType, GoodsStatus, RedPacketStatus} from "../common/enums";
-import {
-	AwardDocument, LottoModel, UserDocument,
-	RedPacketInfo, GoodsInfo, MemberCardInfo, LottoDocument
-} from "../models";
+import {AwardDocument, UserDocument, RedPacketInfo, GoodsInfo, MemberCardInfo, LottoDocument} from "../interfaces";
+import {LottoModel} from "../models";
 import {LottoHelper} from "../helpers";
 
 import BaseService from "./base.service";
