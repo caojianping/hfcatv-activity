@@ -6,68 +6,68 @@ import {TokenHelper} from "../helpers";
 import HttpService from "./http.service";
 
 @Injectable({
-    providedIn: "root"
+	providedIn: "root"
 })
 export class ManagerService {
-    public loginStatus: boolean = !!TokenHelper.getToken();
-    public redirectUrl: string = "";
+	public loginStatus: boolean = !!TokenHelper.getToken();
+	public redirectUrl: string = "";
 
-    constructor(private httpService: HttpService) {
-    }
+	constructor(private httpService: HttpService) {
+	}
 
-    login(username: string, password: string): Observable<string> {
-        return this.httpService.post<string>(Urls.account.login, {username: username, password: password})
-            .pipe(
-                tap((token: string) => {
-                    if (token) {
-                        this.loginStatus = true;
-                        TokenHelper.setToken(token);
-                    }
-                    return token;
-                })
-            );
-    }
+	login(username: string, password: string): Observable<string> {
+		return this.httpService.post<string>(Urls.account.login, {username: username, password: password})
+			.pipe(
+				tap((token: string) => {
+					if (token) {
+						this.loginStatus = true;
+						TokenHelper.setToken(token);
+					}
+					return token;
+				})
+			);
+	}
 
-    logout(): Observable<boolean> {
-        return this.httpService.get<boolean>(Urls.account.logout)
-            .pipe(
-                tap((data: boolean) => {
-                    if (data) {
-                        this.loginStatus = false;
-                        TokenHelper.removeToken();
-                    }
-                    return data;
-                })
-            );
-    }
+	logout(): Observable<boolean> {
+		return this.httpService.get<boolean>(Urls.account.logout)
+			.pipe(
+				tap((data: boolean) => {
+					if (data) {
+						this.loginStatus = false;
+						TokenHelper.removeToken();
+					}
+					return data;
+				})
+			);
+	}
 
-    setPassword(password: string): Observable<boolean> {
-        return this.httpService.post<boolean>(Urls.account.setPassword, {password: password})
-            .pipe(
-                tap((data: boolean) => {
-                    if (data) {
-                        this.loginStatus = false;
-                        TokenHelper.removeToken();
-                    }
-                    return data;
-                })
-            );
-    }
+	setPassword(password: string): Observable<boolean> {
+		return this.httpService.post<boolean>(Urls.account.setPassword, {password: password})
+			.pipe(
+				tap((data: boolean) => {
+					if (data) {
+						this.loginStatus = false;
+						TokenHelper.removeToken();
+					}
+					return data;
+				})
+			);
+	}
 
-    getTokenStatus(): Observable<boolean> {
-        return this.httpService.get<boolean>(Urls.token.status);
-    }
+	getTokenStatus(): Observable<boolean> {
+		return this.httpService.get<boolean>(Urls.token.status);
+	}
 
-    refreshTokenStatus(): Observable<string> {
-        return this.httpService.get<string>(Urls.token.refresh)
-            .pipe(
-                tap((token: string) => {
-                    if (token) {
-                        this.loginStatus = true;
-                        TokenHelper.setToken(token);
-                    }
-                    return token;
-                })
-            );
-    }
+	refreshTokenStatus(): Observable<string> {
+		return this.httpService.get<string>(Urls.token.refresh)
+			.pipe(
+				tap((token: string) => {
+					if (token) {
+						this.loginStatus = true;
+						TokenHelper.setToken(token);
+					}
+					return token;
+				})
+			);
+	}
 }

@@ -1,6 +1,6 @@
 <app-layout>
-    <nz-table #awardTable
-              [nzData]="awardPageResult.docs"
+    <nz-table [nzData]="awardPageResult.docs"
+              [nzFrontPagination]="false"
               [nzTotal]="awardPageResult.total"
               [nzPageIndex]="awardPageResult.page"
               [nzPageSize]="awardPageResult.limit"
@@ -8,23 +8,33 @@
               [nzLoading]="isLoading"
               [nzPageSizeOptions]="[2,5,10,20,30]"
               [nzShowSizeChanger]="true"
-              (nzPageIndexChange)="fetchPageAwards()"
-              (nzPageSizeChange)="fetchPageAwards()">
+              (nzPageIndexChange)="fetchPageAwards('page', $event)"
+              (nzPageSizeChange)="fetchPageAwards('limit', $event)">
         <thead>
         <tr>
             <th>奖品名称</th>
             <th>奖品类型</th>
             <th>创建时间</th>
             <th>更新时间</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody>
         <tr *ngFor="let award of awardPageResult.docs">
             <td>{{award.name}}</td>
-            <td>{{award.type}}</td>
+            <td>{{AwardTypes[award.type]}}</td>
             <td>{{award.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>{{award.updateTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>
+                <button nz-button nzSize="small" nzType="primary" (click)="editAward(award)">编辑</button>
+                <button nz-button nzSize="small" nzType="danger" style="margin-left: 8px;"
+                        (click)="removeAward(award._id)">删除</button>
+            </td>
         </tr>
         </tbody>
     </nz-table>
+
+    <app-award-modal [visible]="isVisible" [award]="currentAward"
+                     (onCancel)="handleModalCancel"
+                     (onOk)="handleModalOk($event)"></app-award-modal>
 </app-layout>

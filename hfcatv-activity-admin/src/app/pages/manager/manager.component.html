@@ -1,1 +1,21 @@
-<app-layout></app-layout>
+<app-layout>
+    <form nz-form [formGroup]="managerForm" class="manager-form" (ngSubmit)="modifyPassword(managerForm.value)">
+        <nz-form-item>
+            <nz-form-control nzErrorTip="请输入新密码！">
+                <nz-input-group nzPrefixIcon="lock">
+                    <input type="password" nz-input formControlName="password" placeholder="请输入新密码"/>
+                </nz-input-group>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control nzErrorTip="请确认新密码！">
+                <nz-input-group nzPrefixIcon="lock">
+                    <input type="password" nz-input formControlName="confirmPassword" placeholder="请确认新密码"/>
+                </nz-input-group>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <button nz-button nzType="primary" nzSize="large" class="btn-modify">修改密码</button>
+        </nz-form-item>
+    </form>
+</app-layout>

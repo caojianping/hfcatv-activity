@@ -11,14 +11,6 @@ interface ResponseResult<T> {
 	trace: string;
 }
 
-const token = TokenHelper.getToken();
-const httpOptions = {
-	headers: new HttpHeaders({
-		"Content-Type": "application/json",
-		"Authorization": token ? `Bearer ${token}` : ""
-	})
-};
-
 @Injectable({
 	providedIn: "root"
 })
@@ -26,36 +18,50 @@ export default class HttpService {
 	constructor(private http: HttpClient) {
 	}
 
+	private setHeaders() {
+		let token = TokenHelper.getToken(),
+			headers = {"Content-Type": "application/json"};
+		if (token) {
+			headers["Authorization"] = token ? `Bearer ${token}` : "";
+		}
+		return {headers: new HttpHeaders(headers)};
+	}
+
+	private handleResponse<T>(res: any) {
+		console.log("HTTP res:", typeof res, res);
+		let result: ResponseResult<any> = <ResponseResult<any>>res,
+			code = result.code;
+		if (code === 200) return <T>result.data;
+
+		if (code === 700) {
+			TokenHelper.removeToken();
+			window.location.href = "/login";
+		}
+		throw new Error(result.message);
+	}
+
+	private handleError(error: HttpErrorResponse) {
+		console.log("HTTP error:", error);
+		let message = error.message;
+		if (error.error instanceof ErrorEvent) {
+			message = error.error.message;
+		}
+		return throwError(message);
+	}
+
 	public get<T>(url: string): Observable<any> {
-		console.log("http.get args:", url);
-		return this.http.get(url, httpOptions).pipe(
+		console.log("GET args:", url);
+		return this.http.get(url, this.setHeaders()).pipe(
 			map((res: any) => this.handleResponse<T>(res)),
 			catchError(this.handleError)
 		);
 	}
 
 	public post<T>(url: string, data: any): Observable<any> {
-		console.log("http.post args:", url, data);
-		return this.http.post(url, data, httpOptions).pipe(
+		console.log("POST args:", url, data);
+		return this.http.post(url, data, this.setHeaders()).pipe(
 			map((res: any) => this.handleResponse<T>(res)),
 			catchError(this.handleError)
 		);
-	}
-
-	private handleResponse<T>(res: any) {
-		console.log("http res:", typeof res, res);
-		let result: ResponseResult<any> = <ResponseResult<any>>res;
-		if (result.code !== 200) throw new Error(result.message);
-		return <T>result.data;
-	}
-
-	private handleError(error: HttpErrorResponse) {
-		console.log("http error:", error);
-		let message = error.message;
-		if (error.error instanceof ErrorEvent) {
-			message = error.error.message;
-		}
-        console.log("http message:", message);
-		return throwError(message);
 	}
 }

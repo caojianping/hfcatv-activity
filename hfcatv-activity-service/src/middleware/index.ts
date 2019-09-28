@@ -17,21 +17,23 @@ const secret = config.get<string>("jwt.secret");
 export default function middlewares() {
 	return compose([
 		error(),
+
+		convert(cors()),
+		logger(),
+		bodyParser(),
+		json(),
+		helmet(),
+
 		response(),
 		auth(),
-		// jwt({secret: secret})
-		// 	.unless({
-		// 		path: [
-		// 			/^\/api/,
-		// 			/^\/admin\/account\/login/,
-		// 			/^\/admin\/account\/logout/,
-		// 			/^\/admin\/token\/status/
-		// 		]
-		// 	}),
-		logger(),
-		json(),
-		bodyParser(),
-		helmet(),
-		convert(cors())
+		jwt({secret: secret})
+			.unless({
+				path: [
+					/^\/api/,
+					/^\/admin\/account\/login/,
+					/^\/admin\/account\/logout/,
+					/^\/admin\/token\/status/
+				]
+			}),
 	]);
 };

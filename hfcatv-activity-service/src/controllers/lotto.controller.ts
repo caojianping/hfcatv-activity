@@ -1,7 +1,8 @@
 import {Context} from "koa";
 import {ErrorType} from "../error";
-import {LottoDocument} from "../interfaces";
+import {ActivityAwardDocument, LottoDocument} from "../interfaces";
 import {LottoService, UserService} from "../services";
+import {Utils} from "../common/utils";
 
 const lottoService = new LottoService();
 const userService = new UserService();
@@ -51,17 +52,8 @@ export default class LottoController {
 		let params = ctx.params,
 			page = Number(params.page || 1),
 			limit = Number(params.limit || 10),
-			options = {
-				sort: {createTime: -1},
-				populate: [
-					{path: "user", model: "user"},
-					{path: "activity", model: "activity"},
-					{path: "award", model: "award"}
-				],
-				page: page,
-				limit: limit
-			},
-			result = await lottoService.getPage<LottoDocument>({}, options);
+			conditions = ctx.request.body || {},
+			result = await lottoService.getPageLottos(conditions, page, limit);
 		ctx.success(result);
 	}
 

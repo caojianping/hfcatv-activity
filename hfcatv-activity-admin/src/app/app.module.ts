@@ -20,18 +20,22 @@ import {LottoComponent} from "./pages/lotto/lotto.component";
 import {ManagerComponent} from "./pages/manager/manager.component";
 
 import {LayoutComponent} from "./components/layout/layout.component";
+import {AwardModalComponent} from "./components/award-modal/award-modal.component";
 
 registerLocaleData(zh);
 
 @NgModule({
 	declarations: [
 		AppComponent,
+		
 		LoginComponent,
 		AwardComponent,
 		ActivityComponent,
 		LottoComponent,
 		ManagerComponent,
-		LayoutComponent
+
+		LayoutComponent,
+		AwardModalComponent
 	],
 	imports: [
 		BrowserModule,

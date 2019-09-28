@@ -1,1 +1,63 @@
-<app-layout></app-layout>
+<app-layout>
+    <nz-table [nzData]="lottoPageResult.docs"
+              [nzFrontPagination]="false"
+              [nzTotal]="lottoPageResult.total"
+              [nzPageIndex]="lottoPageResult.page"
+              [nzPageSize]="lottoPageResult.limit"
+              [nzPaginationPosition]="'both'"
+              [nzLoading]="isLoading"
+              [nzPageSizeOptions]="[5,10,20,30]"
+              [nzShowSizeChanger]="true"
+              (nzPageIndexChange)="fetchPageLottos('page', $event)"
+              (nzPageSizeChange)="fetchPageLottos('limit', $event)">
+        <thead>
+        <tr>
+            <th>中奖人</th>
+            <th>活动名称</th>
+            <th>活动状态</th>
+            <th>奖品名称</th>
+            <th>奖品类型</th>
+            <th>奖品等级</th>
+            <th>状态</th>
+            <th>创建时间</th>
+            <th>更新时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let lotto of lottoPageResult.docs">
+            <td>{{lotto.user.nickname}}</td>
+            <td>{{lotto.activity.title}}</td>
+            <td>{{ActivityStatuses[lotto.activity.status]}}</td>
+            <td>{{lotto.award.name}}</td>
+            <td>{{AwardTypes[lotto.award.type]}}</td>
+            <td>{{AwardRanks[lotto.activity.awards[0].rank]}}</td>
+            <td>
+                <span *ngIf="lotto.award.type === 2">{{RedPacketStatusMap[lotto.attachInfo.status]}}</span>
+                <span *ngIf="lotto.award.type === 3">{{GoodsStatusMap[lotto.attachInfo.status]}}</span>
+            </td>
+            <td>{{lotto.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>{{lotto.updateTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>
+                <button *ngIf="lotto.award.type === 2 && lotto.attachInfo.status === 1"
+                        nz-button nzSize="small" nzType="primary"
+                        (click)="setStatus(lotto._id, 2)">发放
+                </button>
+                <button *ngIf="lotto.award.type === 2 && lotto.attachInfo.status === 1"
+                        nz-button nzSize="small" nzType="primary"
+                        (click)="setStatus(lotto._id, -1)">驳回
+                </button>
+
+                <button *ngIf="lotto.award.type === 3 && lotto.attachInfo.status === 1"
+                        nz-button nzSize="small" nzType="primary"
+                        (click)="setStatus(lotto._id, 2)">发货
+                </button>
+                <button *ngIf="lotto.award.type === 3 && lotto.attachInfo.status === 1"
+                        nz-button nzSize="small" nzType="primary"
+                        (click)="setStatus(lotto._id, -1)">驳回
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </nz-table>
+</app-layout>

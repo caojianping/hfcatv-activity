@@ -7,6 +7,8 @@ import {LottoHelper} from "../helpers";
 import BaseService from "./base.service";
 import UserService from "./user.service";
 import ActivityService from "./activity.service";
+import {Utils} from "../common/utils";
+import {PaginateResult} from "mongoose";
 
 export default class LottoService extends BaseService {
 	private activityService: ActivityService = new ActivityService();
@@ -14,6 +16,30 @@ export default class LottoService extends BaseService {
 
 	constructor() {
 		super(LottoModel);
+	}
+
+	async getPageLottos(conditions: any, page: number, limit: number): Promise<PaginateResult<LottoDocument>> {
+		if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
+
+		let options = {
+				sort: {createTime: -1},
+				populate: [
+					{path: "user", model: "user", select: "-_id nickname openId"},
+					{path: "activity", model: "activity", select: "-_id title status awards"},
+					{path: "award", model: "award", select: "_id name type"}
+				],
+				page: page,
+				limit: limit
+			},
+			pageResult = await this.getPage<LottoDocument>(conditions, options);
+
+		let lottosDup = Utils.duplicate<any>(pageResult.docs);
+		lottosDup.forEach((lotto: LottoDocument) => {
+			let awardId = String(lotto.award._id);
+			lotto["activity"]["awards"] = lotto.activity.awards.filter((item: any) => awardId === String(item.award));
+		});
+		pageResult["docs"] = lottosDup;
+		return pageResult;
 	}
 
 	async getLottoCount(activityId: string, awardId: string): Promise<number> {

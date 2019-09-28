@@ -28,10 +28,10 @@ export default class AwardController {
 
 	async updateAward(ctx: Context, next: Function) {
 		let data = ctx.request.body,
-			id = data.id;
-		delete data.id;
+			id = data._id;
+		delete data._id;
 
-		let award = await awardService.updateAward({_id: id}, data);
+		let award = await awardService.updateAward(id, data);
 		ctx.success(award);
 	}
 

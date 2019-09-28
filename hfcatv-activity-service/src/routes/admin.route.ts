@@ -26,7 +26,7 @@ export default (router: Router) => {
 		.post("/activity/update", activityController.updateActivity)
 		.post("/activity/remove", activityController.removeActivity)
 
-		.get("/lotto/list/:page/:limit", lottoController.getPageLottos)
+		.post("/lotto/list/:page/:limit", lottoController.getPageLottos)
 		.post("/lotto/setStatus", lottoController.setStatus)
 
 		.get("/test", async (ctx: Context, next: Function) => {

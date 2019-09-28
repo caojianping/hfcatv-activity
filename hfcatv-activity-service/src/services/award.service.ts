@@ -27,12 +27,11 @@ export default class AwardService extends BaseService {
 		return await this.model.create(awards);
 	}
 
-	async updateAward(conditions: any, update: any): Promise<AwardDocument> {
-		if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
+	async updateAward(id: string, update: any): Promise<AwardDocument> {
+		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
 		if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
 
-		conditions["isDelete"] = false;
 		update["updateTime"] = new Date();
-		return await this.model.findOneAndUpdate(conditions, {$set: update}, {new: true});
+		return await this.model.findByIdAndUpdate(id, {$set: update}, {new: true});
 	}
 };
