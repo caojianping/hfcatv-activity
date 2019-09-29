@@ -1,15 +1,141 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder} from "@angular/forms";
+import {NzMessageService, NzModalService} from "ng-zorro-antd";
+import {ActivityStatuses, AwardRanks, AwardTypes} from "../../../ts/common/names";
+import {ActivityDocument, PaginateResult} from "../../../ts/interfaces";
+import {ActivityService} from "../../../ts/services";
 
 @Component({
-  selector: 'app-activity',
-  templateUrl: './activity.component.html',
-  styleUrls: ['./activity.component.less']
+	selector: 'app-activity',
+	templateUrl: './activity.component.html',
+	styleUrls: ['./activity.component.less']
 })
 export class ActivityComponent implements OnInit {
+	ActivityStatuses: Array<string> = ActivityStatuses;
+	AwardTypes: Array<string> = AwardTypes;
+	AwardRanks: Array<string> = AwardRanks;
 
-  constructor() { }
+	queryForm: any;
 
-  ngOnInit() {
-  }
+	isLoading: boolean = false;
+	activityPageResult: PaginateResult<ActivityDocument> = {
+		docs: [],
+		total: 0,
+		limit: 10,
+		page: 1
+	};
 
+	isVisible: boolean = false;
+	currentActivity?: ActivityDocument;
+
+	constructor(
+		private message: NzMessageService,
+		private modal: NzModalService,
+		private activityService: ActivityService,
+		private formBuilder: FormBuilder
+	) {
+		this.queryForm = this.formBuilder.group({
+			title: [""],
+			status: [""]
+		});
+	}
+
+	ngOnInit() {
+	}
+
+	fetchPageActivities(key?: string, $event?: number) {
+		const self = this;
+		if (key && $event) {
+			self.activityPageResult[key] = $event;
+		}
+
+		const {message, activityService, queryForm, activityPageResult} = self;
+		self.isLoading = true;
+		activityService.getPageActivities(queryForm.value || {}, activityPageResult.page, activityPageResult.limit)
+			.subscribe({
+				next(result: PaginateResult<ActivityDocument>) {
+					console.log("getPageActivities result:", result);
+					self.isLoading = false;
+					self.activityPageResult = result;
+				},
+				error(err: any) {
+					console.log("getPageActivities err:", err);
+					self.isLoading = false;
+					message.error(err);
+				}
+			})
+	}
+
+	queryActivities() {
+		if (!this.queryForm.valid) {
+			for (const i in this.queryForm.controls) {
+				this.queryForm.controls[i].markAsDirty();
+				this.queryForm.controls[i].updateValueAndValidity();
+			}
+			return;
+		}
+
+		this.fetchPageActivities();
+	}
+
+	addActivity() {
+		this.currentActivity = undefined;
+		this.isVisible = true;
+	}
+
+	editActivity(activity: ActivityDocument) {
+		this.currentActivity = activity;
+		this.isVisible = true;
+	}
+
+	removeActivity(id: string) {
+		const self = this;
+		const {message, modal, activityService} = self;
+		modal.confirm({
+			nzTitle: "确定要删除此活动吗？",
+			nzOnOk() {
+				activityService.removeActivity(id)
+					.subscribe({
+						next(result: boolean) {
+							if (!result) message.error("删除失败");
+							self.fetchPageActivities();
+						},
+						error(err: any) {
+							message.error(err);
+						}
+					});
+			}
+		});
+	}
+
+	handleModalCancel() {
+		this.isVisible = false;
+	}
+
+	handleModalOk(activity: ActivityDocument) {
+		const self = this;
+		const {message, activityService, activityPageResult} = self;
+		activityService.updateActivity(<ActivityDocument>activity)
+			.subscribe({
+				next(data: ActivityDocument) {
+					let activities = activityPageResult.docs;
+					activities.forEach((activity: ActivityDocument) => {
+						if (activity._id === data._id) {
+							for (let key in data) {
+								let value = data[key];
+								if (key !== "_id") {
+									activity[key] = value;
+								}
+							}
+						}
+					});
+					self.activityPageResult["docs"] = activities;
+					self.isVisible = false;
+				},
+				error(err: any) {
+					message.error(err);
+					self.isVisible = false;
+				}
+			});
+	}
 }

@@ -15,12 +15,13 @@ export default class ActivityController {
 		let params = ctx.params,
 			page = Number(params.page || 1),
 			limit = Number(params.limit || 10),
+			conditions = ctx.request.body || {},
 			options = {
 				sort: {createTime: -1},
 				page: page,
 				limit: limit
 			},
-			result = await activityService.getPage<ActivityDocument>({}, options);
+			result = await activityService.getPage<ActivityDocument>(conditions, options);
 		ctx.success(result);
 	}
 
@@ -33,10 +34,10 @@ export default class ActivityController {
 
 	async updateActivity(ctx: Context, next: Function) {
 		let data = ctx.request.body,
-			id = data.id;
-		delete data.id;
+			id = data._id;
+		delete data._id;
 
-		let activity = await activityService.updateActivity({_id: id}, data);
+		let activity = await activityService.updateActivity(id, data);
 		ctx.success(activity);
 	}
 

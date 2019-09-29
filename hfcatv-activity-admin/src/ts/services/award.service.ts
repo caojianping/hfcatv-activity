@@ -6,28 +6,29 @@ import {AwardDocument, PaginateResult} from "../interfaces";
 import HttpService from "./http.service";
 
 @Injectable({
-    providedIn: "root"
+	providedIn: "root"
 })
 export class AwardService {
-    constructor(private httpService: HttpService) {
-    }
+	constructor(private httpService: HttpService) {
+	}
 
-    getPageAwards(page: number, limit: number): Observable<PaginateResult<AwardDocument>> {
-        return this.httpService.get<PaginateResult<AwardDocument>>(`${Urls.award.list}/${page}/${limit}`);
-    }
+	getAwards(): Observable<Array<AwardDocument>> {
+		return this.httpService.get<Array<AwardDocument>>(Urls.award.list);
+	}
 
-    addAward(name: string, type: AwardType): Observable<AwardDocument> {
-        return this.httpService.post<AwardDocument>(
-            Urls.award.add,
-            {name: name, type: type}
-        );
-    }
+	getPageAwards(conditions: any, page: number, limit: number): Observable<PaginateResult<AwardDocument>> {
+		return this.httpService.post<PaginateResult<AwardDocument>>(`${Urls.award.list}/${page}/${limit}`, conditions);
+	}
 
-    updateAward(data: AwardDocument): Observable<AwardDocument> {
-        return this.httpService.post<AwardDocument>(Urls.award.update, data);
-    }
+	addAward(name: string, type: AwardType): Observable<AwardDocument> {
+		return this.httpService.post<AwardDocument>(Urls.award.add, {name: name, type: type});
+	}
 
-    removeAward(id: string): Observable<boolean> {
-        return this.httpService.post<AwardDocument>(Urls.award.remove, {id: id});
-    }
+	updateAward(data: AwardDocument): Observable<AwardDocument> {
+		return this.httpService.post<AwardDocument>(Urls.award.update, data);
+	}
+
+	removeAward(id: string): Observable<boolean> {
+		return this.httpService.post<AwardDocument>(Urls.award.remove, {id: id});
+	}
 }

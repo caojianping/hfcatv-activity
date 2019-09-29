@@ -27,15 +27,14 @@ export default class ActivityService extends BaseService {
 		return await this.model.create(activity);
 	}
 
-	async updateActivity(conditions: any, update: any): Promise<ActivityDocument> {
-		if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
+	async updateActivity(id: string, update: any): Promise<ActivityDocument> {
+		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
 		if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
 
-		conditions["isDelete"] = false;
 		update["updateTime"] = new Date();
-		return await this.model.findOneAndUpdate(conditions, {$set: update}, {new: true});
+		return await this.model.findByIdAndUpdate(id,{$set: update}, {new: true});
 	}
-
+	
 	async setStatus(id: string, status: ActivityStatus): Promise<ActivityDocument> {
 		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 		return await this.model.findByIdAndUpdate(id, {$set: {status: status, updateTime: new Date()}}, {new: true});

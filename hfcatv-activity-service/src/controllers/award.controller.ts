@@ -6,16 +6,22 @@ import {AwardService} from "../services";
 const awardService = new AwardService();
 
 export default class AwardController {
+	async getAwards(ctx: Context, next: Function) {
+		let awards = await awardService.getAwards();
+		ctx.success(awards);
+	}
+
 	async getPageAwards(ctx: Context, next: Function) {
 		let params = ctx.params,
 			page = Number(params.page || 1),
 			limit = Number(params.limit || 10),
+			conditions = ctx.request.body || {},
 			options = {
 				sort: {createTime: -1},
 				page: page,
 				limit: limit
 			},
-			result = await awardService.getPage<AwardDocument>({}, options);
+			result = await awardService.getPage<AwardDocument>(conditions, options);
 		ctx.success(result);
 	}
 

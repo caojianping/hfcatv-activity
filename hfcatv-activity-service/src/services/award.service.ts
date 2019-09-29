@@ -10,7 +10,7 @@ export default class AwardService extends BaseService {
 	}
 
 	async getAwards(): Promise<Array<AwardDocument>> {
-		return await this.model.find();
+		return await this.model.find({});
 	}
 
 	async addAward(name: string, type: AwardType): Promise<AwardDocument | null> {

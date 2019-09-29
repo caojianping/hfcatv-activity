@@ -1,1 +1,98 @@
-<app-layout></app-layout>
+<app-layout>
+    <form nz-form [formGroup]="queryForm" (ngSubmit)="queryActivities()">
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="8">
+                <nz-form-item nzFlex>
+                    <nz-form-label nzFor="name">名称</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input placeholder="名称" formControlName="name" id="name"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div nz-col [nzSpan]="8">
+                <nz-form-item nzFlex>
+                    <nz-form-label nzFor="status">状态</nz-form-label>
+                    <nz-form-control>
+                        <nz-select formControlName="status" id="status">
+                            <nz-option [nzValue]="" nzLabel="请选择状态"></nz-option>
+                            <nz-option *ngFor="let item of ActivityStatuses; index as i;" [nzValue]="i"
+                                       [nzLabel]="item"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div nz-col [nzSpan]="8">
+                <button nz-button nzType="primary" nzSize="small">查询</button>
+            </div>
+        </div>
+    </form>
+
+    <nz-table [nzData]="activityPageResult.docs"
+              [nzFrontPagination]="false"
+              [nzTotal]="activityPageResult.total"
+              [nzPageIndex]="activityPageResult.page"
+              [nzPageSize]="activityPageResult.limit"
+              [nzPaginationPosition]="'both'"
+              [nzLoading]="isLoading"
+              [nzPageSizeOptions]="[2,5,10,20,30]"
+              [nzShowSizeChanger]="true"
+              (nzPageIndexChange)="fetchPageActivities('page', $event)"
+              (nzPageSizeChange)="fetchPageActivities('limit', $event)">
+        <thead>
+        <tr>
+            <th>活动名称</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>活动状态</th>
+            <th>奖品列表</th>
+            <th>创建时间</th>
+            <th>更新时间</th>
+            <th>操作
+                <button nz-button nzType="default" nzSize="small" (click)="addActivity()">添加</button>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let activity of activityPageResult.docs">
+            <td>{{activity.title}}</td>
+            <td>{{activity.startTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>{{activity.endTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>{{ActivityStatuses[activity.status]}}</td>
+            <td>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>奖品名称</th>
+                        <th>奖品类型</th>
+                        <th>奖品等级</th>
+                        <th>奖品库存</th>
+                        <th>奖品权重</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let activityAward of activity.awards">
+                        <td>{{activityAward.award.name}}</td>
+                        <td>{{AwardTypes[activityAward.award.type]}}</td>
+                        <td>{{AwardRanks[activityAward.rank]}}</td>
+                        <td>{{activityAward.stock}}</td>
+                        <td>{{activityAward.weight}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>{{activity.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>{{activity.updateTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>
+                <button nz-button nzSize="small" nzType="primary" (click)="editActivity(activity)">编辑</button>
+                <button nz-button nzSize="small" nzType="danger" style="margin-left: 8px;"
+                        (click)="removeActivity(activity._id)">删除
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </nz-table>
+
+    <app-activity-modal [visible]="isVisible" [activity]="currentActivity"
+                     (onCancel)="handleModalCancel"
+                     (onOk)="handleModalOk($event)"></app-activity-modal>
+</app-layout>

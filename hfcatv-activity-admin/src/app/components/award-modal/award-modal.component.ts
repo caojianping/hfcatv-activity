@@ -31,16 +31,14 @@ export class AwardModalComponent implements OnInit {
 	}
 
 	openAward() {
-		// console.log("AwardModalComponent openAward:", this.award);
-		let awardDup: AwardDocument | undefined;
-		if (this.award) {
-			awardDup = Utils.duplicate<AwardDocument>(this.award);
-		}
+		let awardDup: AwardDocument | undefined = this.award ? Utils.duplicate<AwardDocument>(this.award) : undefined;
 		this.awardDup = awardDup;
-		this.awardForm = this.formBuilder.group({
-			name: [awardDup.name, [Validators.required]],
-			type: [awardDup.type, [Validators.required]]
-		});
+		if (awardDup) {
+			this.awardForm = this.formBuilder.group({
+				name: [awardDup.name, [Validators.required]],
+				type: [awardDup.type, [Validators.required]]
+			});
+		}
 	}
 
 	closeAward() {
@@ -55,10 +53,11 @@ export class AwardModalComponent implements OnInit {
 			}
 			return;
 		}
+		let awardDup = this.awardDup || {};
 		for (let key in formData) {
 			let value = formData[key];
-			this.awardDup[key] = value;
+			awardDup[key] = value;
 		}
-		this.onOk.emit(this.awardDup);
+		this.onOk.emit(<AwardDocument>awardDup);
 	}
 }

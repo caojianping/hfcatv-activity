@@ -1,4 +1,20 @@
 <app-layout>
+    <form nz-form [formGroup]="queryForm" (ngSubmit)="queryAwards()">
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="8">
+                <nz-form-item nzFlex>
+                    <nz-form-label nzFor="name">名称</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input placeholder="名称" formControlName="name" id="name"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div nz-col [nzSpan]="8">
+                <button nz-button nzType="primary" nzSize="small">查询</button>
+            </div>
+        </div>
+    </form>
+
     <nz-table [nzData]="awardPageResult.docs"
               [nzFrontPagination]="false"
               [nzTotal]="awardPageResult.total"
@@ -16,7 +32,9 @@
             <th>奖品类型</th>
             <th>创建时间</th>
             <th>更新时间</th>
-            <th>操作</th>
+            <th>操作
+                <button nz-button nzType="default" nzSize="small" (click)="addAward()">添加</button>
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -28,7 +46,8 @@
             <td>
                 <button nz-button nzSize="small" nzType="primary" (click)="editAward(award)">编辑</button>
                 <button nz-button nzSize="small" nzType="danger" style="margin-left: 8px;"
-                        (click)="removeAward(award._id)">删除</button>
+                        (click)="removeAward(award._id)">删除
+                </button>
             </td>
         </tr>
         </tbody>

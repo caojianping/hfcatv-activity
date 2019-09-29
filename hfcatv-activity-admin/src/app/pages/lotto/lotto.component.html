@@ -1,4 +1,61 @@
 <app-layout>
+    <form nz-form [formGroup]="queryForm" (ngSubmit)="queryLottos()">
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="5">
+                <nz-form-item nzFlex>
+                    <nz-form-label nzFor="username">姓名</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input placeholder="姓名" formControlName="username" id="username"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col [nzSpan]="5">
+                <nz-form-item nzFlex>
+                    <nz-form-label nzFor="title">活动</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input placeholder="活动" formControlName="title" id="title"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col [nzSpan]="5">
+                <nz-form-item nzFlex>
+                    <nz-form-label nzFor="type">类型</nz-form-label>
+                    <nz-form-control>
+                        <nz-select formControlName="type" id="type">
+                            <nz-option [nzValue]="" nzLabel="请选择类型"></nz-option>
+                            <nz-option *ngFor="let item of AwardTypes; index as i;" [nzValue]="i" [nzLabel]="item"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col [nzSpan]="5">
+                <nz-form-item nzFlex>
+                    <nz-form-label nzFor="status">状态</nz-form-label>
+                    <nz-form-control>
+                        <nz-select *ngIf="queryForm.value.type === 2" formControlName="status">
+                            <nz-option *ngFor="let item of RedPacketStatusMap | keyvalue" [nzValue]="item.value" [nzLabel]="item.key"></nz-option>
+                        </nz-select>
+
+                        <nz-select *ngIf="queryForm.value.type === 3" formControlName="status">
+                            <nz-option *ngFor="let item of GoodsStatusMap | keyvalue" [nzValue]="item.value" [nzLabel]="item.key"></nz-option>
+                        </nz-select>
+
+                        <nz-select *ngIf="queryForm.value.type !== 2 && queryForm.value.type !== 3" formControlName="status">
+                            <nz-option [nzValue]="" nzLabel="请选择状态"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col [nzSpan]="4">
+                <button nz-button nzType="primary" nzSize="small">查询</button>
+            </div>
+        </div>
+    </form>
+
     <nz-table [nzData]="lottoPageResult.docs"
               [nzFrontPagination]="false"
               [nzTotal]="lottoPageResult.total"

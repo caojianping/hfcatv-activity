@@ -21,13 +21,14 @@ import {ManagerComponent} from "./pages/manager/manager.component";
 
 import {LayoutComponent} from "./components/layout/layout.component";
 import {AwardModalComponent} from "./components/award-modal/award-modal.component";
+import {ActivityModalComponent} from "./components/activity-modal/activity-modal.component";
 
 registerLocaleData(zh);
 
 @NgModule({
 	declarations: [
 		AppComponent,
-		
+
 		LoginComponent,
 		AwardComponent,
 		ActivityComponent,
@@ -35,7 +36,8 @@ registerLocaleData(zh);
 		ManagerComponent,
 
 		LayoutComponent,
-		AwardModalComponent
+		AwardModalComponent,
+		ActivityModalComponent
 	],
 	imports: [
 		BrowserModule,

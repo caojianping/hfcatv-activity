@@ -16,12 +16,13 @@ export default (router: Router) => {
 		.get("/token/status", managerController.getTokenStatus)
 		.get("/token/refresh", managerController.refreshTokenStatus)
 
-		.get("/award/list/:page/:limit", awardController.getPageAwards)
+		.get("/award/list", awardController.getAwards)
+		.post("/award/list/:page/:limit", awardController.getPageAwards)
 		.post("/award/add", awardController.addAward)
 		.post("/award/update", awardController.updateAward)
 		.post("/award/remove", awardController.removeAward)
 
-		.get("/activity/list/:page/:limit", activityController.getPageActivities)
+		.post("/activity/list/:page/:limit", activityController.getPageActivities)
 		.post("/activity/add", activityController.addActivity)
 		.post("/activity/update", activityController.updateActivity)
 		.post("/activity/remove", activityController.removeActivity)

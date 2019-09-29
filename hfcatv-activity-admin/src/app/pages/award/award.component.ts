@@ -1,5 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {NzMessageService, NzModalService} from "ng-zorro-antd";
+import {FormBuilder} from "@angular/forms";
 import {AwardTypes} from "../../../ts/common/names";
 import {AwardDocument, PaginateResult} from "../../../ts/interfaces";
 import {AwardService} from "../../../ts/services";
@@ -11,6 +12,8 @@ import {AwardService} from "../../../ts/services";
 })
 export class AwardComponent implements OnInit {
 	AwardTypes: Array<string> = AwardTypes;
+
+	queryForm: any;
 
 	isLoading: boolean = false;
 	awardPageResult: PaginateResult<AwardDocument> = {
@@ -26,8 +29,12 @@ export class AwardComponent implements OnInit {
 	constructor(
 		private message: NzMessageService,
 		private modal: NzModalService,
-		private awardService: AwardService
+		private awardService: AwardService,
+		private formBuilder: FormBuilder
 	) {
+		this.queryForm = this.formBuilder.group({
+			name: [""]
+		});
 	}
 
 	ngOnInit() {
@@ -40,9 +47,9 @@ export class AwardComponent implements OnInit {
 			self.awardPageResult[key] = $event;
 		}
 
-		const {message, awardService, awardPageResult} = self;
+		const {message, awardService, queryForm, awardPageResult} = self;
 		self.isLoading = true;
-		awardService.getPageAwards(awardPageResult.page, awardPageResult.limit)
+		awardService.getPageAwards(queryForm.value || {}, awardPageResult.page, awardPageResult.limit)
 			.subscribe({
 				next(result: PaginateResult<AwardDocument>) {
 					console.log("getPageAwards result:", result);
@@ -55,6 +62,23 @@ export class AwardComponent implements OnInit {
 					message.error(err);
 				}
 			})
+	}
+
+	queryAwards(){
+		if (!this.queryForm.valid) {
+			for (const i in this.queryForm.controls) {
+				this.queryForm.controls[i].markAsDirty();
+				this.queryForm.controls[i].updateValueAndValidity();
+			}
+			return;
+		}
+
+		this.fetchPageAwards();
+	}
+
+	addAward(){
+		this.currentAward = undefined;
+		this.isVisible = true;
 	}
 
 	editAward(award: AwardDocument) {

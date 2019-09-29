@@ -3,6 +3,7 @@ import {NzMessageService, NzModalService} from "ng-zorro-antd";
 import {ActivityStatuses, AwardRanks, AwardTypes, RedPacketStatusMap, GoodsStatusMap} from "../../../ts/common/names";
 import {LottoDocument, PaginateResult} from "../../../ts/interfaces";
 import {LottoService} from "../../../ts/services";
+import {FormBuilder} from "@angular/forms";
 
 @Component({
 	selector: 'app-lotto',
@@ -16,6 +17,8 @@ export class LottoComponent implements OnInit {
 	RedPacketStatusMap: any = RedPacketStatusMap;
 	GoodsStatusMap: any = GoodsStatusMap;
 
+	queryForm: any;
+
 	isLoading: boolean = false;
 	lottoPageResult: PaginateResult<LottoDocument> = {
 		docs: [],
@@ -27,8 +30,15 @@ export class LottoComponent implements OnInit {
 	constructor(
 		private message: NzMessageService,
 		private modal: NzModalService,
-		private lottoService: LottoService
+		private lottoService: LottoService,
+		private formBuilder: FormBuilder
 	) {
+		this.queryForm = this.formBuilder.group({
+			username: [""],
+			title: [""],
+			type: [""],
+			status: [""]
+		});
 	}
 
 	ngOnInit() {
@@ -41,9 +51,9 @@ export class LottoComponent implements OnInit {
 			self.lottoPageResult[key] = $event;
 		}
 
-		const {message, lottoService, lottoPageResult} = self;
+		const {message, lottoService, queryForm, lottoPageResult} = self;
 		self.isLoading = true;
-		lottoService.getPageLottos({}, lottoPageResult.page, lottoPageResult.limit)
+		lottoService.getPageLottos(queryForm.value || {}, lottoPageResult.page, lottoPageResult.limit)
 			.subscribe({
 				next(result: PaginateResult<LottoDocument>) {
 					console.log("getPageLottos result:", result);
@@ -56,6 +66,18 @@ export class LottoComponent implements OnInit {
 					message.error(err);
 				}
 			})
+	}
+
+	queryLottos() {
+		if (!this.queryForm.valid) {
+			for (const i in this.queryForm.controls) {
+				this.queryForm.controls[i].markAsDirty();
+				this.queryForm.controls[i].updateValueAndValidity();
+			}
+			return;
+		}
+
+		this.fetchPageLottos();
 	}
 
 	setStatus(id: string, status: number) {
