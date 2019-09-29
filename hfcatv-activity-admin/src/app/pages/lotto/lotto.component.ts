@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormControl} from "@angular/forms";
 import {NzMessageService, NzModalService} from "ng-zorro-antd";
 import {ActivityStatuses, AwardRanks, AwardTypes, RedPacketStatusMap, GoodsStatusMap} from "../../../ts/common/names";
 import {LottoDocument, PaginateResult} from "../../../ts/interfaces";
 import {LottoService} from "../../../ts/services";
-import {FormBuilder} from "@angular/forms";
+import {Utils} from "../../../ts/common/utils";
 
 @Component({
 	selector: 'app-lotto',
@@ -34,10 +35,10 @@ export class LottoComponent implements OnInit {
 		private formBuilder: FormBuilder
 	) {
 		this.queryForm = this.formBuilder.group({
-			username: [""],
-			title: [""],
-			type: [""],
-			status: [""]
+			nickname: new FormControl(null),
+			title: new FormControl(null),
+			type: new FormControl(null),
+			status: new FormControl(null)
 		});
 	}
 
@@ -53,15 +54,13 @@ export class LottoComponent implements OnInit {
 
 		const {message, lottoService, queryForm, lottoPageResult} = self;
 		self.isLoading = true;
-		lottoService.getPageLottos(queryForm.value || {}, lottoPageResult.page, lottoPageResult.limit)
+		lottoService.getPageLottos(Utils.filterConditions(queryForm.value), lottoPageResult.page, lottoPageResult.limit)
 			.subscribe({
 				next(result: PaginateResult<LottoDocument>) {
-					console.log("getPageLottos result:", result);
 					self.isLoading = false;
 					self.lottoPageResult = result;
 				},
 				error(err: any) {
-					console.log("getPageLottos err:", err);
 					self.isLoading = false;
 					message.error(err);
 				}

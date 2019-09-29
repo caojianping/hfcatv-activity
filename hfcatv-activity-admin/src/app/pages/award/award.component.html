@@ -1,16 +1,16 @@
 <app-layout>
     <form nz-form [formGroup]="queryForm" (ngSubmit)="queryAwards()">
         <div nz-row [nzGutter]="24">
-            <div nz-col [nzSpan]="8">
+            <div nz-col [nzSpan]="7">
                 <nz-form-item nzFlex>
                     <nz-form-label nzFor="name">名称</nz-form-label>
                     <nz-form-control>
-                        <input nz-input placeholder="名称" formControlName="name" id="name"/>
+                        <input id="name" nz-input formControlName="name" placeholder="名称"/>
                     </nz-form-control>
                 </nz-form-item>
             </div>
-            <div nz-col [nzSpan]="8">
-                <button nz-button nzType="primary" nzSize="small">查询</button>
+            <div nz-col [nzSpan]="6">
+                <button class="btn-query" nz-button nzType="primary">查询</button>
             </div>
         </div>
     </form>
@@ -33,7 +33,7 @@
             <th>创建时间</th>
             <th>更新时间</th>
             <th>操作
-                <button nz-button nzType="default" nzSize="small" (click)="addAward()">添加</button>
+                <button class="btn-add" nz-button nzSize="small" (click)="addAward()">添加</button>
             </th>
         </tr>
         </thead>
@@ -53,7 +53,7 @@
         </tbody>
     </nz-table>
 
-    <app-award-modal [visible]="isVisible" [award]="currentAward"
-                     (onCancel)="handleModalCancel"
+    <app-award-modal [type]="type" [visible]="isVisible" [award]="currentAward"
+                     (onCancel)="handleModalCancel()"
                      (onOk)="handleModalOk($event)"></app-award-modal>
 </app-layout>

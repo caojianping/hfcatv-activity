@@ -5,7 +5,7 @@ import {AwardComponent} from "./pages/award/award.component";
 import {ActivityComponent} from "./pages/activity/activity.component";
 import {LottoComponent} from "./pages/lotto/lotto.component";
 import {ManagerComponent} from "./pages/manager/manager.component";
-import {AuthGuard} from "./guard/auth.guard";
+import {AuthGuard} from "./auth.guard";
 
 const routes: Routes = [
 	{path: '', pathMatch: "full", redirectTo: "/award"},
