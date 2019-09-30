@@ -32,24 +32,6 @@ export class ActivityModalComponent implements OnInit {
 		return startTime && endTime ? ActivityHelper.getActivityStatus(startTime, endTime) : null;
 	}
 
-	_buildActivityAwardFormGroup(activityAward?: ActivityAwardDocument) {
-		if (activityAward) {
-			return this.formBuilder.group({
-				awardId: new FormControl(activityAward.award._id, Validators.required),
-				rank: new FormControl(activityAward.rank, Validators.required),
-				stock: new FormControl(activityAward.stock, Validators.min(0)),
-				weight: new FormControl(activityAward.weight, [Validators.min(0), Validators.max(1)])
-			});
-		} else {
-			return this.formBuilder.group({
-				awardId: new FormControl(null, Validators.required),
-				rank: new FormControl(null, Validators.required),
-				stock: new FormControl(null, Validators.min(0)),
-				weight: new FormControl(null, [Validators.min(0), Validators.max(1)])
-			});
-		}
-	}
-
 	constructor(
 		private message: NzMessageService,
 		private formBuilder: FormBuilder,
@@ -66,6 +48,24 @@ export class ActivityModalComponent implements OnInit {
 	ngOnInit() {
 		this.fetchAwards();
 	}
+
+    _buildActivityAwardFormGroup(activityAward?: ActivityAwardDocument) {
+        if (activityAward) {
+            return this.formBuilder.group({
+                awardId: new FormControl(activityAward.award._id, Validators.required),
+                rank: new FormControl(activityAward.rank, Validators.required),
+                stock: new FormControl(activityAward.stock, Validators.min(0)),
+                weight: new FormControl(activityAward.weight, [Validators.min(0), Validators.max(1)])
+            });
+        } else {
+            return this.formBuilder.group({
+                awardId: new FormControl(null, Validators.required),
+                rank: new FormControl(null, Validators.required),
+                stock: new FormControl(null, Validators.min(0)),
+                weight: new FormControl(null, [Validators.min(0), Validators.max(1)])
+            });
+        }
+    }
 
 	fetchAwards() {
 		let self = this;
@@ -128,10 +128,13 @@ export class ActivityModalComponent implements OnInit {
 
 	addActivityAward() {
 		console.log("addActivityAward");
-		(this.activityForm.controls["awards"] as FormArray).push(this._buildActivityAwardFormGroup());
+		let awardsForms = this.activityForm.get("awards") as FormArray;
+        awardsForms.push(this._buildActivityAwardFormGroup());
 	}
 
 	removeActivityAward(id: number) {
-		(this.activityForm.controls["awards"] as FormArray).removeAt(id);
+        console.log("removeActivityAward");
+        let awardsForms = this.activityForm.get("awards") as FormArray;
+        awardsForms.removeAt(id);
 	}
 }

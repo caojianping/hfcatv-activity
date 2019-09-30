@@ -47,30 +47,30 @@
                         </th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr formArrayName="activityAwardsForms"
-                        *ngFor="let activityAward of activityForm.get('awards').value.controls; index as i;">
+                    <tbody formArrayName="awards">
+                    <tr *ngFor="let activityAward of activityForm.get('awards').controls as FormArray; let i = index;"
+                        [formGroupName]="i">
                         <td>
-                            <nz-select [formControlName]="activityAward.awardId" nzSize="small"
-                                       style="width: 130px">
+                            <nz-select formControlName="awardId"
+                                       nzSize="small" style="width: 130px">
                                 <nz-option *ngFor="let award of awards"
                                            [nzLabel]="award.name" [nzValue]="award._id"></nz-option>
                             </nz-select>
                         </td>
                         <td>
-                            <nz-select [formControlName]="activityAward.rank" nzSize="small"
-                                       style="width: 90px">
+                            <nz-select formControlName="rank"
+                                       nzSize="small" style="width: 90px">
                                 <nz-option *ngFor="let awardRank of AwardRanks; index as j;"
                                            [nzLabel]="awardRank" [nzValue]="j"></nz-option>
                             </nz-select>
                         </td>
                         <td>
-                            <nz-input-number [formControlName]="activityAward.stock"
+                            <nz-input-number formControlName="stock"
                                              nzSize="small" [nzMin]="0" [nzMax]="9999"
                                              [nzStep]="10" [nzPrecision]="0"></nz-input-number>
                         </td>
                         <td>
-                            <nz-input-number [formControlName]="activityAward.weight"
+                            <nz-input-number formControlName="weight"
                                              nzSize="small" [nzMin]="0" [nzMax]="1"
                                              [nzStep]="0.01" [nzPrecision]="2"></nz-input-number>
                         </td>
