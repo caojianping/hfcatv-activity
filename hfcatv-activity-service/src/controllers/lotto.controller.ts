@@ -1,8 +1,7 @@
 import {Context} from "koa";
 import {ErrorType} from "../error";
-import {ActivityAwardDocument, LottoDocument} from "../interfaces";
+import {LottoDocument} from "../interfaces";
 import {LottoService, UserService} from "../services";
-import {Utils} from "../common/utils";
 
 const lottoService = new LottoService();
 const userService = new UserService();

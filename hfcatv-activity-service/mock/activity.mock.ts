@@ -29,7 +29,7 @@ async function addActivity() {
 }
 
 async function getActivity() {
-	await activityService.getActivity();
+	let activity = await activityService.getActivity();
 }
 
 async function removeActivities() {

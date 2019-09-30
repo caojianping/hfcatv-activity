@@ -1,4 +1,5 @@
 import {BusinessError, ErrorType} from "../error";
+import {Utils} from "../common/utils";
 import {ActivityStatus} from "../common/enums";
 import {ActivityDocument, ActivityAwardDocument} from "../interfaces";
 import {ActivityModel} from "../models";
@@ -10,13 +11,25 @@ export default class ActivityService extends BaseService {
 		super(ActivityModel);
 	}
 
-	async getActivity(): Promise<ActivityDocument | null> {
-		let activities = await this.model.find({
-			status: {$ne: ActivityStatus.Finished},
-			isDelete: false
-		}, null, {sort: {createTime: -1}, limit: 1})
-			.populate({path: "awards.award", model: "award", select: "name type"});
-		return activities[0] || null;
+	async getActivity(): Promise<any> {
+		let conditions = {
+				status: {$ne: ActivityStatus.Finished},
+				isDelete: false
+			},
+			projection = "_id title startTime endTime status awards.award awards.rank",
+			activities = await this.model.find(conditions, projection, {sort: {createTime: -1}, limit: 1})
+				.populate({path: "awards.award", model: "award", select: "-_id name type"});
+		let activity = activities[0] || null;
+		if (!activity) return null;
+		else {
+			let activityDup: any = Utils.duplicate<any>(activity);
+			activityDup["awards"] = activityDup.awards.map((item: any) => ({
+				name: item.award.name,
+				type: item.award.type,
+				rank: item.rank
+			}));
+			return activityDup;
+		}
 	}
 
 	async addActivity(activity: any): Promise<ActivityDocument | null> {
@@ -32,9 +45,9 @@ export default class ActivityService extends BaseService {
 		if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
 
 		update["updateTime"] = new Date();
-		return await this.model.findByIdAndUpdate(id,{$set: update}, {new: true});
+		return await this.model.findByIdAndUpdate(id, {$set: update}, {new: true});
 	}
-	
+
 	async setStatus(id: string, status: ActivityStatus): Promise<ActivityDocument> {
 		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 		return await this.model.findByIdAndUpdate(id, {$set: {status: status, updateTime: new Date()}}, {new: true});

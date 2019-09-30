@@ -10,7 +10,7 @@ export default class ActivityController {
 		let activity = await activityService.getActivity();
 		ctx.success(activity);
 	}
-
+	
 	async getPageActivities(ctx: Context, next: Function) {
 		let params = ctx.params,
 			page = Number(params.page || 1),
