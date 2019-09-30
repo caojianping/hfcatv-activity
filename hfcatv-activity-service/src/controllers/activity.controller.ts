@@ -18,6 +18,9 @@ export default class ActivityController {
 			conditions = ctx.request.body || {},
 			options = {
 				sort: {createTime: -1},
+                populate: [
+                    {path: "awards.award", model: "award", select: "-_id name type"}
+                ],
 				page: page,
 				limit: limit
 			},

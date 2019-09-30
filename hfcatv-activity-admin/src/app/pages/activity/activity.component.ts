@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder} from "@angular/forms";
+import {FormBuilder, FormControl} from "@angular/forms";
 import {NzMessageService, NzModalService} from "ng-zorro-antd";
 import {ActivityStatuses, AwardRanks, AwardTypes} from "../../../ts/common/names";
 import {ActivityDocument, PaginateResult} from "../../../ts/interfaces";
 import {ActivityService} from "../../../ts/services";
+import {Utils} from "../../../ts/common/utils";
 
 @Component({
 	selector: 'app-activity',
@@ -25,6 +26,7 @@ export class ActivityComponent implements OnInit {
 		page: 1
 	};
 
+	type: string = "";
 	isVisible: boolean = false;
 	currentActivity?: ActivityDocument;
 
@@ -35,12 +37,13 @@ export class ActivityComponent implements OnInit {
 		private formBuilder: FormBuilder
 	) {
 		this.queryForm = this.formBuilder.group({
-			title: [""],
-			status: [""]
+			title: new FormControl(null),
+			status: new FormControl(null)
 		});
 	}
 
 	ngOnInit() {
+	    this.fetchPageActivities();
 	}
 
 	fetchPageActivities(key?: string, $event?: number) {
@@ -51,15 +54,13 @@ export class ActivityComponent implements OnInit {
 
 		const {message, activityService, queryForm, activityPageResult} = self;
 		self.isLoading = true;
-		activityService.getPageActivities(queryForm.value || {}, activityPageResult.page, activityPageResult.limit)
+		activityService.getPageActivities(Utils.filterConditions(queryForm.value), activityPageResult.page, activityPageResult.limit)
 			.subscribe({
 				next(result: PaginateResult<ActivityDocument>) {
-					console.log("getPageActivities result:", result);
 					self.isLoading = false;
 					self.activityPageResult = result;
 				},
 				error(err: any) {
-					console.log("getPageActivities err:", err);
 					self.isLoading = false;
 					message.error(err);
 				}
@@ -79,11 +80,13 @@ export class ActivityComponent implements OnInit {
 	}
 
 	addActivity() {
+	    this.type = "add";
 		this.currentActivity = undefined;
 		this.isVisible = true;
 	}
 
 	editActivity(activity: ActivityDocument) {
+        this.type = "edit";
 		this.currentActivity = activity;
 		this.isVisible = true;
 	}
@@ -114,28 +117,42 @@ export class ActivityComponent implements OnInit {
 
 	handleModalOk(activity: ActivityDocument) {
 		const self = this;
-		const {message, activityService, activityPageResult} = self;
-		activityService.updateActivity(<ActivityDocument>activity)
-			.subscribe({
-				next(data: ActivityDocument) {
-					let activities = activityPageResult.docs;
-					activities.forEach((activity: ActivityDocument) => {
-						if (activity._id === data._id) {
-							for (let key in data) {
-								let value = data[key];
-								if (key !== "_id") {
-									activity[key] = value;
-								}
-							}
-						}
-					});
-					self.activityPageResult["docs"] = activities;
-					self.isVisible = false;
-				},
-				error(err: any) {
-					message.error(err);
-					self.isVisible = false;
-				}
-			});
+		const {message, activityService, activityPageResult, type} = self;
+		if(type === "add"){
+		    activityService.addActivity(activity)
+                .subscribe({
+                    next(data: ActivityDocument) {
+                        self.fetchPageActivities();
+                        self.isVisible = false;
+                    },
+                    error(err: any) {
+                        message.error(err);
+                        self.isVisible = false;
+                    }
+                });
+        }else if(type === "edit"){
+            activityService.updateActivity(<ActivityDocument>activity)
+                .subscribe({
+                    next(data: ActivityDocument) {
+                        let activities = activityPageResult.docs;
+                        activities.forEach((activity: ActivityDocument) => {
+                            if (activity._id === data._id) {
+                                for (let key in data) {
+                                    let value = data[key];
+                                    if (key !== "_id") {
+                                        activity[key] = value;
+                                    }
+                                }
+                            }
+                        });
+                        self.activityPageResult["docs"] = activities;
+                        self.isVisible = false;
+                    },
+                    error(err: any) {
+                        message.error(err);
+                        self.isVisible = false;
+                    }
+                });
+        }
 	}
 }

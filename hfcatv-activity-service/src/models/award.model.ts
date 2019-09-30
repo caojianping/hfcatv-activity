@@ -10,10 +10,10 @@ const AwardSchema: Schema = new Schema({
 	type: {
 		type: Schema.Types.Number,
 		required: true,
-		enum: [0, 1, 2],// 参与奖、会员卡、现金红包等
+		enum: [0, 1, 2, 3],// 参与奖、会员卡、红包、物品等
 		validate: [
 			function (value: number) {
-				return [0, 1, 2].indexOf(value) > -1;
+				return [0, 1, 2, 3].indexOf(value) > -1;
 			},
 			"无效的奖品类型"
 		]

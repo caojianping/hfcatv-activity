@@ -33,7 +33,9 @@
                             }
                         ],
                         "styles": [
-                            "src/styles.less"
+                            "src/less/styles.less",
+                            "src/less/reset.less",
+                            "src/less/common.less"
                         ],
                         "scripts": []
                     },
@@ -127,7 +129,9 @@
                             "src/assets"
                         ],
                         "styles": [
-                            "src/styles.less"
+                            "src/less/styles.less",
+                            "src/less/reset.less",
+                            "src/less/common.less"
                         ],
                         "scripts": []
                     }
