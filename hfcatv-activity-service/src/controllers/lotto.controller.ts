@@ -10,15 +10,14 @@ export default class LottoController {
 	async execLotto(ctx: Context, next: Function) {
 		let {openId, activityId} = ctx.request.body,
 			userId = await userService.getUserIdByOpenId(openId),
-			user = await lottoService.addLotto(userId, activityId);
-		if (!user) ctx.failure(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[用户]`);
-		else ctx.success({
-			openId: user.openId,
-			nickname: user.nickname,
-			lottoCount: user.lottoCount
-		});
+			data = await lottoService.addLotto(userId, activityId);
+		if (!data) ctx.failure(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖数据]`);
+		else {
+			data["lottos"] = await lottoService.getLottos();
+			ctx.success(data);
+		}
 	}
-
+	
 	async getPageLottosByOpenId(ctx: Context, next: Function) {
 		let params = ctx.params,
 			page = Number(params.page || 1),

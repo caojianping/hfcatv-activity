@@ -18,12 +18,13 @@ export default class ActivityService extends BaseService {
 			},
 			projection = "_id title startTime endTime status awards.award awards.rank",
 			activities = await this.model.find(conditions, projection, {sort: {createTime: -1}, limit: 1})
-				.populate({path: "awards.award", model: "award", select: "-_id name type"});
+				.populate({path: "awards.award", model: "award", select: "_id name type"});
 		let activity = activities[0] || null;
 		if (!activity) return null;
 		else {
 			let activityDup: any = Utils.duplicate<any>(activity);
 			activityDup["awards"] = activityDup.awards.map((item: any) => ({
+				id: item.award._id,
 				name: item.award.name,
 				type: item.award.type,
 				rank: item.rank
