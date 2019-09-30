@@ -1,81 +1,87 @@
-<nz-modal [nzVisible]="visible" nzTitle="编辑活动"
+<nz-modal [nzVisible]="visible" nzTitle="编辑活动" [nzWidth]="688"
           [nzOkDisabled]="true" [nzCancelDisabled]="true" [nzFooter]="null"
           (nzAfterOpen)="openActivity()" (nzOnCancel)="closeActivity()">
 
     <form nz-form [formGroup]="activityForm"
           (ngSubmit)="saveActivity(activityForm.value)">
         <nz-form-item>
-            <nz-form-label [nzSpan]="6" nzRequired nzFor="title">活动标题</nz-form-label>
+            <nz-form-label [nzSpan]="4" nzRequired nzFor="title">活动标题</nz-form-label>
             <nz-form-control [nzSpan]="14" nzErrorTip="请输入活动标题">
                 <input nz-input formControlName="title" id="title"/>
             </nz-form-control>
         </nz-form-item>
 
         <nz-form-item>
-            <nz-form-label [nzSpan]="6" nzRequired nzFor="startTime">开始时间</nz-form-label>
+            <nz-form-label [nzSpan]="4" nzRequired nzFor="startTime">开始时间</nz-form-label>
             <nz-form-control [nzSpan]="14" nzErrorTip="请输入开始时间">
                 <nz-date-picker id="startTime" formControlName="startTime" nzFormat="yyyy/MM/dd hh:mm"></nz-date-picker>
             </nz-form-control>
         </nz-form-item>
 
         <nz-form-item>
-            <nz-form-label [nzSpan]="6" nzRequired nzFor="endTime">结束时间</nz-form-label>
+            <nz-form-label [nzSpan]="4" nzRequired nzFor="endTime">结束时间</nz-form-label>
             <nz-form-control [nzSpan]="14" nzErrorTip="请输入结束时间">
                 <nz-date-picker id="endTime" formControlName="endTime" nzFormat="yyyy/MM/dd hh:mm"></nz-date-picker>
             </nz-form-control>
         </nz-form-item>
 
         <nz-form-item>
-            <nz-form-label [nzSpan]="6" nzRequired nzFor="status">活动状态</nz-form-label>
-            <nz-form-control [nzSpan]="14" nzErrorTip="请输入活动状态">
-                <nz-select id="status" nzDisabled [ngModel]="activityStatus">
-                    <nz-option *ngFor="let item of ActivityStatuses; index as i;" [nzValue]="i"
-                               [nzLabel]="item"></nz-option>
-                </nz-select>
+            <nz-form-label [nzSpan]="4">活动状态</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <span>{{ActivityStatuses[activityStatus]}}</span>
             </nz-form-control>
         </nz-form-item>
 
         <nz-form-item>
-            <nz-form-label [nzSpan]="24" nzRequired nzFor="status">奖品列表</nz-form-label>
-            <table>
-                <thead>
-                <tr>
-                    <th>奖品</th>
-                    <th>等级</th>
-                    <th>库存</th>
-                    <th>权重</th>
-                    <th>操作
-                        <button nz-button nzType="default" nzSize="small" (click)="addActivityAward()">添加</button>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr formArrayName="awards"
-                    *ngFor="let activityAward of activityForm.controls['awards'].controls;let i = index;">
-                    <td>
-                        <nz-select [formControlName]="activityAward.awardId">
-                            <nz-option *ngFor="let award of awards" [nzValue]="award._id"
-                                       [nzLabel]="award.name"></nz-option>
-                        </nz-select>
-                    </td>
-                    <td>
-                        <nz-select [formControlName]="activityAward.rank">
-                            <nz-option *ngFor="let awardRank of AwardRanks; index as i;" [nzValue]="i"
-                                       [nzLabel]="awardRank"></nz-option>
-                        </nz-select>
-                    </td>
-                    <td>
-                        <input nz-input [formControlName]="activityAward.stock"/>
-                    </td>
-                    <td>
-                        <input nz-input [formControlName]="activityAward.weight"/>
-                    </td>
-                    <td>
-                        <button nz-button nzType="default" nzSize="small" (click)="removeActivityAward(i)">删除</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <nz-form-label [nzSpan]="4" nzRequired>奖品列表</nz-form-label>
+            <nz-form-control [nzSpan]="20">
+                <table class="award-table">
+                    <thead>
+                    <tr>
+                        <th>奖品</th>
+                        <th>等级</th>
+                        <th>库存</th>
+                        <th>权重</th>
+                        <th>操作
+                            <button class="btn-add" nz-button nzType="default" nzSize="small" (click)="addActivityAward()">添加</button>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr formArrayName="activityAwardsForms"
+                        *ngFor="let activityAward of activityForm.get('awards').value.controls; index as i;">
+                        <td>
+                            <nz-select [formControlName]="activityAward.awardId" nzSize="small"
+                                       style="width: 130px">
+                                <nz-option *ngFor="let award of awards"
+                                           [nzLabel]="award.name" [nzValue]="award._id"></nz-option>
+                            </nz-select>
+                        </td>
+                        <td>
+                            <nz-select [formControlName]="activityAward.rank" nzSize="small"
+                                       style="width: 90px">
+                                <nz-option *ngFor="let awardRank of AwardRanks; index as j;"
+                                           [nzLabel]="awardRank" [nzValue]="j"></nz-option>
+                            </nz-select>
+                        </td>
+                        <td>
+                            <nz-input-number [formControlName]="activityAward.stock"
+                                             nzSize="small" [nzMin]="0" [nzMax]="9999"
+                                             [nzStep]="10" [nzPrecision]="0"></nz-input-number>
+                        </td>
+                        <td>
+                            <nz-input-number [formControlName]="activityAward.weight"
+                                             nzSize="small" [nzMin]="0" [nzMax]="1"
+                                             [nzStep]="0.01" [nzPrecision]="2"></nz-input-number>
+                        </td>
+                        <td>
+                            <button nz-button nzType="danger" nzSize="small"
+                                    (click)="removeActivityAward(i)">删除</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </nz-form-control>
         </nz-form-item>
 
         <nz-form-item style="text-align: center">

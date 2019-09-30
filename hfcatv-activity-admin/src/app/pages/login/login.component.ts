@@ -44,7 +44,9 @@ export class LoginComponent implements OnInit {
 					if (token) {
 						let redirectUrl = managerService.redirectUrl ?
 							router.parseUrl(managerService.redirectUrl) : "/award";
-						router.navigateByUrl(redirectUrl);
+						setTimeout(()=>{
+							router.navigateByUrl(redirectUrl);
+						},1000);
 					}
 				},
 				error(err: any) {

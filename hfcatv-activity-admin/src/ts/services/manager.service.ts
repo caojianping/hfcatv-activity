@@ -19,9 +19,13 @@ export class ManagerService {
 		return this.httpService.post<string>(Urls.account.login, {username: username, password: password})
 			.pipe(
 				tap((token: string) => {
+					console.log("login 000:", token);
 					if (token) {
 						this.loginStatus = true;
-						TokenHelper.setToken(token);
+						let test = TokenHelper.setToken(token);
+						console.log("login 111:", test);
+						console.log("login 222:", TokenHelper.getToken());
+						console.log("login 333:", TokenHelper.getManagerInfo());
 					}
 					return token;
 				})

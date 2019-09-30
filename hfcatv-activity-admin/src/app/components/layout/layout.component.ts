@@ -18,11 +18,6 @@ export class LayoutComponent implements OnInit {
         private message: NzMessageService,
         private managerService: ManagerService
     ) {
-        let managerInfo = TokenHelper.getManagerInfo();
-        console.log("managerInfo:", managerInfo);
-        if (managerInfo) {
-            this.username = managerInfo.username;
-        }
     }
 
     logout() {
@@ -44,5 +39,10 @@ export class LayoutComponent implements OnInit {
     }
 
     ngOnInit() {
+		let managerInfo = TokenHelper.getManagerInfo();
+		console.log("managerInfo:", managerInfo);
+		if (managerInfo) {
+			this.username = managerInfo.username;
+		}
     }
 }

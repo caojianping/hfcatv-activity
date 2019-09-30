@@ -45,8 +45,6 @@
             <th>结束时间</th>
             <th>活动状态</th>
             <th>奖品列表</th>
-            <th>创建时间</th>
-            <th>更新时间</th>
             <th>操作
                 <button class="btn-add" nz-button nzType="default" nzSize="small" (click)="addActivity()">添加</button>
             </th>
@@ -55,38 +53,22 @@
         <tbody>
         <tr *ngFor="let activity of activityPageResult.docs">
             <td>{{activity.title}}</td>
-            <td>{{activity.startTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>{{activity.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>{{activity.endTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>{{ActivityStatuses[activity.status]}}</td>
             <td>
-                <button nz-button nz-popover nzPopoverTitle="奖品列表"
-                        [nzPopoverContent]="awardsTemplate">奖品列表
-                </button>
-                <ng-template #awardsTemplate>
-                    <table style="width: 400px">
-                        <thead>
-                        <tr>
-                            <th>奖品名称</th>
-                            <th>奖品类型</th>
-                            <th>奖品等级</th>
-                            <th>奖品库存</th>
-                            <th>奖品权重</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr *ngFor="let activityAward of activity.awards">
-                            <td>{{activityAward.award.name}}</td>
-                            <td>{{AwardTypes[activityAward.award.type]}}</td>
-                            <td>{{AwardRanks[activityAward.rank]}}</td>
-                            <td>{{activityAward.stock}}</td>
-                            <td>{{activityAward.weight}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </ng-template>
+                <nz-list class="award-list" [nzDataSource]="activity.awards" nzBordered [nzRenderItem]="defaultItem">
+                    <ng-template #defaultItem let-item>
+                        <nz-list-item>
+                            <span>{{item.award.name}}</span>
+                            <span>{{AwardTypes[item.award.type]}}</span>
+                            <span>{{AwardRanks[item.rank]}}</span>
+                            <span>{{item.stock}}</span>
+                            <span>{{item.weight}}</span>
+                        </nz-list-item>
+                    </ng-template>
+                </nz-list>
             </td>
-            <td>{{activity.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
-            <td>{{activity.updateTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>
                 <button nz-button nzType="primary" nzSize="small"
                         (click)="editActivity(activity)">编辑

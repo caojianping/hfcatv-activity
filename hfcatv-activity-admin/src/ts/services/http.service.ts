@@ -24,6 +24,7 @@ export default class HttpService {
 		if (token) {
 			headers["Authorization"] = token ? `Bearer ${token}` : "";
 		}
+		console.log("HTTP Authorization:", token, headers);
 		return {headers: new HttpHeaders(headers)};
 	}
 
@@ -34,8 +35,8 @@ export default class HttpService {
 		if (code === 200) return <T>result.data;
 
 		if (code === 700) {
-			TokenHelper.removeToken();
-			window.location.href = "/login";
+			// TokenHelper.removeToken();
+			// window.location.href = "/login";
 		}
 		throw new Error(result.message);
 	}

@@ -30,6 +30,9 @@ export class ActivityComponent implements OnInit {
 	isVisible: boolean = false;
 	currentActivity?: ActivityDocument;
 
+	dateFormat: Function = Utils.dateFormat;
+	dateLine: Function = Utils.dateLine;
+
 	constructor(
 		private message: NzMessageService,
 		private modal: NzModalService,
