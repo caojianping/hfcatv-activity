@@ -1,51 +1,60 @@
 <app-layout>
-    <form nz-form [formGroup]="queryForm" (ngSubmit)="queryLottos()">
+    <form nz-form [formGroup]="queryForm"
+          (ngSubmit)="queryLottos()">
         <div nz-row [nzGutter]="24">
-            <div nz-col [nzSpan]="5">
-                <nz-form-item nzFlex>
+
+            <div nz-col [nzSpan]="6">
+                <nz-form-item class="mb0" nzFlex>
                     <nz-form-label nzFor="nickname">昵称</nz-form-label>
                     <nz-form-control>
-                        <input id="nickname" nz-input formControlName="nickname" placeholder="昵称"/>
+                        <input id="nickname" nz-input formControlName="nickname"
+                               placeholder="请输入昵称"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col [nzSpan]="6">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="title">标题</nz-form-label>
+                    <nz-form-control>
+                        <input id="title" nz-input formControlName="title"
+                               placeholder="请输入活动标题"/>
                     </nz-form-control>
                 </nz-form-item>
             </div>
 
             <div nz-col [nzSpan]="5">
-                <nz-form-item nzFlex>
-                    <nz-form-label nzFor="title">标题</nz-form-label>
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="type" title="奖品类型">类型</nz-form-label>
                     <nz-form-control>
-                        <input id="title" nz-input formControlName="title" placeholder="活动"/>
-                    </nz-form-control>
-                </nz-form-item>
-            </div>
-
-            <div nz-col [nzSpan]="6">
-                <nz-form-item nzFlex>
-                    <nz-form-label nzFor="type">奖品类型</nz-form-label>
-                    <nz-form-control>
-                        <nz-select formControlName="type" id="type">
-                            <nz-option [nzValue]="" nzLabel="请选择奖品类型"></nz-option>
+                        <nz-select id="type" formControlName="type"
+                                   nzAllowClear nzPlaceHolder="请选择类型">
                             <nz-option *ngFor="let item of AwardTypes; index as i;"
-                                       [nzValue]="i" [nzLabel]="item" [nzDisabled]="i < 2"></nz-option>
+                                       [nzLabel]="item" [nzValue]="i"
+                                       [nzDisabled]="i < 2"></nz-option>
                         </nz-select>
                     </nz-form-control>
                 </nz-form-item>
             </div>
 
-            <div nz-col [nzSpan]="6">
-                <nz-form-item nzFlex>
-                    <nz-form-label nzFor="status">中奖状态</nz-form-label>
+            <div nz-col [nzSpan]="5">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="status" title="奖品状态">状态</nz-form-label>
                     <nz-form-control>
-                        <nz-select *ngIf="queryForm.value.type === 2" formControlName="status">
-                            <nz-option *ngFor="let item of RedPacketStatusMap | keyvalue" [nzValue]="item.key" [nzLabel]="item.value"></nz-option>
+                        <nz-select *ngIf="queryForm.value.type === 2" formControlName="status"
+                                   nzAllowClear nzPlaceHolder="请选择状态">
+                            <nz-option *ngFor="let item of RedPacketStatusMap | keyvalue"
+                                       [nzLabel]="item.value" [nzValue]="item.key"></nz-option>
                         </nz-select>
 
-                        <nz-select *ngIf="queryForm.value.type === 3" formControlName="status">
-                            <nz-option *ngFor="let item of GoodsStatusMap | keyvalue" [nzValue]="item.key" [nzLabel]="item.value"></nz-option>
+                        <nz-select *ngIf="queryForm.value.type === 3" formControlName="status"
+                                   nzAllowClear nzPlaceHolder="请选择状态">
+                            <nz-option *ngFor="let item of GoodsStatusMap | keyvalue"
+                                       [nzLabel]="item.value" [nzValue]="item.key"></nz-option>
                         </nz-select>
 
-                        <nz-select *ngIf="queryForm.value.type !== 2 && queryForm.value.type !== 3" formControlName="status">
-                            <nz-option [nzValue]="" nzLabel="请选择中奖状态"></nz-option>
+                        <nz-select *ngIf="queryForm.value.type < 2" formControlName="status"
+                                   nzAllowClear nzPlaceHolder="请选择状态">
                         </nz-select>
                     </nz-form-control>
                 </nz-form-item>
@@ -54,6 +63,7 @@
             <div nz-col [nzSpan]="2">
                 <button class="btn-query" nz-button nzType="primary">查询</button>
             </div>
+
         </div>
     </form>
 
@@ -70,11 +80,10 @@
               (nzPageSizeChange)="fetchPageLottos('limit', $event)">
         <thead>
         <tr>
-            <th>中奖人</th>
-            <th>活动名称</th>
+            <th>昵称</th>
+            <th>活动标题</th>
             <th>活动状态</th>
             <th>奖品名称</th>
-            <th>奖品类型</th>
             <th>奖品等级</th>
             <th>状态</th>
             <th>创建时间</th>
@@ -86,32 +95,37 @@
         <tr *ngFor="let lotto of lottoPageResult.docs">
             <td>{{lotto.user.nickname}}</td>
             <td>{{lotto.activity.title}}</td>
-            <td>{{ActivityStatuses[lotto.activity.status]}}</td>
-            <td>{{lotto.award.name}}</td>
-            <td>{{AwardTypes[lotto.award.type]}}</td>
-            <td>{{AwardRanks[lotto.activity.awards[0].rank]}}</td>
+            <td [ngStyle]="{color: ['gray','green','red'][lotto.activity.status]}">
+                {{ActivityStatuses[lotto.activity.status]}}
+            </td>
+            <td [title]="AwardTypes[lotto.award.type]">{{lotto.award.name}}</td>
+            <td>{{AwardRanks[lotto.award.rank]}}</td>
             <td>
-                <span *ngIf="lotto.award.type === 2">{{RedPacketStatusMap[lotto.attachInfo.status]}}</span>
-                <span *ngIf="lotto.award.type === 3">{{GoodsStatusMap[lotto.attachInfo.status]}}</span>
+                <span *ngIf="lotto.award.type === 2">
+                    {{RedPacketStatusMap[lotto.attachInfo.status]}}
+                </span>
+                <span *ngIf="lotto.award.type === 3">
+                    {{GoodsStatusMap[lotto.attachInfo.status]}}
+                </span>
             </td>
             <td>{{lotto.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>{{lotto.updateTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>
                 <button *ngIf="lotto.award.type === 2 && lotto.attachInfo.status === 1"
-                        nz-button nzSize="small" nzType="primary"
+                        nz-button nzType="primary" nzSize="small"
                         (click)="setStatus(lotto._id, 2)">发放
                 </button>
                 <button *ngIf="lotto.award.type === 2 && lotto.attachInfo.status === 1"
-                        nz-button nzSize="small" nzType="primary"
+                        nz-buttonmnzType="primary" nzSize="small"
                         (click)="setStatus(lotto._id, -1)">驳回
                 </button>
 
                 <button *ngIf="lotto.award.type === 3 && lotto.attachInfo.status === 1"
-                        nz-button nzSize="small" nzType="primary"
+                        nz-button nzType="primary" nzSize="small"
                         (click)="setStatus(lotto._id, 2)">发货
                 </button>
                 <button *ngIf="lotto.award.type === 3 && lotto.attachInfo.status === 1"
-                        nz-button nzSize="small" nzType="primary"
+                        nz-button nzType="primary" nzSize="small"
                         (click)="setStatus(lotto._id, -1)">驳回
                 </button>
             </td>

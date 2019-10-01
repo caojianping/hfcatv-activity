@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
 import {Urls} from "../common/urls";
-import {ActivityDocument, AwardDocument, PaginateResult} from "../interfaces";
+import {ActivityDocument, AwardDocument, AwardVO, PaginateResult} from "../interfaces";
 import HttpService from "./http.service";
 
 @Injectable({
@@ -11,19 +11,27 @@ export class ActivityService {
 	constructor(private httpService: HttpService) {
 	}
 
-	getPageActivities(conditions: any, page: number, limit: number): Observable<PaginateResult<ActivityDocument>> {
-		return this.httpService.post<PaginateResult<ActivityDocument>>(`${Urls.activity.list}/${page}/${limit}`, conditions);
+	getPageActivities(conditions: any, page: number, limit: number)
+        : Observable<PaginateResult<ActivityDocument<AwardVO>>> {
+		return this.httpService
+            .post<PaginateResult<ActivityDocument<AwardVO>>>(
+                `${Urls.activity.list}/${page}/${limit}`, conditions);
 	}
 
-	addActivity(data: ActivityDocument): Observable<ActivityDocument> {
-		return this.httpService.post<ActivityDocument>(Urls.activity.add, data);
+	addActivity(data: ActivityDocument<AwardVO>)
+        : Observable<ActivityDocument<AwardVO>> {
+		return this.httpService
+            .post<ActivityDocument<AwardVO>>(Urls.activity.add, data);
 	}
 
-	updateActivity(data: ActivityDocument): Observable<ActivityDocument> {
-		return this.httpService.post<ActivityDocument>(Urls.activity.update, data);
+	updateActivity(data: ActivityDocument<AwardVO>)
+        : Observable<ActivityDocument<AwardVO>> {
+		return this.httpService
+            .post<ActivityDocument<AwardVO>>(Urls.activity.update, data);
 	}
 
 	removeActivity(id: string): Observable<boolean> {
-		return this.httpService.post<AwardDocument>(Urls.activity.remove, {id: id});
+		return this.httpService
+            .post<boolean>(Urls.activity.remove, {id: id});
 	}
 }

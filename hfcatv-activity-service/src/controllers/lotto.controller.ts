@@ -1,64 +1,52 @@
 import {Context} from "koa";
 import {ErrorType} from "../error";
-import {LottoDocument} from "../interfaces";
 import {LottoService, UserService} from "../services";
 
 const lottoService = new LottoService();
 const userService = new UserService();
 
 export default class LottoController {
-	async execLotto(ctx: Context, next: Function) {
-		let {openId, activityId} = ctx.request.body,
-			userId = await userService.getUserIdByOpenId(openId),
-			data = await lottoService.addLotto(userId, activityId);
-		if (!data) ctx.failure(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖数据]`);
-		else {
-			data["lottos"] = await lottoService.getLottos();
-			ctx.success(data);
-		}
-	}
-	
-	async getPageLottosByOpenId(ctx: Context, next: Function) {
-		let params = ctx.params,
-			page = Number(params.page || 1),
-			limit = Number(params.limit || 10),
-			userId = await userService.getUserIdByOpenId(ctx.request.body.openId),
-			conditions = {user: userId},
-			options = {
-				sort: {createTime: -1},
-				populate: [
-					{path: "user", model: "user", select: "openId nickname"},
-					{path: "activity", model: "activity", select: "title status awards"},
-					{path: "award", model: "award", select: "name type"}
-				],
-				page: page,
-				limit: limit
-			},
-			result = await lottoService.getPage<LottoDocument>(conditions, options);
-		ctx.success(result);
-	}
+    async execLotto(ctx: Context, next: Function) {
+        let {openId, activityId} = ctx.request.body,
+            userId = await userService.getUserIdByOpenId(openId),
+            data = await lottoService.addLotto(userId, activityId);
+        if (!data) ctx.failure(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖数据]`);
+        else {
+            data["lottos"] = await lottoService.getLastestLottos();
+            ctx.success(data);
+        }
+    }
 
-	async receiveLotto(ctx: Context, next: Function) {
-		let {id, attachInfo} = ctx.request.body,
-			lotto = await lottoService.receiveLotto(id, attachInfo);
-		ctx.success(lotto);
-	}
+    async getPageLottosByOpenId(ctx: Context, next: Function) {
+        let params = ctx.params,
+            page = Number(params.page || 1),
+            limit = Number(params.limit || 10),
+            userId = await userService.getUserIdByOpenId(ctx.request.body.openId),
+            result = await lottoService.getPageLottosByUserId(userId, page, limit);
+        ctx.success(result);
+    }
+
+    async receiveLotto(ctx: Context, next: Function) {
+        let {id, attachInfo} = ctx.request.body,
+            lotto = await lottoService.receiveLotto(id, attachInfo);
+        ctx.success(lotto);
+    }
 
 
-	// for admin
-	async getPageLottos(ctx: Context, next: Function) {
-		let params = ctx.params,
-			page = Number(params.page || 1),
-			limit = Number(params.limit || 10),
-			conditions = ctx.request.body || {},
-			result = await lottoService.getPageLottos(conditions, page, limit);
-		ctx.success(result);
-	}
+    // for admin
+    async getPageLottosByConditions(ctx: Context, next: Function) {
+        let params = ctx.params,
+            page = Number(params.page || 1),
+            limit = Number(params.limit || 10),
+            conditions = ctx.request.body || {},
+            result = await lottoService.getPageLottosByConditions(conditions, page, limit);
+        ctx.success(result);
+    }
 
-	// for admin
-	async setStatus(ctx: Context, next: Function) {
-		let {id, status} = ctx.request.body,
-			lotto = await lottoService.setStatus(id, status);
-		ctx.success(lotto);
-	}
+    // for admin
+    async setStatus(ctx: Context, next: Function) {
+        let {id, status} = ctx.request.body,
+            lotto = await lottoService.setStatus(id, status);
+        ctx.success(lotto);
+    }
 };

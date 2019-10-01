@@ -1,34 +1,35 @@
-<nz-layout class="login-layout">
+<nz-layout>
     <div nz-row nzType="flex" nzJustify="center" nzAlign="middle">
-        <div nz-col [nzXs]="{span: 20}" [nzSm]="{span:16}" [nzMd]="{span:12}"
-             [nzLg]="{span:10}" [nzXl]="{span:8}" [nzXXl]="{span:6}">
+        <div nz-col [nzXs]="20" [nzSm]="16" [nzMd]="12" [nzLg]="10" [nzXl]="8" [nzXXl]="6">
 
-            <div class="login">
-                <h1 class="login-title">某某公司测试CMS系统</h1>
-                <form nz-form [formGroup]="loginForm" class="login-form" (ngSubmit)="login(loginForm.value)">
+            <div class="login-main">
+                <h1 class="login-title">合肥有线抽奖活动CMS系统</h1>
+                <form nz-form class="login-form" [formGroup]="loginForm"
+                      (ngSubmit)="login(loginForm.value)">
                     <nz-form-item>
-                        <nz-form-control nzErrorTip="Please input your username!">
+                        <nz-form-control nzErrorTip="请输入管理员账号">
                             <nz-input-group nzPrefixIcon="user">
-                                <input type="text" nz-input formControlName="username" placeholder="Username"/>
+                                <input type="text" nz-input formControlName="username"
+                                       placeholder="管理员账号"/>
                             </nz-input-group>
                         </nz-form-control>
                     </nz-form-item>
+
                     <nz-form-item>
-                        <nz-form-control nzErrorTip="Please input your Password!">
+                        <nz-form-control nzErrorTip="请输入管理员密码">
                             <nz-input-group nzPrefixIcon="lock">
-                                <input type="password" nz-input formControlName="password" placeholder="Password"/>
+                                <input type="password" nz-input formControlName="password"
+                                       placeholder="请输入管理员密码"/>
                             </nz-input-group>
                         </nz-form-control>
                     </nz-form-item>
+
                     <nz-form-item>
                         <nz-form-control>
                             <label nz-checkbox formControlName="remember">
-                                <span>Remember me</span>
+                                <span>记住我</span>
                             </label>
-                            <a class="login-form-forgot" class="login-form-forgot">Forgot password</a>
-                            <button nz-button class="login-form-button" [nzType]="'primary'">Log in</button>
-                            Or
-                            <a>register now!</a>
+                            <button class="btn-login" nz-button nzType="primary">登录</button>
                         </nz-form-control>
                     </nz-form-item>
                 </form>

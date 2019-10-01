@@ -34,9 +34,9 @@ export default class HttpService {
 			code = result.code;
 		if (code === 200) return <T>result.data;
 
-		if (code === 700) {
-			// TokenHelper.removeToken();
-			// window.location.href = "/login";
+		if (code === 401) {
+			TokenHelper.removeToken();
+			window.location.href = "/login";
 		}
 		throw new Error(result.message);
 	}

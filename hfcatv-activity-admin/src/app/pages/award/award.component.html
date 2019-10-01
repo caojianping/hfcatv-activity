@@ -1,15 +1,16 @@
 <app-layout>
     <form nz-form [formGroup]="queryForm" (ngSubmit)="queryAwards()">
         <div nz-row [nzGutter]="24">
-            <div nz-col [nzSpan]="7">
-                <nz-form-item nzFlex>
-                    <nz-form-label nzFor="name">名称</nz-form-label>
+            <div nz-col [nzSpan]="8">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="name">奖品名称</nz-form-label>
                     <nz-form-control>
-                        <input id="name" nz-input formControlName="name" placeholder="名称"/>
+                        <input id="name" nz-input formControlName="name"
+                               placeholder="请输入奖品名称"/>
                     </nz-form-control>
                 </nz-form-item>
             </div>
-            <div nz-col [nzSpan]="6">
+            <div nz-col [nzSpan]="8">
                 <button class="btn-query" nz-button nzType="primary">查询</button>
             </div>
         </div>
@@ -32,8 +33,11 @@
             <th>奖品类型</th>
             <th>创建时间</th>
             <th>更新时间</th>
-            <th>操作
-                <button class="btn-add" nz-button nzSize="small" (click)="addAward()">添加</button>
+            <th>
+                <span>操作</span>
+                <button class="btn-add" nz-button nzSize="small"
+                        (click)="addAward()">添加
+                </button>
             </th>
         </tr>
         </thead>
@@ -44,8 +48,10 @@
             <td>{{award.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>{{award.updateTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>
-                <button nz-button nzSize="small" nzType="primary" (click)="editAward(award)">编辑</button>
-                <button nz-button nzSize="small" nzType="danger" style="margin-left: 8px;"
+                <button class="btn-edit" nz-button nzType="primary" nzSize="small"
+                        (click)="editAward(award)">编辑
+                </button>
+                <button class="btn-remove" nz-button nzType="danger" nzSize="small"
                         (click)="removeAward(award._id)">删除
                 </button>
             </td>

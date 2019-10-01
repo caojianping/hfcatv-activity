@@ -23,10 +23,10 @@ export interface MemberCardInfo {
 	code: string;       // 激活码
 }
 
-export interface LottoDocument extends BaseDocument {
+export interface LottoDocument<T> extends BaseDocument {
 	_id: any;                                                   // 抽奖编号
 	user: UserDocument;                                         // 抽奖用户
-	activity: ActivityDocument;                                 // 抽奖活动
+	activity: ActivityDocument<T>;                                 // 抽奖活动
 	award: AwardDocument;                                       // 抽奖奖品
 	attachInfo?: RedPacketInfo | GoodsInfo | MemberCardInfo;    // 附加信息
 	handler: ManagerDocument;                                   // 处理人

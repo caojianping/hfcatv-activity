@@ -23,8 +23,8 @@ async function addAwards() {
 	]);
 }
 
-async function updateAward() {
-	await awardService.updateAward({type: AwardType.Nothing}, {name: "谢谢参与123"});
+async function updateAward(id: string) {
+	await awardService.updateAward(id, {name: "谢谢参与123"});
 }
 
 async function removeAwards() {

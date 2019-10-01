@@ -1,6 +1,6 @@
 import {Schema, PaginateModel, model} from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
-import {LottoDocument} from "../interfaces";
+import {ActivityAwardDocument, LottoDocument} from "../interfaces";
 
 const LottoSchema: Schema = new Schema({
 	user: {
@@ -50,4 +50,4 @@ LottoSchema.pre("findOneAndUpdate", function (next) {
 	next();
 });
 
-export const LottoModel: PaginateModel<LottoDocument> = model("lotto", LottoSchema, "lotto");
+export const LottoModel: PaginateModel<LottoDocument<ActivityAwardDocument>> = model("lotto", LottoSchema, "lotto");

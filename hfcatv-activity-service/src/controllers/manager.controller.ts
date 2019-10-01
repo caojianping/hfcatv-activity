@@ -20,27 +20,25 @@ export default class ManagerController {
     }
 
     async logout(ctx: Context, next: Function) {
-        console.log("logout:", ctx.state);
-        delete ctx.state.managerId;
         delete ctx.state.user;
         ctx.success(true);
     }
 
     async setPassword(ctx: Context, next: Function) {
-        let managerId = ctx.state.managerId,
+        let managerId = TokenHelper.getManagerId(ctx.state.user),
             password = ctx.request.body.password,
             result = await managerService.setPassword({_id: managerId}, password);
         ctx.success(!!result);
     }
 
     async getTokenStatus(ctx: Context, next: Function) {
-        ctx.success(!!ctx.state.managerId);
+        ctx.success(!!TokenHelper.getManagerId(ctx.state.user));
     }
 
     async refreshTokenStatus(ctx: Context, next: Function) {
-        let managerId = ctx.state.managerId,
+        let managerId = TokenHelper.getManagerId(ctx.state.user),
             manager = await managerService.getManager(managerId);
-        if (!managerId) ctx.failure(
+        if (!manager) ctx.failure(
             ErrorType.DataInexistence.code,
             `${ErrorType.DataInexistence.message}:[管理员]`
         );

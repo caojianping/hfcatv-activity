@@ -1,171 +1,184 @@
+import {PaginateResult} from "mongoose";
 import {BusinessError, ErrorType} from "../error";
+import {Utils} from "../common/utils";
 import {AwardType, GoodsStatus, RedPacketStatus} from "../common/enums";
-import {AwardDocument, UserDocument, RedPacketInfo, GoodsInfo, MemberCardInfo, LottoDocument} from "../interfaces";
+import {
+    AwardDocument, LottoDocument, ActivityAwardDocument,
+    MemberCardInfo, RedPacketInfo, GoodsInfo
+} from "../interfaces";
 import {LottoModel} from "../models";
-import {LottoHelper} from "../helpers";
+import {LottoHelper, AwardHelper} from "../helpers";
 
 import BaseService from "./base.service";
 import UserService from "./user.service";
 import ActivityService from "./activity.service";
-import {Utils} from "../common/utils";
-import {PaginateResult} from "mongoose";
 
 export default class LottoService extends BaseService {
-	private activityService: ActivityService = new ActivityService();
-	private userService: UserService = new UserService();
+    private activityService: ActivityService = new ActivityService();
+    private userService: UserService = new UserService();
+    private populates: Array<any> = [
+        {path: "user", model: "user", select: "-_id nickname openId"},
+        {
+            path: "activity", model: "activity", select: "-_id title status awards",
+            populate: {path: "awards.award", model: "award"}
+        }
+    ];
 
-	constructor() {
-		super(LottoModel);
-	}
+    constructor() {
+        super(LottoModel);
+    }
 
-	async getLottos(): Promise<Array<LottoDocument>> {
-		let options = {
-				sort: {createTime: -1},
-				populate: [
-					{path: "user", model: "user", select: "-_id nickname openId"},
-					{path: "activity", model: "activity", select: "-_id title startTime endTime status awards"},
-					{path: "award", model: "award", select: "_id name type"}
-				],
-				page: 1,
-				limit: 10
-			},
-			pageResult = await this.getPage<LottoDocument>({}, options);
+    private _buildLotto(lotto: LottoDocument<ActivityAwardDocument>, isBase: boolean = false) {
+        let lottoDup = Utils.duplicate<any>(lotto),
+            activityAward = lottoDup.activity.awards
+                .filter((activityAward: ActivityAwardDocument) => String(lottoDup.award) === String(activityAward.award._id))[0];
 
-		let lottos: any = Utils.duplicate<any>(pageResult.docs);
-		lottos.forEach((lotto: any) => {
-			let activity = lotto.activity,
-				award = lotto.award,
-				awardId = String(award._id),
-				activityAward = activity.awards
-					.filter((item: any) => awardId === String(item.award))[0];
+        delete lottoDup.activity.awards;
+        lottoDup["activity"] = lottoDup.activity;
+        lottoDup["award"] = AwardHelper.convertToAwardVO(activityAward, isBase);
+        return lottoDup;
+    }
 
-			lotto["activity"] = {
-				title: activity.title,
-				startTime: activity.startTime,
-				endTime: activity.endTime,
-				status: activity.status
-			};
-			lotto["award"] = {
-				name: award.name,
-				type: award.type,
-				rank: activityAward.rank
-			};
-		});
-		return lottos;
-	}
+    private _buildLottos(lottos: Array<LottoDocument<ActivityAwardDocument>>, isBase: boolean = false) {
+        let self = this,
+            result: Array<any> = [];
+        lottos.forEach((lotto: LottoDocument<ActivityAwardDocument>) => {
+            let data = self._buildLotto(lotto, isBase);
+            result.push(data);
+        });
+        return result;
+    }
 
-	async getPageLottos(conditions: any, page: number, limit: number): Promise<PaginateResult<LottoDocument>> {
-		if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
 
-		console.log("conditions:", conditions);
-		let tconditions = {};
-		const {nickname, title, type, status} = conditions;
-		if (nickname) {
-			let userIds = [];// todo: get userIds by nickname
-			tconditions["user"] = {$in: userIds};
-		}
-		if (title) {
-			let activityIds = [];// todo: get activityIds by title
-			tconditions["activity"] = {$in: activityIds};
-		}
-		if (type) {
-			let awardIds = [];// todo: get awardIds by type
-			tconditions["award"] = {$in: awardIds};
-		}
-		if (status) {
-			tconditions["status"] = {"attachInfo.status": status};
-		}
-		let options = {
-				sort: {createTime: -1},
-				populate: [
-					{path: "user", model: "user", select: "-_id nickname openId"},
-					{path: "activity", model: "activity", select: "-_id title status awards"},
-					{path: "award", model: "award", select: "_id name type"}
-				],
-				page: page,
-				limit: limit
-			},
-			pageResult = await this.getPage<LottoDocument>(tconditions, options);
+    async getLastestLottos(): Promise<Array<any>> {
+        let options = {
+                sort: {createTime: -1},
+                populate: this.populates,
+                page: 1,
+                limit: 10
+            },
+            result = await this.getPage<LottoDocument<ActivityAwardDocument>>({}, options);
+        return this._buildLottos(result.docs, true);
+    }
 
-		let lottosDup = Utils.duplicate<any>(pageResult.docs);
-		lottosDup.forEach((lotto: LottoDocument) => {
-			let awardId = String(lotto.award._id);
-			lotto["activity"]["awards"] = lotto.activity.awards.filter((item: any) => awardId === String(item.award));
-		});
-		pageResult["docs"] = lottosDup;
-		return pageResult;
-	}
+    async getPageLottosByUserId(userId: string, page: number, limit: number): Promise<PaginateResult<any>> {
+        if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
 
-	async getLottoCount(activityId: string, awardId: string): Promise<number> {
-		if (!activityId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
-		if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
-		return await this.model.count({activity: activityId, award: awardId});
-	}
+        let conditions = {user: userId},
+            options = {
+                sort: {createTime: -1},
+                populate: this.populates,
+                page: page,
+                limit: limit
+            },
+            result = await this.getPage<LottoDocument<ActivityAwardDocument>>(conditions, options);
+        result["docs"] = this._buildLottos(result.docs, true);
+        return result;
+    }
 
-	async addLotto(userId: string, activityId: string): Promise<any> {
-		if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
-		if (!activityId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
+    async getPageLottosByConditions(conditions: any, page: number, limit: number): Promise<PaginateResult<any>> {
+        if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
 
-		let isFinished = await this.activityService.isFinished(activityId);
-		if (isFinished) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[活动已经结束]`));
+        let tconditions = {},
+            {nickname, title, type, status} = conditions;
+        if (nickname) {
+            let userIds = [];// todo: get userIds by nickname
+            tconditions["user"] = {$in: userIds};
+        }
+        if (title) {
+            let activityIds = [];// todo: get activityIds by title
+            tconditions["activity"] = {$in: activityIds};
+        }
+        if (type) {
+            let awardIds = [];// todo: get awardIds by type
+            tconditions["award"] = {$in: awardIds};
+        }
+        if (status) {
+            tconditions["status"] = {"attachInfo.status": status};
+        }
 
-		let lottoCount = await this.userService.getLottoCount(userId);
-		if (lottoCount <= 0) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[您的抽奖机会已经用完啦]`));
+        let options = {
+                sort: {createTime: -1},
+                populate: this.populates,
+                page: page,
+                limit: limit
+            },
+            result = await this.getPage<LottoDocument<ActivityAwardDocument>>(tconditions, options);
+        result["docs"] = this._buildLottos(result.docs, true);
+        return result;
+    }
 
-		let attachInfo: RedPacketInfo | GoodsInfo | MemberCardInfo | undefined;
-		let award: AwardDocument = await LottoHelper.getRandomAward(activityId),
-			awardType = award.type;
-		if (awardType === AwardType.Nothing) {
-			attachInfo = undefined;
-		} else if (awardType === AwardType.RedPacket) {
-			attachInfo = <RedPacketInfo>{
-				amount: LottoHelper.getRandomRedPacket(1, 5),
-				status: RedPacketStatus.UnReceived,
-				message: ""
-			};
-		} else if (awardType === AwardType.Goods) {
-			attachInfo = <GoodsInfo>{
-				name: "",
-				mobile: "",
-				address: "",
-				status: GoodsStatus.UnReceived,
-				message: ""
-			};
-		} else if (awardType === AwardType.MemberCard) {
-			attachInfo = <MemberCardInfo>{code: "123456789"};
-		}
-		let lotto = await this.model.create({
-			user: userId,
-			activity: activityId,
-			award: award._id,
-			attachInfo: attachInfo
-		});
-		if (!lotto) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[抽奖数据创建失败]`));
+    async getLottoCount(activityId: string, awardId: string): Promise<number> {
+        if (!activityId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
+        if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
+        return await this.model.count({activity: activityId, award: awardId});
+    }
 
-		let user = await this.userService.setLottoCount(userId, -1);
-		return {
-			lottoCount: user.lottoCount,
-			awardId: award._id
-		};
-	}
+    async addLotto(userId: string, activityId: string): Promise<any> {
+        if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
+        if (!activityId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 
-	async receiveLotto(id: string, attachInfo: any): Promise<LottoDocument> {
-		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[抽奖编号]`));
-		return await this.model.findByIdAndUpdate(id, {
-			$set: {
-				attachInfo: attachInfo,
-				updateTime: new Date()
-			}
-		}, {new: true});
-	}
+        let isFinished = await this.activityService.isFinished(activityId);
+        if (isFinished) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[活动已经结束]`));
 
-	async setStatus(id: string, status: number): Promise<LottoDocument> {
-		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[抽奖编号]`));
-		return await this.model.findByIdAndUpdate(id, {
-			$set: {
-				"attachInfo.status": status,
-				updateTime: new Date()
-			}
-		}, {new: true});
-	}
+        let lottoCount = await this.userService.getLottoCount(userId);
+        if (lottoCount <= 0) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[您的抽奖机会已经用完啦]`));
+
+        let attachInfo: RedPacketInfo | GoodsInfo | MemberCardInfo | undefined;
+        let award: AwardDocument = await LottoHelper.getRandomAward(activityId),
+            awardType = award.type;
+        if (awardType === AwardType.Nothing) {
+            attachInfo = undefined;
+        } else if (awardType === AwardType.RedPacket) {
+            attachInfo = <RedPacketInfo>{
+                amount: LottoHelper.getRandomRedPacket(1, 5),
+                status: RedPacketStatus.UnReceived,
+                message: ""
+            };
+        } else if (awardType === AwardType.Goods) {
+            attachInfo = <GoodsInfo>{
+                name: "",
+                mobile: "",
+                address: "",
+                status: GoodsStatus.UnReceived,
+                message: ""
+            };
+        } else if (awardType === AwardType.MemberCard) {
+            attachInfo = <MemberCardInfo>{code: "123456789"};
+        }
+
+        let lotto = await this.model.create({
+            user: userId,
+            activity: activityId,
+            award: award._id,
+            attachInfo: attachInfo
+        });
+        if (!lotto) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[抽奖数据创建失败]`));
+
+        let user = await this.userService.setLottoCount(userId, -1);
+        return {
+            lottoCount: user.lottoCount,
+            awardId: award._id
+        };
+    }
+
+    async receiveLotto(id: string, attachInfo: any): Promise<LottoDocument<ActivityAwardDocument>> {
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[抽奖编号]`));
+        return await this.model.findByIdAndUpdate(id, {
+            $set: {
+                attachInfo: attachInfo,
+                updateTime: new Date()
+            }
+        }, {new: true});
+    }
+
+    async setStatus(id: string, status: number): Promise<LottoDocument<ActivityAwardDocument>> {
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[抽奖编号]`));
+        return await this.model.findByIdAndUpdate(id, {
+            $set: {
+                "attachInfo.status": status,
+                updateTime: new Date()
+            }
+        }, {new: true});
+    }
 };

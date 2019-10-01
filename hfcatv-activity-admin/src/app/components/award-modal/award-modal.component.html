@@ -1,29 +1,33 @@
 <nz-modal [nzVisible]="visible"
-          [nzTitle]="{'add':'添加','edit':'编辑'}[type]" [nzFooter]="null"
-          (nzAfterOpen)="openAward()" (nzOnCancel)="closeAward()">
-
+          [nzTitle]="OperateTypes[type] + '奖品'"
+          [nzWidth]="500" [nzFooter]="null"
+          (nzAfterOpen)="openAward()"
+          (nzOnCancel)="closeAward()">
     <form nz-form [formGroup]="awardForm"
           (ngSubmit)="saveAward(awardForm.value)">
         <nz-form-item>
             <nz-form-label [nzSpan]="6" nzRequired nzFor="name">奖品名称</nz-form-label>
             <nz-form-control [nzSpan]="14" nzErrorTip="请输入奖品名称">
-                <input id="name" nz-input formControlName="name"/>
+                <input id="name" nz-input formControlName="name"
+                       placeholder="请输入奖品名称"/>
             </nz-form-control>
         </nz-form-item>
 
         <nz-form-item>
             <nz-form-label [nzSpan]="6" nzRequired nzFor="type">奖品类型</nz-form-label>
-            <nz-form-control [nzSpan]="14" nzErrorTip="请输入奖品类型">
-                <nz-select id="type" formControlName="type" placeholder="请输入奖品类型">
+            <nz-form-control [nzSpan]="14" nzErrorTip="请选择奖品类型">
+                <nz-select id="type" formControlName="type"
+                           nzAllowClear nzPlaceHolder="请选择奖品类型">
                     <nz-option *ngFor="let item of AwardTypes; index as i;"
-                               [nzValue]="i" [nzLabel]="item"></nz-option>
+                               [nzLabel]="item" [nzValue]="i"></nz-option>
                 </nz-select>
             </nz-form-control>
         </nz-form-item>
 
-        <nz-form-item style="text-align: center">
-            <button class="btn-save" nz-button nzType="primary" [disabled]="!awardForm.valid">保存</button>
+        <nz-form-item>
+            <button class="btn-save" nz-button nzType="primary"
+                    [disabled]="!awardForm.valid">保存
+            </button>
         </nz-form-item>
     </form>
-
 </nz-modal>

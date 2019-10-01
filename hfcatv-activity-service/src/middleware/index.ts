@@ -25,7 +25,7 @@ export default function middlewares() {
 		helmet(),
 
 		response(),
-		auth(),
+		// auth(),
 		jwt({secret: secret})
 			.unless({
 				path: [

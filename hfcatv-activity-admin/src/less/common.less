@@ -39,6 +39,11 @@
     .font-styles(1rem, normal, 4rem, orange, center);
 }
 
+// 全局内外边距样式
+.mb0 {
+    margin-bottom: 0;
+}
+
 // 全局通用样式
 .btn-query {
     margin-top: 4px;
@@ -51,13 +56,28 @@
     line-height: 20px;
 }
 
-.btn-save {
-    width: 100px;
+.btn-edit + .btn-remove {
+    margin-left: 8px;
 }
 
-.ant-table{
+.btn-save {
+    display: block;
+    margin: auto;
+    width: 120px;
+}
+
+.ant-table {
     thead > tr > th,
-    tbody > tr > td{
+    tbody > tr > td {
         text-align: center;
+    }
+}
+
+.award-table {
+    thead > tr > th,
+    tbody > tr > td {
+        padding: 4px 8px;
+        .font-styles(12px, normal, 1, @font-black, center);
+        border: 1px solid #d9d9d9;
     }
 }

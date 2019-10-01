@@ -1,10 +1,11 @@
 import {Component, OnInit} from "@angular/core";
-import {NzMessageService, NzModalService} from "ng-zorro-antd";
 import {FormBuilder, FormControl} from "@angular/forms";
-import {AwardTypes} from "../../../ts/common/names";
+import {NzMessageService, NzModalService} from "ng-zorro-antd";
+import {Utils} from "../../../ts/common/utils";
+import {OperateType} from "../../../ts/common/enums";
+import {AwardTypes, OperateTypes} from "../../../ts/common/names";
 import {AwardDocument, PaginateResult} from "../../../ts/interfaces";
 import {AwardService} from "../../../ts/services";
-import {Utils} from "../../../ts/common/utils";
 
 @Component({
     selector: "app-award",
@@ -13,6 +14,7 @@ import {Utils} from "../../../ts/common/utils";
 })
 export class AwardComponent implements OnInit {
     AwardTypes: Array<string> = AwardTypes;
+    OperateTypes: Array<string> = OperateTypes;
 
     queryForm: any;
 
@@ -20,19 +22,19 @@ export class AwardComponent implements OnInit {
     awardPageResult: PaginateResult<AwardDocument> = {
         docs: [],
         total: 0,
-        limit: 10,
-        page: 1
+        page: 1,
+        limit: 10
     };
 
-    type: string = "";
+    type: OperateType = OperateType.Add;
     isVisible: boolean = false;
     currentAward?: AwardDocument;
 
     constructor(
-        private message: NzMessageService,
+        private formBuilder: FormBuilder,
         private modal: NzModalService,
-        private awardService: AwardService,
-        private formBuilder: FormBuilder
+        private message: NzMessageService,
+        private awardService: AwardService
     ) {
         this.queryForm = this.formBuilder.group({
             name: new FormControl(null)
@@ -77,20 +79,20 @@ export class AwardComponent implements OnInit {
     }
 
     addAward() {
-        this.type = "add";
+        this.type = OperateType.Add;
         this.currentAward = undefined;
         this.isVisible = true;
     }
 
     editAward(award: AwardDocument) {
-        this.type = "edit";
+        this.type = OperateType.Edit;
         this.currentAward = award;
         this.isVisible = true;
     }
 
     removeAward(id: string) {
         const self = this;
-        const {message, modal, awardService} = self;
+        const {modal, message, awardService} = self;
         modal.confirm({
             nzTitle: "确定要删除此奖品吗？",
             nzOnOk() {
@@ -98,7 +100,7 @@ export class AwardComponent implements OnInit {
                     .subscribe({
                         next(result: boolean) {
                             if (!result) message.error("删除失败");
-                            self.fetchPageAwards();
+                            else self.fetchPageAwards();
                         },
                         error(err: any) {
                             message.error(err);
@@ -115,10 +117,10 @@ export class AwardComponent implements OnInit {
     handleModalOk(award: AwardDocument) {
         const self = this;
         const {message, awardService, awardPageResult, type} = self;
-        if (type === "add") {
+        if (type === OperateType.Add) {
             awardService.addAward(award.name, award.type)
                 .subscribe({
-                    next(data: AwardDocument) {
+                    next() {
                         self.fetchPageAwards();
                         self.isVisible = false;
                     },
@@ -127,7 +129,7 @@ export class AwardComponent implements OnInit {
                         self.isVisible = false;
                     }
                 });
-        } else if (type === "edit") {
+        } else if (type === OperateType.Edit) {
             awardService.updateAward(<AwardDocument>{_id: award._id, name: award.name, type: award.type})
                 .subscribe({
                     next(data: AwardDocument) {
