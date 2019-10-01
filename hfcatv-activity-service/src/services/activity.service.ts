@@ -29,6 +29,22 @@ export default class ActivityService extends BaseService {
         return result;
     }
 
+    private _handleActivity(activity: any) {
+        let {startTime, endTime} = activity;
+        activity["status"] = ActivityHelper.getActivityStatus(new Date(startTime), new Date(endTime));
+        let awards: any = Utils.duplicate<any>(activity.awards || []);
+        if (awards.length > 0) {
+            awards = awards.map((item: any) => ({
+                award: item.id,
+                rank: item.rank,
+                stock: item.stock,
+                weight: item.weight
+            }));
+        }
+        activity["awards"] = awards;
+        return activity;
+    }
+
     async getActivity(): Promise<ActivityDocument<AwardBaseVO>> {
         let conditions = {status: {$ne: ActivityStatus.Finished}, isDelete: false},
             projection = "_id title startTime endTime status awards",
@@ -60,19 +76,16 @@ export default class ActivityService extends BaseService {
     async addActivity(activity: any): Promise<ActivityDocument<AwardVO> | null> {
         if (!activity) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动]`));
 
+        let {startTime, endTime} = activity;
+        if (!startTime) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动开始时间]`));
+        if (!endTime) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动结束时间]`));
+        if (new Date(startTime).getTime() > new Date(endTime).getTime())
+            return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[开始时间不可以大于结束时间]`));
+
         let result = await this.isExist({status: {$ne: ActivityStatus.Finished}, isDelete: false});
         if (result.status) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[存在未结束的活动]`));
         else {
-            let awards: any = activity.awards || [];
-            if (awards.length > 0) {
-                awards.forEach((item: any) => ({
-                    award: item.id,
-                    rank: item.rank,
-                    stock: item.stock,
-                    weight: item.weight
-                }));
-            }
-            let data = await this.model.create(activity);
+            let data = await this.model.create(this._handleActivity(activity));
             if (!data) return null;
             return this._buildActivity(data, false);
         }
@@ -83,23 +96,19 @@ export default class ActivityService extends BaseService {
         if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
 
         update["updateTime"] = new Date();
-        let awards: any = update.awards || [];
-        if (awards.length > 0) {
-            awards.forEach((item: any) => ({
-                award: item.id,
-                rank: item.rank,
-                stock: item.stock,
-                weight: item.weight
-            }));
-        }
-        let data = await this.model.findByIdAndUpdate(id, {$set: update}, {new: true});
+        let data = await this.model.findByIdAndUpdate(id, {$set: this._handleActivity(update)}, {new: true});
         if (!data) return null;
         return this._buildActivity(data, false);
     }
 
     async setStatus(id: string, status: ActivityStatus): Promise<ActivityDocument<AwardVO>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
-        let data = await this.model.findByIdAndUpdate(id, {$set: {status: status, updateTime: new Date()}}, {new: true});
+        let data = await this.model.findByIdAndUpdate(id, {
+            $set: {
+                status: status,
+                updateTime: new Date()
+            }
+        }, {new: true});
         if (!data) return null;
         return this._buildActivity(data, false);
     }

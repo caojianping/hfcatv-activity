@@ -14,13 +14,13 @@ export class LottoService {
 	getPageLottos(conditions: any, page: number, limit: number)
         : Observable<PaginateResult<LottoDocument<any, AwardVO>>> {
 		return this.httpService
-            .post<PaginateResult<LottoDocument<AwardVO>>>(
+            .post<PaginateResult<LottoDocument<any, AwardVO>>>(
                 `${Urls.lotto.list}/${page}/${limit}`, conditions);
 	}
 
 	setStatus(id: string, status: number)
-        : Observable<LottoDocument<AwardVO>> {
+        : Observable<LottoDocument<any, AwardVO>> {
 		return this.httpService
-            .post<LottoDocument<AwardVO>>(Urls.lotto.setStatus, {id: id, status: status});
+            .post<LottoDocument<any, AwardVO>>(Urls.lotto.setStatus, {id: id, status: status});
 	}
 }

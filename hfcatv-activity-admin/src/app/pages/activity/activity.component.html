@@ -1,5 +1,5 @@
 <app-layout>
-    <form nz-form [formGroup]="queryForm"
+    <form class="query-form" nz-form [formGroup]="queryForm"
           (ngSubmit)="queryActivities()">
         <div nz-row [nzGutter]="24">
 
@@ -40,7 +40,7 @@
               [nzPageSize]="activityPageResult.limit"
               [nzPaginationPosition]="'both'"
               [nzLoading]="isLoading"
-              [nzPageSizeOptions]="[2,5,10,20,30]"
+              [nzPageSizeOptions]="[5,10,20,30]"
               [nzShowSizeChanger]="true"
               (nzPageIndexChange)="fetchPageActivities('page', $event)"
               (nzPageSizeChange)="fetchPageActivities('limit', $event)">

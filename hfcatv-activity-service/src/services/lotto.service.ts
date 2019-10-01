@@ -158,6 +158,7 @@ export default class LottoService extends BaseService {
         });
         if (!lotto) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[抽奖数据创建失败]`));
 
+        // todo: 减少活动的库存
         let user = await this.userService.setLottoCount(userId, -1);
         return {
             lottoCount: user.lottoCount,

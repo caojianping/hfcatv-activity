@@ -62,8 +62,8 @@ export class ActivityModalComponent implements OnInit {
             return this.formBuilder.group({
                 id: new FormControl(null, Validators.required),
                 rank: new FormControl(null, Validators.required),
-                stock: new FormControl(null, Validators.min(0)),
-                weight: new FormControl(null, [Validators.min(0), Validators.max(1)])
+                stock: new FormControl(null, [Validators.required, Validators.min(0)]),
+                weight: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(1)])
             });
         }
     }
@@ -83,7 +83,8 @@ export class ActivityModalComponent implements OnInit {
     }
 
     openActivity() {
-        let formBuilder = this.formBuilder,
+        let self = this,
+            formBuilder = this.formBuilder,
             type = this.type;
         if (type === OperateType.Add) {
             this.activityForm = formBuilder.group({
@@ -95,11 +96,15 @@ export class ActivityModalComponent implements OnInit {
         } else if (type === OperateType.Edit) {
             let activity = this.activity;
             if (activity) {
+                let awardForms: Array<any> = [];
+                activity.awards.forEach((award: any) => {
+                    awardForms.push(self._buildAwardFormGroup(award));
+                });
                 this.activityForm = formBuilder.group({
                     title: new FormControl(activity.title, Validators.required),
                     startTime: new FormControl(new Date(activity.startTime), Validators.required),
                     endTime: new FormControl(new Date(activity.endTime), Validators.required),
-                    awards: formBuilder.array(activity.awards.map((award: AwardVO) => this._buildAwardFormGroup(award)))
+                    awards: formBuilder.array(awardForms)
                 });
             }
         }

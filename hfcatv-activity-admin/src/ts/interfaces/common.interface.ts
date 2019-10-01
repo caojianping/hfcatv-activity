@@ -1,4 +1,3 @@
-import {Document} from "mongoose";
 import {AwardRank, AwardType} from "../common/enums";
 
 export interface BaseDocument {

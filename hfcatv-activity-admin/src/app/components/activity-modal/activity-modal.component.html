@@ -17,7 +17,7 @@
         <nz-form-item>
             <nz-form-label [nzSpan]="5" nzRequired nzFor="startTime">开始时间</nz-form-label>
             <nz-form-control [nzSpan]="19" nzErrorTip="请输入开始时间">
-                <nz-date-picker id="startTime" formControlName="startTime"
+                <nz-date-picker id="startTime" formControlName="startTime" nzShowTime
                                 nzFormat="yyyy/MM/dd hh:mm" nzPlaceHolder="请输入开始时间"
                                 [nzStyle]="{width: '300px'}"></nz-date-picker>
             </nz-form-control>
@@ -26,7 +26,7 @@
         <nz-form-item>
             <nz-form-label [nzSpan]="5" nzRequired nzFor="endTime">结束时间</nz-form-label>
             <nz-form-control [nzSpan]="19" nzErrorTip="请输入结束时间">
-                <nz-date-picker id="endTime" formControlName="endTime"
+                <nz-date-picker id="endTime" formControlName="endTime" nzShowTime
                                 nzFormat="yyyy/MM/dd hh:mm" nzPlaceHolder="请输入结束时间"
                                 [nzStyle]="{width: '300px'}"></nz-date-picker>
             </nz-form-control>

@@ -13,11 +13,6 @@ export default class ManagerService extends BaseService {
 		return await this.model.findById(id);
 	}
 
-	async getManagerByUsername(username: string): Promise<ManagerDocument | null> {
-		if (!username) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员姓名]`));
-		return await this.model.findOne({username: username});
-	}
-
 	async addManager(username: string, password: string): Promise<ManagerDocument> {
 		if (!username) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员姓名]`));
 		if (!password) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员密码]`));

@@ -37,6 +37,6 @@ export default class LottoHelper {
 
     static getRandomRedPacket(min: number, max: number): number {
         let num = Math.random() * (max - min) + min;
-        return parseFloat(String(num));
+        return parseFloat(num.toFixed(2));
     }
 };

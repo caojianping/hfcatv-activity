@@ -1,5 +1,6 @@
 <app-layout>
-    <form nz-form [formGroup]="queryForm" (ngSubmit)="queryAwards()">
+    <form class="query-form" nz-form [formGroup]="queryForm"
+          (ngSubmit)="queryAwards()">
         <div nz-row [nzGutter]="24">
             <div nz-col [nzSpan]="8">
                 <nz-form-item class="mb0" nzFlex>
@@ -23,7 +24,7 @@
               [nzPageSize]="awardPageResult.limit"
               [nzPaginationPosition]="'both'"
               [nzLoading]="isLoading"
-              [nzPageSizeOptions]="[2,5,10,20,30]"
+              [nzPageSizeOptions]="[5,10,20,30]"
               [nzShowSizeChanger]="true"
               (nzPageIndexChange)="fetchPageAwards('page', $event)"
               (nzPageSizeChange)="fetchPageAwards('limit', $event)">

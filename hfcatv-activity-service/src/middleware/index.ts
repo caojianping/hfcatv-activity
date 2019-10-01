@@ -1,4 +1,5 @@
 import compose from "koa-compose";
+import koaStatic from "koa-static";
 import convert from "koa-convert";
 import cors from "koa-cors";
 import helmet from "koa-helmet";
@@ -10,30 +11,30 @@ import config from "config";
 
 import {error} from "../error";
 import {response} from "../response";
-import auth from "./auth.middleware";
 
 const secret = config.get<string>("jwt.secret");
 
 export default function middlewares() {
-	return compose([
-		error(),
+    return compose([
+        error(),
 
-		convert(cors()),
-		logger(),
-		bodyParser(),
-		json(),
-		helmet(),
+        koaStatic(__dirname + "./static"),
+        convert(cors()),
+        logger(),
+        bodyParser(),
+        json(),
+        helmet(),
 
-		response(),
-		// auth(),
-		jwt({secret: secret})
-			.unless({
-				path: [
-					/^\/api/,
-					/^\/admin\/account\/login/,
-					/^\/admin\/account\/logout/,
-					/^\/admin\/token\/status/
-				]
-			}),
-	]);
+        response(),
+        // auth(),
+        jwt({secret: secret})
+            .unless({
+                path: [
+                    /^\/api/,
+                    /^\/admin\/account\/login/,
+                    /^\/admin\/account\/logout/,
+                    /^\/admin\/token\/status/
+                ]
+            }),
+    ]);
 };
