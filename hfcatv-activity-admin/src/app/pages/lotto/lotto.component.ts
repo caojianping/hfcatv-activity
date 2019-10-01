@@ -21,7 +21,7 @@ export class LottoComponent implements OnInit {
     queryForm: any;
 
     isLoading: boolean = false;
-    lottoPageResult: PaginateResult<LottoDocument<AwardVO>> = {
+    lottoPageResult: PaginateResult<LottoDocument<any, AwardVO>> = {
         docs: [],
         total: 0,
         page: 1,
@@ -56,7 +56,7 @@ export class LottoComponent implements OnInit {
         self.isLoading = true;
         lottoService.getPageLottos(Utils.filterConditions(queryForm.value), lottoPageResult.page, lottoPageResult.limit)
             .subscribe({
-                next(result: PaginateResult<LottoDocument<AwardVO>>) {
+                next(result: PaginateResult<LottoDocument<any, AwardVO>>) {
                     self.isLoading = false;
                     self.lottoPageResult = result;
                 },
@@ -84,10 +84,10 @@ export class LottoComponent implements OnInit {
         const {message, lottoService, lottoPageResult} = self;
         lottoService.setStatus(id, status)
             .subscribe({
-                next(data: LottoDocument<AwardVO>) {
+                next(data: LottoDocument<any, AwardVO>) {
                     let attachInfo: any = data.attachInfo || {},
                         lottos = lottoPageResult.docs;
-                    lottos.forEach((lotto: LottoDocument<AwardVO>) => {
+                    lottos.forEach((lotto: LottoDocument<any, AwardVO>) => {
                         if (lotto._id === data._id) {
                             lotto.attachInfo["status"] = attachInfo.status;
                         }

@@ -2,7 +2,7 @@ import {PaginateResult} from "mongoose";
 import {BusinessError, ErrorType} from "../error";
 import {Utils} from "../common/utils";
 import {ActivityStatus} from "../common/enums";
-import {ActivityDocument, ActivityAwardDocument, AwardVO, AwardBaseVO} from "../interfaces";
+import {ActivityDocument, AwardDetailDocument, AwardBaseVO, AwardVO} from "../interfaces";
 import {ActivityModel} from "../models";
 import {ActivityHelper, AwardHelper} from "../helpers";
 import BaseService from "./base.service";
@@ -12,17 +12,17 @@ export default class ActivityService extends BaseService {
         super(ActivityModel);
     }
 
-    private _buildActivity(activity: ActivityDocument<ActivityAwardDocument>, isBase: boolean = false) {
+    private _buildActivity(activity: ActivityDocument<AwardDetailDocument>, isBase: boolean = false) {
         let activityDup = Utils.duplicate<any>(activity);
         activityDup["awards"] = activityDup.awards
-            .map((activityAward: ActivityAwardDocument) => AwardHelper.convertToAwardVO(activityAward, isBase));
+            .map((awardDetail: AwardDetailDocument) => AwardHelper.convertToAwardVO(awardDetail, isBase));
         return activityDup;
     }
 
-    private _buildActivities(activities: Array<ActivityDocument<ActivityAwardDocument>>, isBase: boolean = false) {
+    private _buildActivities(activities: Array<ActivityDocument<AwardDetailDocument>>, isBase: boolean = false) {
         let self = this,
             result: Array<any> = [];
-        activities.forEach((activity: ActivityDocument<ActivityAwardDocument>) => {
+        activities.forEach((activity: ActivityDocument<AwardDetailDocument>) => {
             let data = self._buildActivity(activity, isBase);
             result.push(data);
         });
@@ -44,19 +44,20 @@ export default class ActivityService extends BaseService {
         else return this._buildActivity(activity, true);
     }
 
-    async getPageActivitiesByConditions(conditions: any, page: number, limit: number): Promise<PaginateResult<any>> {
+    async getPageActivitiesByConditions(conditions: any, page: number, limit: number)
+        : Promise<PaginateResult<ActivityDocument<AwardVO>>> {
         let options = {
                 sort: {createTime: -1},
                 populate: [{path: "awards.award", model: "award"}],
                 page: page,
                 limit: limit
             },
-            result = await this.getPage<ActivityDocument<ActivityAwardDocument>>(conditions, options);
+            result: any = await this.getPage<ActivityDocument<AwardDetailDocument>>(conditions, options);
         result["docs"] = this._buildActivities(result.docs, false);
-        return result;
+        return <PaginateResult<ActivityDocument<AwardVO>>>result;
     }
 
-    async addActivity(activity: any): Promise<ActivityDocument<ActivityAwardDocument> | null> {
+    async addActivity(activity: any): Promise<ActivityDocument<AwardVO> | null> {
         if (!activity) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动]`));
 
         let result = await this.isExist({status: {$ne: ActivityStatus.Finished}, isDelete: false});
@@ -71,11 +72,13 @@ export default class ActivityService extends BaseService {
                     weight: item.weight
                 }));
             }
-            return await this.model.create(activity);
+            let data = await this.model.create(activity);
+            if (!data) return null;
+            return this._buildActivity(data, false);
         }
     }
 
-    async updateActivity(id: string, update: any): Promise<ActivityAwardDocument> {
+    async updateActivity(id: string, update: any): Promise<ActivityDocument<AwardVO>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
         if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
 
@@ -89,18 +92,22 @@ export default class ActivityService extends BaseService {
                 weight: item.weight
             }));
         }
-        return await this.model.findByIdAndUpdate(id, {$set: update}, {new: true});
+        let data = await this.model.findByIdAndUpdate(id, {$set: update}, {new: true});
+        if (!data) return null;
+        return this._buildActivity(data, false);
     }
 
-    async setStatus(id: string, status: ActivityStatus): Promise<ActivityDocument<ActivityAwardDocument>> {
+    async setStatus(id: string, status: ActivityStatus): Promise<ActivityDocument<AwardVO>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
-        return await this.model.findByIdAndUpdate(id, {$set: {status: status, updateTime: new Date()}}, {new: true});
+        let data = await this.model.findByIdAndUpdate(id, {$set: {status: status, updateTime: new Date()}}, {new: true});
+        if (!data) return null;
+        return this._buildActivity(data, false);
     }
 
     async isFinished(id: string): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 
-        let activity: ActivityDocument<ActivityAwardDocument> = await this.model.findById(id);
+        let activity: ActivityDocument<AwardDetailDocument> = await this.model.findById(id);
         if (!activity) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
 
         let status = ActivityHelper.getActivityStatus(activity.startTime, activity.endTime);
@@ -110,7 +117,7 @@ export default class ActivityService extends BaseService {
         return status === ActivityStatus.Finished;
     }
 
-    async getActivityAwards(id: string): Promise<Array<ActivityAwardDocument>> {
+    async getAwardDetails(id: string): Promise<Array<AwardDetailDocument>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 
         let activity = await this.model.findById(id).populate({
@@ -120,20 +127,5 @@ export default class ActivityService extends BaseService {
         });
         if (!activity) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
         return activity.awards || [];
-    }
-
-    async getActivityAward(id: string, awardId: string): Promise<ActivityAwardDocument> {
-        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
-        if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
-
-        let activity = await this.model.findById(id).populate({
-            path: "awards.award",
-            model: "award",
-            select: "name type"
-        });
-        if (!activity) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
-
-        let activityAwards: Array<ActivityAwardDocument> = activity.awards || [];
-        return activityAwards.filter((activityAward: ActivityAwardDocument) => activityAward.award._id === awardId)[0];
     }
 };

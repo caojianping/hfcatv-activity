@@ -11,7 +11,7 @@ export interface ActivityDocument<T> extends BaseDocument {
 	status: ActivityStatus;                 // 活动状态
 }
 
-export interface ActivityAwardDocument {
+export interface AwardDetailDocument {
 	award: AwardDocument;       // 奖品
 	rank: AwardRank;            // 级别
 	stock: number;              // 库存

@@ -12,7 +12,7 @@ export class LottoService {
 	}
 
 	getPageLottos(conditions: any, page: number, limit: number)
-        : Observable<PaginateResult<LottoDocument<AwardVO>>> {
+        : Observable<PaginateResult<LottoDocument<any, AwardVO>>> {
 		return this.httpService
             .post<PaginateResult<LottoDocument<AwardVO>>>(
                 `${Urls.lotto.list}/${page}/${limit}`, conditions);

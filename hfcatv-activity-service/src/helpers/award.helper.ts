@@ -1,25 +1,25 @@
-import {ActivityAwardDocument, AwardBaseVO, AwardDocument, AwardVO} from "../interfaces";
+import {AwardDetailDocument, AwardBaseVO, AwardDocument, AwardVO} from "../interfaces";
 
 export default class AwardHelper {
-    static convertToAwardVO(activityAward?: ActivityAwardDocument, isBase: boolean = false): AwardBaseVO | AwardVO | null {
-        if (!activityAward) return null;
+    static convertToAwardVO(awardDetail?: AwardDetailDocument, isBase: boolean = false): AwardBaseVO | AwardVO | null {
+        if (!awardDetail) return null;
 
-        let award: AwardDocument = activityAward.award;
+        let award: AwardDocument = awardDetail.award;
         if (isBase) {
             return <AwardBaseVO>{
                 id: award._id,
                 name: award.name,
                 type: award.type,
-                rank: activityAward.rank
+                rank: awardDetail.rank
             };
         } else {
             return <AwardVO>{
                 id: award._id,
                 name: award.name,
                 type: award.type,
-                rank: activityAward.rank,
-                stock: activityAward.stock,
-                weight: activityAward.weight
+                rank: awardDetail.rank,
+                stock: awardDetail.stock,
+                weight: awardDetail.weight
             };
         }
     }

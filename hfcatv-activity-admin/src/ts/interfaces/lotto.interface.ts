@@ -1,7 +1,6 @@
 import {GoodsStatus, RedPacketStatus} from "../common/enums";
 import {BaseDocument} from "./common.interface";
 import {ManagerDocument} from "./manager.interface";
-import {AwardDocument} from "./award.interface";
 import {ActivityDocument} from "./activity.interface";
 import {UserDocument} from "./user.interface";
 
@@ -23,11 +22,11 @@ export interface MemberCardInfo {
     code: string;       // 激活码
 }
 
-export interface LottoDocument<T> extends BaseDocument {
+export interface LottoDocument<T, U> extends BaseDocument {
     _id: any;                                                   // 抽奖编号
     user: UserDocument;                                         // 抽奖用户
-    activity: any;                                              // 抽奖活动
-    award: T;                                                   // 抽奖奖品
+    activity: ActivityDocument<T>;                              // 抽奖活动
+    award: U;                                                   // 抽奖奖品
     attachInfo?: RedPacketInfo | GoodsInfo | MemberCardInfo;    // 附加信息
     handler: ManagerDocument;                                   // 处理人
 }

@@ -1,6 +1,6 @@
 import {Schema, PaginateModel, model} from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
-import {ActivityAwardDocument, ActivityDocument} from "../interfaces";
+import {AwardDetailDocument, ActivityDocument} from "../interfaces";
 
 const ActivitySchema: Schema = new Schema({
     title: {
@@ -76,4 +76,4 @@ ActivitySchema.pre("findOneAndUpdate", function (next) {
     next();
 });
 
-export const ActivityModel: PaginateModel<ActivityDocument<ActivityAwardDocument>> = model("activity", ActivitySchema, "activity");
+export const ActivityModel: PaginateModel<ActivityDocument<AwardDetailDocument>> = model("activity", ActivitySchema, "activity");

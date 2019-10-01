@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
 import {Urls} from "../common/urls";
-import {ActivityDocument, AwardDocument, AwardVO, PaginateResult} from "../interfaces";
+import {ActivityDocument, AwardVO, PaginateResult} from "../interfaces";
 import HttpService from "./http.service";
 
 @Injectable({

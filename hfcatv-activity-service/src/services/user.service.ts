@@ -8,11 +8,6 @@ export default class UserService extends BaseService {
 		super(UserModel);
 	}
 
-	async getUser(id: string): Promise<UserDocument | null> {
-		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
-		return await this.model.findById(id);
-	}
-
 	async getUserByOpenId(openId: string): Promise<UserDocument | null> {
 		if (!openId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信编号]`));
 		return await this.model.findOne({openId: openId});

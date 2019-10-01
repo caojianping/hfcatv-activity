@@ -3,8 +3,8 @@ import {BusinessError, ErrorType} from "../error";
 import {Utils} from "../common/utils";
 import {AwardType, GoodsStatus, RedPacketStatus} from "../common/enums";
 import {
-    AwardDocument, LottoDocument, ActivityAwardDocument,
-    MemberCardInfo, RedPacketInfo, GoodsInfo
+    AwardDocument, LottoDocument, AwardDetailDocument,
+    MemberCardInfo, RedPacketInfo, GoodsInfo, AwardBaseVO, AwardVO
 } from "../interfaces";
 import {LottoModel} from "../models";
 import {LottoHelper, AwardHelper} from "../helpers";
@@ -28,21 +28,22 @@ export default class LottoService extends BaseService {
         super(LottoModel);
     }
 
-    private _buildLotto(lotto: LottoDocument<ActivityAwardDocument>, isBase: boolean = false) {
+    private _buildLotto(lotto: LottoDocument<AwardDetailDocument, AwardDocument>, isBase: boolean = false) {
         let lottoDup = Utils.duplicate<any>(lotto),
-            activityAward = lottoDup.activity.awards
-                .filter((activityAward: ActivityAwardDocument) => String(lottoDup.award) === String(activityAward.award._id))[0];
+            awardDetail = lottoDup.activity.awards
+                .filter((awardDetail: AwardDetailDocument) =>
+                    String(lottoDup.award) === String(awardDetail.award._id))[0];
 
         delete lottoDup.activity.awards;
         lottoDup["activity"] = lottoDup.activity;
-        lottoDup["award"] = AwardHelper.convertToAwardVO(activityAward, isBase);
+        lottoDup["award"] = AwardHelper.convertToAwardVO(awardDetail, isBase);
         return lottoDup;
     }
 
-    private _buildLottos(lottos: Array<LottoDocument<ActivityAwardDocument>>, isBase: boolean = false) {
+    private _buildLottos(lottos: Array<LottoDocument<AwardDetailDocument, AwardDocument>>, isBase: boolean = false) {
         let self = this,
             result: Array<any> = [];
-        lottos.forEach((lotto: LottoDocument<ActivityAwardDocument>) => {
+        lottos.forEach((lotto: LottoDocument<AwardDetailDocument, AwardDocument>) => {
             let data = self._buildLotto(lotto, isBase);
             result.push(data);
         });
@@ -50,18 +51,19 @@ export default class LottoService extends BaseService {
     }
 
 
-    async getLastestLottos(): Promise<Array<any>> {
+    async getLastestLottos(): Promise<Array<LottoDocument<any, AwardBaseVO>>> {
         let options = {
                 sort: {createTime: -1},
                 populate: this.populates,
                 page: 1,
                 limit: 10
             },
-            result = await this.getPage<LottoDocument<ActivityAwardDocument>>({}, options);
+            result: any = await this.getPage<LottoDocument<AwardDetailDocument, AwardDocument>>({}, options);
         return this._buildLottos(result.docs, true);
     }
 
-    async getPageLottosByUserId(userId: string, page: number, limit: number): Promise<PaginateResult<any>> {
+    async getPageLottosByUserId(userId: string, page: number, limit: number)
+        : Promise<PaginateResult<LottoDocument<any, AwardBaseVO>>> {
         if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
 
         let conditions = {user: userId},
@@ -71,12 +73,13 @@ export default class LottoService extends BaseService {
                 page: page,
                 limit: limit
             },
-            result = await this.getPage<LottoDocument<ActivityAwardDocument>>(conditions, options);
+            result: any = await this.getPage<LottoDocument<AwardDetailDocument, AwardDocument>>(conditions, options);
         result["docs"] = this._buildLottos(result.docs, true);
         return result;
     }
 
-    async getPageLottosByConditions(conditions: any, page: number, limit: number): Promise<PaginateResult<any>> {
+    async getPageLottosByConditions(conditions: any, page: number, limit: number)
+        : Promise<PaginateResult<LottoDocument<any, AwardVO>>> {
         if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
 
         let tconditions = {},
@@ -103,8 +106,8 @@ export default class LottoService extends BaseService {
                 page: page,
                 limit: limit
             },
-            result = await this.getPage<LottoDocument<ActivityAwardDocument>>(tconditions, options);
-        result["docs"] = this._buildLottos(result.docs, true);
+            result: any = await this.getPage<LottoDocument<AwardDetailDocument, AwardDocument>>(tconditions, options);
+        result["docs"] = this._buildLottos(result.docs, false);
         return result;
     }
 
@@ -162,23 +165,25 @@ export default class LottoService extends BaseService {
         };
     }
 
-    async receiveLotto(id: string, attachInfo: any): Promise<LottoDocument<ActivityAwardDocument>> {
+    async receiveLotto(id: string, attachInfo: any): Promise<LottoDocument<AwardDetailDocument, AwardBaseVO>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[抽奖编号]`));
-        return await this.model.findByIdAndUpdate(id, {
+        let data = await this.model.findByIdAndUpdate(id, {
             $set: {
                 attachInfo: attachInfo,
                 updateTime: new Date()
             }
         }, {new: true});
+        return this._buildLotto(data, true);
     }
 
-    async setStatus(id: string, status: number): Promise<LottoDocument<ActivityAwardDocument>> {
+    async setStatus(id: string, status: number): Promise<LottoDocument<AwardDetailDocument, AwardVO>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[抽奖编号]`));
-        return await this.model.findByIdAndUpdate(id, {
+        let data = await this.model.findByIdAndUpdate(id, {
             $set: {
                 "attachInfo.status": status,
                 updateTime: new Date()
             }
         }, {new: true});
+        return this._buildLotto(data, false);
     }
 };

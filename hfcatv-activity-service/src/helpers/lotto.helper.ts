@@ -1,4 +1,4 @@
-import {ActivityAwardDocument, AwardDocument} from "../interfaces";
+import {AwardDetailDocument, AwardDocument} from "../interfaces";
 import ActivityService from "../services/activity.service";
 import LottoService from "../services/lotto.service";
 
@@ -6,27 +6,27 @@ export default class LottoHelper {
     static async getRandomAward(activityId: string): Promise<AwardDocument> {
         // 1、获取本次活动的奖品配置
         // 2、过滤已经抽完的奖品数据
-        let activityAwards = await new ActivityService().getActivityAwards(activityId),
+        let awardDetails = await new ActivityService().getAwardDetails(activityId),
             filters: Array<any> = [];
-        for (let i = 0; i < activityAwards.length; i++) {
-            let activityAward: ActivityAwardDocument = activityAwards[i],
-                award = activityAward.award;
+        for (let i = 0; i < awardDetails.length; i++) {
+            let awardDetail: AwardDetailDocument = awardDetails[i],
+                award = awardDetail.award;
             if (!award) continue;
 
             let lottoCount = await new LottoService().getLottoCount(activityId, award._id);
-            if (lottoCount < activityAward.stock) {
-                filters.push(activityAward);
+            if (lottoCount < awardDetail.stock) {
+                filters.push(awardDetail);
             }
         }
 
         // 3、在剩余的奖品配置中进行抽奖算法
         let temp = [];
         for (let j = 0; j < filters.length; j++) {
-            let activityAward: ActivityAwardDocument = activityAwards[j],
-                award = activityAward.award;
+            let awardDetail: AwardDetailDocument = awardDetails[j],
+                award = awardDetail.award;
             if (!award) continue;
 
-            let value = Math.random() * 100 * activityAward.weight;
+            let value = Math.random() * 100 * awardDetail.weight;
             temp.push({item: award, value: value});
         }
         temp.sort(function (m, n) {
