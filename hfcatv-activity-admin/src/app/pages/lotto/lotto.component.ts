@@ -81,18 +81,19 @@ export class LottoComponent implements OnInit {
 
     setStatus(id: string, status: number) {
         const self = this;
-        const {message, lottoService, lottoPageResult} = self;
+        const {message, lottoService} = self;
         lottoService.setStatus(id, status)
             .subscribe({
                 next(data: LottoDocument<any, AwardVO>) {
-                    let attachInfo: any = data.attachInfo || {},
-                        lottos = lottoPageResult.docs;
-                    lottos.forEach((lotto: LottoDocument<any, AwardVO>) => {
-                        if (lotto._id === data._id) {
-                            lotto.attachInfo["status"] = attachInfo.status;
-                        }
-                    });
-                    self.lottoPageResult["docs"] = lottos;
+                    // let attachInfo: any = data.attachInfo || {},
+                    //     lottos = lottoPageResult.docs;
+                    // lottos.forEach((lotto: LottoDocument<any, AwardVO>) => {
+                    //     if (lotto._id === data._id) {
+                    //         lotto.attachInfo["status"] = attachInfo.status;
+                    //     }
+                    // });
+                    // self.lottoPageResult["docs"] = lottos;
+                    self.fetchPageLottos();
                 },
                 error(err: any) {
                     message.error(err);

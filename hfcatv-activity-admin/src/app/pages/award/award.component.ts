@@ -133,18 +133,19 @@ export class AwardComponent implements OnInit {
             awardService.updateAward(<AwardDocument>{_id: award._id, name: award.name, type: award.type})
                 .subscribe({
                     next(data: AwardDocument) {
-                        let awards = awardPageResult.docs;
-                        awards.forEach((award: AwardDocument) => {
-                            if (award._id === data._id) {
-                                for (let key in data) {
-                                    let value = data[key];
-                                    if (key !== "_id") {
-                                        award[key] = value;
-                                    }
-                                }
-                            }
-                        });
-                        self.awardPageResult["docs"] = awards;
+                        // let awards = awardPageResult.docs;
+                        // awards.forEach((award: AwardDocument) => {
+                        //     if (award._id === data._id) {
+                        //         for (let key in data) {
+                        //             let value = data[key];
+                        //             if (key !== "_id") {
+                        //                 award[key] = value;
+                        //             }
+                        //         }
+                        //     }
+                        // });
+                        // self.awardPageResult["docs"] = awards;
+                        self.fetchPageAwards();
                         self.isVisible = false;
                     },
                     error(err: any) {

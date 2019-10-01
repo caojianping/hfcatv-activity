@@ -97,9 +97,10 @@ export class ActivityModalComponent implements OnInit {
             let activity = this.activity;
             if (activity) {
                 let awardForms: Array<any> = [];
-                activity.awards.forEach((award: any) => {
+                for (let i = 0; i < activity.awards.length; i++) {
+                    let award = activity.awards[i];
                     awardForms.push(self._buildAwardFormGroup(award));
-                });
+                }
                 this.activityForm = formBuilder.group({
                     title: new FormControl(activity.title, Validators.required),
                     startTime: new FormControl(new Date(activity.startTime), Validators.required),

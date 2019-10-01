@@ -61,7 +61,7 @@
                     </tr>
                     </thead>
                     <tbody formArrayName="awards">
-                    <tr *ngFor="let activityAward of activityForm.get('awards').controls as FormArray; let i = index;"
+                    <tr *ngFor="let item of activityForm.get('awards')['controls']; let i = index;"
                         [formGroupName]="i">
                         <td>
                             <nz-select formControlName="id" nzSize="small"
