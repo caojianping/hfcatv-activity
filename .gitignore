@@ -86,7 +86,6 @@ typings/
 /hfcatv-activity-service/dist
 /hfcatv-activity-service/logs
 /hfcatv-activity-service/package-lock.json
-/hfcatv-activity-service/static
 
 /hfcatv-activity-admin/.idea
 /hfcatv-activity-admin/node_modules

@@ -46,7 +46,7 @@
                 <nz-dropdown-menu #menu="nzDropdownMenu">
                     <ul nz-menu nzSelectable>
                         <li nz-menu-item>
-                            <span (click)="logout">退出登录</span>
+                            <a href="javascript:void(0)" (click)="logout()">退出登录</a>
                         </li>
                         <li nz-menu-item>
                             <a routerLink="/manager">修改密码</a>

@@ -1,6 +1,7 @@
 import config from "config";
 import jwt from "jsonwebtoken";
 import done from "../common/done";
+import {Constants} from "../common/constants";
 
 const secret = config.get<string>("jwt.secret");
 
@@ -22,7 +23,7 @@ export class ManagerToken {
 
 export class TokenHelper {
     static createToken(data: any): any {
-        const exp = Math.floor(Date.now() / 1000) + 7200;
+        const exp = Math.floor(Date.now() / 1000) + Constants.TOKEN_EXPIRE_TIME;
         return jwt.sign({data: data, exp: exp}, secret);
     }
 

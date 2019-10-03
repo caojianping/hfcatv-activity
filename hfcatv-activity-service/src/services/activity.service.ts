@@ -73,6 +73,13 @@ export default class ActivityService extends BaseService {
         return <PaginateResult<ActivityDocument<AwardVO>>>result;
     }
 
+    async getActivityIdsByTitle(title: string): Promise<Array<string>> {
+        if (!title) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动标题]`));
+
+        let activities = await this.model.find({title: {$regex: title}});
+        return activities.map(item => item._id);
+    }
+
     async addActivity(activity: any): Promise<ActivityDocument<AwardVO> | null> {
         if (!activity) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动]`));
 
@@ -136,5 +143,16 @@ export default class ActivityService extends BaseService {
         });
         if (!activity) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
         return activity.awards || [];
+    }
+
+    async reduceStock(id: string, awardId: string): Promise<boolean> {
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
+        if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
+
+        let activity = await this.model.findOneAndUpdate(
+            {_id: id, "awards.award": awardId},
+            {$inc: {"awards.$.stock": -1}}
+        );
+        return !!activity;
     }
 };

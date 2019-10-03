@@ -31,6 +31,13 @@ export default class UserService extends BaseService {
         return user._id;
     }
 
+    async getUserIdsByNickname(nickname: string): Promise<Array<string>> {
+        if (!nickname) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[昵称]`));
+
+        let users = await this.model.find({nickname: {$regex: nickname}});
+        return users.map(item => item._id);
+    }
+
     async addUser(openId: string, nickname: string): Promise<UserDocument | null> {
         if (!openId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信编号]`));
         if (!nickname) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[昵称]`));

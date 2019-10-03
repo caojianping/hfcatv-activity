@@ -54,7 +54,8 @@ export class LottoComponent implements OnInit {
 
         const {message, lottoService, queryForm, lottoPageResult} = self;
         self.isLoading = true;
-        lottoService.getPageLottos(Utils.filterConditions(queryForm.value), lottoPageResult.page, lottoPageResult.limit)
+        queryForm.value["status"] = Number(queryForm.value.status);
+        lottoService.getPageLottos(Utils.filterConditions(queryForm.value, false), lottoPageResult.page, lottoPageResult.limit)
             .subscribe({
                 next(result: PaginateResult<LottoDocument<any, AwardVO>>) {
                     self.isLoading = false;

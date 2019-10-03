@@ -7,8 +7,24 @@ const awardController = new AwardController();
 const activityController = new ActivityController();
 const lottoController = new LottoController();
 
+
+import koaJwt from "koa-jwt";
+import config from "config";
+
+const secret = config.get<string>("jwt.secret");
+const jwt = koaJwt({secret: secret})
+    .unless({
+        path: [
+            /^\/admin\/account\/login/,
+            /^\/admin\/account\/logout/,
+            /^\/admin\/token\/status/,
+            /^\/admin\/test/
+        ]
+    });
+
 export default (router: Router) => {
     return router
+        .use(jwt)
         .post("/account/login", managerController.login)
         .get("/account/logout", managerController.logout)
         .post("/account/setPassword", managerController.setPassword)
@@ -31,7 +47,6 @@ export default (router: Router) => {
         .post("/lotto/setStatus", lottoController.setStatus)
 
         .get("/test", async (ctx: Context, next: Function) => {
-            console.log("/admin/test state:", ctx.state);
             ctx.success(ctx.state);
         });
 };

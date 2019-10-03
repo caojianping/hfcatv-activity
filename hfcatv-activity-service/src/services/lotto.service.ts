@@ -11,11 +11,14 @@ import {LottoHelper, AwardHelper} from "../helpers";
 
 import BaseService from "./base.service";
 import UserService from "./user.service";
+import AwardService from "./award.service";
 import ActivityService from "./activity.service";
 
 export default class LottoService extends BaseService {
-    private activityService: ActivityService = new ActivityService();
     private userService: UserService = new UserService();
+    private awardService: AwardService = new AwardService();
+    private activityService: ActivityService = new ActivityService();
+
     private populates: Array<any> = [
         {path: "user", model: "user", select: "-_id nickname openId"},
         {
@@ -85,16 +88,22 @@ export default class LottoService extends BaseService {
         let tconditions = {},
             {nickname, title, type, status} = conditions;
         if (nickname) {
-            let userIds = [];// todo: get userIds by nickname
-            tconditions["user"] = {$in: userIds};
+            let userIds = await this.userService.getUserIdsByNickname(nickname);
+            if (userIds.length > 0) {
+                tconditions["user"] = {$in: userIds};
+            }
         }
         if (title) {
-            let activityIds = [];// todo: get activityIds by title
-            tconditions["activity"] = {$in: activityIds};
+            let activityIds = await this.activityService.getActivityIdsByTitle(title);
+            if (activityIds.length > 0) {
+                tconditions["activity"] = {$in: activityIds};
+            }
         }
         if (type) {
-            let awardIds = [];// todo: get awardIds by type
-            tconditions["award"] = {$in: awardIds};
+            let awardIds = await this.awardService.getAwardIdsByType(type);
+            if (awardIds.length > 0) {
+                tconditions["award"] = {$in: awardIds};
+            }
         }
         if (status) {
             tconditions["status"] = {"attachInfo.status": status};
@@ -129,6 +138,7 @@ export default class LottoService extends BaseService {
 
         let attachInfo: RedPacketInfo | GoodsInfo | MemberCardInfo | undefined;
         let award: AwardDocument = await LottoHelper.getRandomAward(activityId),
+            awardId = award._id,
             awardType = award.type;
         if (awardType === AwardType.Nothing) {
             attachInfo = undefined;
@@ -153,16 +163,18 @@ export default class LottoService extends BaseService {
         let lotto = await this.model.create({
             user: userId,
             activity: activityId,
-            award: award._id,
+            award: awardId,
             attachInfo: attachInfo
         });
         if (!lotto) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[抽奖数据创建失败]`));
 
-        // todo: 减少活动的库存
+        let result = await this.activityService.reduceStock(activityId, awardId);
+        if (!result) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[奖品库存处理失败]`));
+
         let user = await this.userService.setLottoCount(userId, -1);
         return {
             lottoCount: user.lottoCount,
-            awardId: award._id
+            awardId: awardId
         };
     }
 

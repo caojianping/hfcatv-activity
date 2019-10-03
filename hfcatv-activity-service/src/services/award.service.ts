@@ -13,6 +13,11 @@ export default class AwardService extends BaseService {
         return await this.model.find({});
     }
 
+    async getAwardIdsByType(type: number): Promise<Array<string>> {
+        let awards = await this.model.find({type: type});
+        return awards.map(item => item._id);
+    }
+
     async addAward(name: string, type: AwardType): Promise<AwardDocument | null> {
         if (!name) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品名称]`));
         if (type < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));

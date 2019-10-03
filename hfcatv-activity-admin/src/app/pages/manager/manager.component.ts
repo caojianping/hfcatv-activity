@@ -43,18 +43,23 @@ export class ManagerComponent implements OnInit {
             return;
         }
 
+        let msgDf = message.loading("密码修改中……");
         managerService.setPassword(password)
             .subscribe({
                 next(result: boolean) {
-                    if (!result) message.error("密码修改失败");
-                    else {
-                        message.success("密码修改成功，请重新登录");
+                    if (!result) {
+                        message.remove(msgDf.messageId);
+                        message.error("密码修改失败");
+                    } else {
                         setTimeout(() => {
+                            message.remove(msgDf.messageId);
+                            message.success("密码修改成功，请重新登录");
                             router.navigateByUrl("/login");
                         }, 1688);
                     }
                 },
                 error(err: any) {
+                    message.remove(msgDf.messageId);
                     message.error(err);
                 }
             });

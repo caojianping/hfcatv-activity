@@ -3,6 +3,8 @@ import {Router} from "@angular/router";
 import {FormBuilder, FormGroup, FormControl, Validators} from "@angular/forms";
 import {NzMessageService} from "ng-zorro-antd";
 import {ManagerService} from "../../../ts/services";
+import TokenHelper from "../../../ts/helpers/token.helper";
+import {Utils} from "../../../ts/common/utils";
 
 @Component({
     selector: "app-login",
@@ -38,18 +40,25 @@ export class LoginComponent implements OnInit {
         }
 
         const {router, message, managerService} = this;
+        let msgDf = message.loading("登录中……");
         managerService.login(formData.username, formData.password)
             .subscribe({
                 next(token: string) {
-                    if (token) {
+                    if (!token) {
+                        message.remove(msgDf.messageId);
+                        message.error("登录失败");
+                    } else {
                         let redirectUrl = managerService.redirectUrl ?
                             router.parseUrl(managerService.redirectUrl) : "/award";
                         setTimeout(() => {
+                            message.remove(msgDf.messageId);
                             router.navigateByUrl(redirectUrl);
+                            TokenHelper.setVirtualPath(Utils.resolveVirtualPath("/login"));
                         }, 1000);
                     }
                 },
                 error(err: any) {
+                    message.remove(msgDf.messageId);
                     message.error(err);
                 }
             });
