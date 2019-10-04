@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
 import {Urls} from "../common/urls";
 import {ActivityDocument, AwardVO, PaginateResult} from "../interfaces";
-import HttpService from "./http.service";
+import {HttpService} from "./http.service";
 
 @Injectable({
 	providedIn: "root"

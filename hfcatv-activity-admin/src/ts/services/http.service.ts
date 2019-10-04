@@ -14,7 +14,7 @@ interface ResponseResult<T> {
 @Injectable({
     providedIn: "root"
 })
-export default class HttpService {
+export class HttpService {
     constructor(private http: HttpClient) {
     }
 

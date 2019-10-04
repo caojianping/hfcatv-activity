@@ -1,4 +1,4 @@
 export const environment = {
 	production: true,
-	apiUrl: "http://www.hfcatv.com"
+    apiUrl: "http://localhost"
 };

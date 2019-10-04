@@ -3,7 +3,7 @@ import {Observable} from "rxjs";
 import {tap} from "rxjs/operators";
 import {Urls} from "../common/urls";
 import {TokenHelper} from "../helpers";
-import HttpService from "./http.service";
+import {HttpService} from "./http.service";
 
 @Injectable({
     providedIn: "root"

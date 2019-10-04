@@ -3,7 +3,7 @@ import {Observable} from "rxjs";
 import {Urls} from "../common/urls";
 import {AwardType} from "../common/enums";
 import {AwardDocument, PaginateResult} from "../interfaces";
-import HttpService from "./http.service";
+import {HttpService} from "./http.service";
 
 @Injectable({
 	providedIn: "root"
