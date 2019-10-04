@@ -4,8 +4,7 @@
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
-        "build": "ng build --prod",
-        "build:opt": "ng build --prod --build-optimizer",
+        "build": "ng build --prod --build-optimizer",
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e"
