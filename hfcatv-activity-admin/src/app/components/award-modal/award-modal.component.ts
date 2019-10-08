@@ -25,6 +25,8 @@ export class AwardModalComponent implements OnInit {
         this.awardForm = this.formBuilder.group({
             name: new FormControl(null, Validators.required),
             type: new FormControl(null, Validators.required),
+            minimum: new FormControl(null),
+            maximum: new FormControl(null)
         });
     }
 
@@ -37,6 +39,8 @@ export class AwardModalComponent implements OnInit {
             this.awardForm = this.formBuilder.group({
                 name: new FormControl(null, Validators.required),
                 type: new FormControl(null, Validators.required),
+                minimum: new FormControl(null),
+                maximum: new FormControl(null)
             });
         } else if (type === OperateType.Edit) {
             let award = this.award;
@@ -44,6 +48,8 @@ export class AwardModalComponent implements OnInit {
                 this.awardForm = this.formBuilder.group({
                     name: new FormControl(award.name, Validators.required),
                     type: new FormControl(award.type, Validators.required),
+                    minimum: new FormControl(award.minimum),
+                    maximum: new FormControl(award.maximum)
                 });
             }
         }

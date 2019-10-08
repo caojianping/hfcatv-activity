@@ -116,9 +116,9 @@ export class AwardComponent implements OnInit {
 
     handleModalOk(award: AwardDocument) {
         const self = this;
-        const {message, awardService, awardPageResult, type} = self;
+        const {message, awardService, type} = self;
         if (type === OperateType.Add) {
-            awardService.addAward(award.name, award.type)
+            awardService.addAward(award.name, award.type, award.minimum, award.maximum)
                 .subscribe({
                     next() {
                         self.fetchPageAwards();
@@ -130,21 +130,9 @@ export class AwardComponent implements OnInit {
                     }
                 });
         } else if (type === OperateType.Edit) {
-            awardService.updateAward(<AwardDocument>{_id: award._id, name: award.name, type: award.type})
+            awardService.updateAward(award)
                 .subscribe({
                     next(data: AwardDocument) {
-                        // let awards = awardPageResult.docs;
-                        // awards.forEach((award: AwardDocument) => {
-                        //     if (award._id === data._id) {
-                        //         for (let key in data) {
-                        //             let value = data[key];
-                        //             if (key !== "_id") {
-                        //                 award[key] = value;
-                        //             }
-                        //         }
-                        //     }
-                        // });
-                        // self.awardPageResult["docs"] = awards;
                         self.fetchPageAwards();
                         self.isVisible = false;
                     },

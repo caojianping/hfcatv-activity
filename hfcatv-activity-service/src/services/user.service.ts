@@ -35,7 +35,7 @@ export default class UserService extends BaseService {
         if (!nickname) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[昵称]`));
 
         let users = await this.model.find({nickname: {$regex: nickname}});
-        return users.map(item => item._id);
+        return users.map((user: UserDocument) => user._id);
     }
 
     async addUser(openId: string, nickname: string): Promise<UserDocument | null> {
@@ -47,7 +47,7 @@ export default class UserService extends BaseService {
         return await this.model.create({openId: openId, nickname: nickname, lottoCount: Constants.DEFAULT_LOTTO_COUNT});
     }
 
-    async updateUser(conditions: any, update: any): Promise<UserDocument> {
+    async updateUser(conditions: any, update: any): Promise<UserDocument | null> {
         if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
         if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
 
@@ -65,7 +65,7 @@ export default class UserService extends BaseService {
         return user.lottoCount;
     }
 
-    async setLottoCount(id: string, delta: number): Promise<UserDocument> {
+    async setLottoCount(id: string, delta: number): Promise<UserDocument | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
         return await this.model.findByIdAndUpdate(id,
             {

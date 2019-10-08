@@ -8,12 +8,14 @@ import {ActivityHelper, AwardHelper} from "../helpers";
 import BaseService from "./base.service";
 
 export default class ActivityService extends BaseService {
+    private populates: Array<any> = [{path: "awards.award", model: "award"}];
+
     constructor() {
         super(ActivityModel);
     }
 
     private _buildActivity(activity: ActivityDocument<AwardDetailDocument>, isBase: boolean = false) {
-        let activityDup = Utils.duplicate<any>(activity);
+        let activityDup: any = Utils.duplicate<any>(activity);
         activityDup["awards"] = activityDup.awards
             .map((awardDetail: AwardDetailDocument) => AwardHelper.convertToAwardVO(awardDetail, isBase));
         return activityDup;
@@ -45,12 +47,13 @@ export default class ActivityService extends BaseService {
         return activity;
     }
 
-    async getActivity(): Promise<ActivityDocument<AwardBaseVO>> {
+
+    async getActivity(): Promise<ActivityDocument<AwardBaseVO> | null> {
         let conditions = {status: {$ne: ActivityStatus.Finished}, isDelete: false},
             projection = "_id title startTime endTime status awards",
             options = {
                 sort: {createTime: -1},
-                populate: [{path: "awards.award", model: "award"}],
+                populate: this.populates,
                 limit: 1
             },
             activities = await this.model.find(conditions, projection, options);
@@ -60,11 +63,10 @@ export default class ActivityService extends BaseService {
         else return this._buildActivity(activity, true);
     }
 
-    async getPageActivitiesByConditions(conditions: any, page: number, limit: number)
-        : Promise<PaginateResult<ActivityDocument<AwardVO>>> {
+    async getPageActivitiesByConditions(conditions: any, page: number, limit: number): Promise<PaginateResult<ActivityDocument<AwardVO>>> {
         let options = {
                 sort: {createTime: -1},
-                populate: [{path: "awards.award", model: "award"}],
+                populate: this.populates,
                 page: page,
                 limit: limit
             },
@@ -77,7 +79,7 @@ export default class ActivityService extends BaseService {
         if (!title) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动标题]`));
 
         let activities = await this.model.find({title: {$regex: title}});
-        return activities.map(item => item._id);
+        return activities.map((activity: any) => activity._id);
     }
 
     async addActivity(activity: any): Promise<ActivityDocument<AwardVO> | null> {
@@ -92,32 +94,35 @@ export default class ActivityService extends BaseService {
         let result = await this.isExist({status: {$ne: ActivityStatus.Finished}, isDelete: false});
         if (result.status) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[存在未结束的活动]`));
         else {
-            let data = await this.model.create(this._handleActivity(activity));
-            if (!data) return null;
-            return this._buildActivity(data, false);
+            let doc = await this.model.create(this._handleActivity(activity));
+            if (!doc) return null;
+            return this._buildActivity(doc, false);
         }
     }
 
-    async updateActivity(id: string, update: any): Promise<ActivityDocument<AwardVO>> {
+    async updateActivity(id: string, update: any): Promise<ActivityDocument<AwardVO> | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
         if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
 
         update["updateTime"] = new Date();
-        let data = await this.model.findByIdAndUpdate(id, {$set: this._handleActivity(update)}, {new: true});
-        if (!data) return null;
-        return this._buildActivity(data, false);
+        let doc = await this.model.findByIdAndUpdate(id,
+            {$set: this._handleActivity(update)}, {new: true}).populate(this.populates);
+        if (!doc) Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动信息]`));
+        return this._buildActivity(doc, false);
     }
 
-    async setStatus(id: string, status: ActivityStatus): Promise<ActivityDocument<AwardVO>> {
+    async setStatus(id: string, status: ActivityStatus): Promise<ActivityDocument<AwardVO> | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
-        let data = await this.model.findByIdAndUpdate(id, {
-            $set: {
-                status: status,
-                updateTime: new Date()
-            }
-        }, {new: true});
-        if (!data) return null;
-        return this._buildActivity(data, false);
+
+        let update = {
+                $set: {
+                    status: status,
+                    updateTime: new Date()
+                }
+            },
+            doc = await this.model.findByIdAndUpdate(id, update, {new: true}).populate(this.populates);
+        if (!doc) Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动信息]`));
+        return this._buildActivity(doc, false);
     }
 
     async isFinished(id: string): Promise<boolean> {
@@ -136,11 +141,7 @@ export default class ActivityService extends BaseService {
     async getAwardDetails(id: string): Promise<Array<AwardDetailDocument>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 
-        let activity = await this.model.findById(id).populate({
-            path: "awards.award",
-            model: "award",
-            select: "name type"
-        });
+        let activity = await this.model.findById(id).populate(this.populates);
         if (!activity) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
         return activity.awards || [];
     }

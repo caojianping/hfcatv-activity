@@ -7,7 +7,8 @@ const awardService = new AwardService();
 
 export default class AwardController {
     async getAwards(ctx: Context, next: Function) {
-        ctx.success(await awardService.getAwards());
+        let awards = await awardService.getAwards();
+        ctx.success(awards);
     }
 
     async getPageAwardsByConditions(ctx: Context, next: Function) {
@@ -25,9 +26,9 @@ export default class AwardController {
     }
 
     async addAward(ctx: Context, next: Function) {
-        let {name, type} = ctx.request.body,
-            award = await awardService.addAward(name, type);
-        if (!award) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[奖品]`);
+        let {name, type, minimum, maximum} = ctx.request.body,
+            award = await awardService.addAward(name, type, minimum, maximum);
+        if (!award) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[奖品信息]`);
         else ctx.success(award);
     }
 

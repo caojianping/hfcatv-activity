@@ -118,7 +118,7 @@ export class ActivityComponent implements OnInit {
 
     handleModalOk(activity: ActivityDocument<AwardVO>) {
         const self = this;
-        const {message, activityService, activityPageResult, type} = self;
+        const {message, activityService, type} = self;
         if (type === OperateType.Add) {
             activityService.addActivity(activity)
                 .subscribe({
@@ -135,18 +135,6 @@ export class ActivityComponent implements OnInit {
             activityService.updateActivity(<ActivityDocument<AwardVO>>activity)
                 .subscribe({
                     next(data: ActivityDocument<AwardVO>) {
-                        // let activities = activityPageResult.docs;
-                        // activities.forEach((activity: ActivityDocument<AwardVO>) => {
-                        //     if (activity._id === data._id) {
-                        //         for (let key in data) {
-                        //             let value = data[key];
-                        //             if (key !== "_id") {
-                        //                 activity[key] = value;
-                        //             }
-                        //         }
-                        //     }
-                        // });
-                        // self.activityPageResult["docs"] = activities;
                         self.fetchPageActivities();
                         self.isVisible = false;
                     },

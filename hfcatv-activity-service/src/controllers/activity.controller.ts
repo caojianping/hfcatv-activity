@@ -6,7 +6,8 @@ const activityService = new ActivityService();
 
 export default class ActivityController {
     async getActivity(ctx: Context, next: Function) {
-        ctx.success(await activityService.getActivity());
+        let activity = await activityService.getActivity();
+        ctx.success(activity);
     }
 
     async getPageActivitiesByConditions(ctx: Context, next: Function) {
@@ -20,7 +21,7 @@ export default class ActivityController {
 
     async addActivity(ctx: Context, next: Function) {
         let activity = await activityService.addActivity(ctx.request.body);
-        if (!activity) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[活动]`);
+        if (!activity) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[活动信息]`);
         else ctx.success(activity);
     }
 

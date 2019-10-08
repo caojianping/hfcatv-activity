@@ -32,6 +32,7 @@
         <tr>
             <th>奖品名称</th>
             <th>奖品类型</th>
+            <th>奖品配置</th>
             <th>创建时间</th>
             <th>更新时间</th>
             <th>
@@ -46,6 +47,8 @@
         <tr *ngFor="let award of awardPageResult.docs">
             <td>{{award.name}}</td>
             <td>{{AwardTypes[award.type]}}</td>
+            <td *ngIf="award.type === 2">红包最小额度：{{award.minimum}}，红包最大额度：{{award.maximum}}</td>
+            <td *ngIf="award.type !== 2"></td>
             <td>{{award.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>{{award.updateTime | date:"yyyy/MM/dd hh:mm"}}</td>
             <td>
