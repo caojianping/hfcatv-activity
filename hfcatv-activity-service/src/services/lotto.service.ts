@@ -238,8 +238,8 @@ export default class LottoService extends BaseService {
 		if (isNaN(money) || money <= 0) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[无效的红包金额]`));
 
 		try {
-			let wxPay = require("../wechat/weixinPay.js");
-			await wxPay.sendRedPacket(openId, money, "合肥有线活动抽奖现场", null, "合肥有线抽奖活动，现金奖红包");
+			// let wxPay = require("../wechat/weixinPay.js");
+			// await wxPay.sendRedPacket(openId, money, "合肥有线活动抽奖现场", null, "合肥有线抽奖活动，现金奖红包");
 
 			let update = {
 					"attachInfo.status": RedPacketStatus.Received,
