@@ -1,0 +1,15 @@
+{
+    "key": "zhongguotankehuolidexingaodu125m",
+    "appid": "wxa2481dc2110ab2c8",
+    "mch_id": "1420484402",
+    "spbill_create_ip": "139.196.28.211",
+    "notify_url": "http://www.qckjlive.com/pay/callback/",
+    "APPSECRET": "de43b9af90ad17a0a0d166efef085fb5",
+    "TOKEN": "ycl",
+    "redpacket": {
+        "mch_id": "1429680802",
+        "wxappid": "wxfe00f3ca54d73f36",
+        "send_name": "经看",
+        "client_ip": "221.130.140.181"
+    }
+}

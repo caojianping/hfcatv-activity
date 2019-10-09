@@ -47,8 +47,9 @@ export class HttpService {
 
 		let code = rerror.code;
 		if (typeof code === "number") {
-			message = "登录状态已经失效，请重新登录";
+			message = rerror.message;
 			if (code === 401) {
+				message = "登录状态已经失效，请重新登录";
 				window.location.href = "#/login";
 				TokenHelper.removeToken();
 			}

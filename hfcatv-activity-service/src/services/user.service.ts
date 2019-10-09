@@ -31,6 +31,14 @@ export default class UserService extends BaseService {
         return user._id;
     }
 
+	async getOpenIdByUserId(id: string): Promise<string> {
+		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信编号]`));
+
+		let user = await this.model.findById(id);
+		if (!user) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[用户]`));
+		return user.openId;
+	}
+
     async getUserIdsByNickname(nickname: string): Promise<Array<string>> {
         if (!nickname) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[昵称]`));
 

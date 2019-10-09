@@ -27,7 +27,9 @@
         "koa-static": "^5.0.0",
         "mongoose": "^5.7.1",
         "mongoose-paginate": "^5.0.3",
-        "uuid": "^3.3.3"
+        "request": "^2.88.0",
+        "uuid": "^3.3.3",
+        "xml2js": "^0.4.22"
     },
     "devDependencies": {
         "@types/bcrypt": "^3.0.0",

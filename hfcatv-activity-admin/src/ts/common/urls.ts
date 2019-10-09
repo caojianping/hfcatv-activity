@@ -27,6 +27,7 @@ export const Urls = {
 	},
 	lotto: {
 		list: `${apiUrl}/admin/lotto/list`,
-		setStatus: `${apiUrl}/admin/lotto/setStatus`
+		setStatus: `${apiUrl}/admin/lotto/setStatus`,
+		sendRedPacket: `${apiUrl}/admin/lotto/sendRedPacket`
 	}
 };
