@@ -10,6 +10,7 @@ export default (router: Router) => {
         .get("/activity/detail", activityController.getActivity)
         .post("/user/detail", userController.getUser)
         .post("/lotto/exec", lottoController.execLotto)
+		.get("/lotto/lastest", lottoController.getLastestLottos)
         .post("/lotto/list/:page/:limit", lottoController.getPageLottosByOpenId)
         .post("/lotto/receive", lottoController.receiveLotto);
 };

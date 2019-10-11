@@ -17,6 +17,11 @@ export default class LottoController {
 		}
 	}
 
+	async getLastestLottos(ctx: Context, next: Function) {
+		let lottos = await lottoService.getLastestLottos();
+		ctx.success(lottos);
+	}
+	
 	async getPageLottosByOpenId(ctx: Context, next: Function) {
 		let params = ctx.params,
 			page = Number(params.page || 1),
