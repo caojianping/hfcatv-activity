@@ -176,7 +176,8 @@ export default class LottoService extends BaseService {
 			user: userId,
 			activity: activityId,
 			award: awardId,
-			attachInfo: attachInfo
+			attachInfo: attachInfo,
+			createTime: new Date()
 		});
 		if (!lotto) return null;
 

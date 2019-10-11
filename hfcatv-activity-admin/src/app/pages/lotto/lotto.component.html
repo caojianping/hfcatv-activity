@@ -99,34 +99,34 @@
             <td [ngStyle]="{color: ['gray','green','red'][lotto.activity.status]}">
                 {{ActivityStatuses[lotto.activity.status]}}
             </td>
-            <td [title]="AwardTypes[lotto.award.type]">{{lotto.award.name}}</td>
-            <td>{{AwardRanks[lotto.award.rank]}}</td>
+            <td [title]="AwardTypes[$any(lotto.award || {}).type]">{{$any(lotto.award || {}).name}}</td>
+            <td>{{AwardRanks[$any(lotto.award || {}).rank]}}</td>
             <td>
-                <span *ngIf="lotto.award.type === 2">
+                <span *ngIf="$any(lotto.award || {}).type === 2">
                     {{RedPacketStatusMap[lotto.attachInfo.status]}}
                 </span>
-                <span *ngIf="lotto.award.type === 3">
+                <span *ngIf="$any(lotto.award || {}).type === 3">
                     {{GoodsStatusMap[lotto.attachInfo.status]}}
                 </span>
             </td>
-            <td *ngIf="lotto.award.type === 2 || lotto.award.type === 3" [ngStyle]="{color: 'red'}">{{lotto.attachInfo.message}}</td>
-            <td>{{lotto.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
-            <td>{{lotto.updateTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td *ngIf="$any(lotto.award || {}).type === 2 || $any(lotto.award || {}).type === 3" [ngStyle]="{color: 'red'}">{{lotto.attachInfo.message}}</td>
+            <td>{{lotto.createTime | date:"yyyy/MM/dd HH:mm"}}</td>
+            <td>{{lotto.updateTime | date:"yyyy/MM/dd HH:mm"}}</td>
             <td>
-                <button class="btn-send" *ngIf="lotto.award.type === 2 && lotto.attachInfo.status === 1"
+                <button class="btn-send" *ngIf="$any(lotto.award || {}).type === 2 && lotto.attachInfo.status === 1"
                         nz-button nzType="primary" nzSize="small"
                         (click)="sendRedPacket(lotto._id)">发放
                 </button>
-                <button class="btn-reject" *ngIf="lotto.award.type === 2 && lotto.attachInfo.status === 1"
+                <button class="btn-reject" *ngIf="$any(lotto.award || {}).type === 2 && lotto.attachInfo.status === 1"
                         nz-button nzType="danger" nzSize="small"
                         (click)="setStatus(lotto._id, -1)">驳回
                 </button>
 
-                <button class="btn-send" *ngIf="lotto.award.type === 3 && lotto.attachInfo.status === 1"
+                <button class="btn-send" *ngIf="$any(lotto.award || {}).type === 3 && lotto.attachInfo.status === 1"
                         nz-button nzType="primary" nzSize="small"
                         (click)="setStatus(lotto._id, 2)">发货
                 </button>
-                <button class="btn-reject" *ngIf="lotto.award.type === 3 && lotto.attachInfo.status === 1"
+                <button class="btn-reject" *ngIf="$any(lotto.award || {}).type === 3 && lotto.attachInfo.status === 1"
                         nz-button nzType="danger" nzSize="small"
                         (click)="setStatus(lotto._id, -1)">驳回
                 </button>

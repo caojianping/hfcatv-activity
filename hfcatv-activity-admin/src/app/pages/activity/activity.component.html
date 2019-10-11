@@ -62,8 +62,8 @@
         <tbody>
         <tr *ngFor="let activity of activityPageResult.docs">
             <td>{{activity.title}}</td>
-            <td>{{activity.createTime | date:"yyyy/MM/dd hh:mm"}}</td>
-            <td>{{activity.endTime | date:"yyyy/MM/dd hh:mm"}}</td>
+            <td>{{activity.createTime | date:"yyyy/MM/dd HH:mm"}}</td>
+            <td>{{activity.endTime | date:"yyyy/MM/dd HH:mm"}}</td>
             <td [ngStyle]="{color: ['gray','green','red'][activity.status]}">
                 {{ActivityStatuses[activity.status]}}
             </td>
