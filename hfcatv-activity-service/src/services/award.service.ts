@@ -20,10 +20,10 @@ export default class AwardService extends BaseService {
 
 	async addAward(name: string, type: AwardType, minimum?: number, maximum?: number): Promise<AwardDocument | null> {
 		if (!name) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品名称]`));
-		if ([0, 1, 2, 3].indexOf(type) < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
+		if ([0, 1, 2, 3, 4].indexOf(type) < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
 
 		if (
-			type === AwardType.RedPacket &&
+			(type === AwardType.RedPacket || type === AwardType.MovieTicket) &&
 			(minimum === undefined || maximum === undefined)
 		) {
 			return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[红包额度范围]`));

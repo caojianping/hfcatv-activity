@@ -47,8 +47,8 @@
         <tr *ngFor="let award of awardPageResult.docs">
             <td>{{award.name}}</td>
             <td>{{AwardTypes[award.type]}}</td>
-            <td *ngIf="award.type === 2">红包最小额度：{{award.minimum}}，红包最大额度：{{award.maximum}}</td>
-            <td *ngIf="award.type !== 2"></td>
+            <td *ngIf="award.type === 2 || award.type === 4">红包最小额度：{{award.minimum}}，红包最大额度：{{award.maximum}}</td>
+            <td *ngIf="award.type !== 2 && award.type !== 4"></td>
             <td>{{award.createTime | date:"yyyy/MM/dd HH:mm"}}</td>
             <td>{{award.updateTime | date:"yyyy/MM/dd HH:mm"}}</td>
             <td>

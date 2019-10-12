@@ -24,7 +24,7 @@
             </nz-form-control>
         </nz-form-item>
 
-        <nz-form-item *ngIf="awardForm.value.type === 2">
+        <nz-form-item *ngIf="awardForm.value.type === 2 || awardForm.value.type === 4">
             <nz-form-label [nzSpan]="6" nzRequired nzFor="minimum">最小红包</nz-form-label>
             <nz-form-control [nzSpan]="14" nzErrorTip="请输入最小红包">
                 <nz-input-number id="minimum" formControlName="minimum"
@@ -33,7 +33,7 @@
             </nz-form-control>
         </nz-form-item>
 
-        <nz-form-item *ngIf="awardForm.value.type === 2">
+        <nz-form-item *ngIf="awardForm.value.type === 2 || awardForm.value.type === 4">
             <nz-form-label [nzSpan]="6" nzRequired nzFor="maximum">最大红包</nz-form-label>
             <nz-form-control [nzSpan]="14" nzErrorTip="请输入最大红包">
                 <nz-input-number id="maximum" formControlName="maximum"

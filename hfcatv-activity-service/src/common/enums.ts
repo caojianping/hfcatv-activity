@@ -3,9 +3,10 @@
  */
 export enum AwardType {
 	Nothing = 0,        // 参与奖
-	MemberCard = 1,     // 会员卡
-	RedPacket = 2,      // 红包
-	Goods = 3           // 物品
+	MemberCard = 1,     // 会员卡，备注：别名“充值卡券”
+	RedPacket = 2,      // 红包，备注：别名“现金红包”
+	Goods = 3,          // 物品，备注：别名“线下办”
+	MovieTicket = 4		// 观影券，备注：类似于固定的现金红包
 }
 
 /**

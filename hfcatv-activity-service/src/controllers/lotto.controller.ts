@@ -26,9 +26,9 @@ export default class LottoController {
 		let params = ctx.params,
 			page = Number(params.page || 1),
 			limit = Number(params.limit || 10),
-			{openId, status} = ctx.request.body,
+			{openId, type} = ctx.request.body,
 			userId = await userService.getUserIdByOpenId(openId),
-			result = await lottoService.getPageLottosByUserId(userId, status || 1, page, limit);
+			result = await lottoService.getPageLottosByUserId(userId, type || "*", page, limit);
 		ctx.success(result);
 	}
 

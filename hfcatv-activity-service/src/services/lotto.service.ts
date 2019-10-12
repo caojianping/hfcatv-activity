@@ -3,22 +3,28 @@ import {BusinessError, ErrorType} from "../error";
 import {Utils} from "../common/utils";
 import {AwardType, GoodsStatus, RedPacketStatus} from "../common/enums";
 import {
-	AwardDocument, LottoDocument, AwardDetailDocument,
-	MemberCardInfo, RedPacketInfo, GoodsInfo, AwardBaseVO, AwardVO
+	AwardBaseVO,
+	AwardDetailDocument,
+	AwardDocument,
+	AwardVO,
+	GoodsInfo,
+	LottoDocument,
+	MemberCardInfo,
+	RedPacketInfo
 } from "../interfaces";
 import {LottoModel} from "../models";
-import {LottoHelper, AwardHelper} from "../helpers";
+import {AwardHelper, LottoHelper} from "../helpers";
 
 import BaseService from "./base.service";
 import UserService from "./user.service";
 import AwardService from "./award.service";
 import ActivityService from "./activity.service";
 
-const StatusConfigs = {
-	1: [0],			// 未领取
-	2: [1, 2, 3],	// 已领取：包含了待发放、已领取 或者 待发货、发货中、已收货状等状态
-	3: [-3, -2, -1] // 已过期：包含了已驳回、已过期、处理失败三种状态的信息
-};
+// const StatusConfigs = {
+// 	1: [0],			// 未领取
+// 	2: [1, 2, 3],	// 已领取：包含了待发放、已领取 或者 待发货、发货中、已收货状等状态
+// 	3: [-3, -2, -1] // 已过期：包含了已驳回、已过期、处理失败三种状态的信息
+// };
 
 export default class LottoService extends BaseService {
 	private userService: UserService = new UserService();
@@ -71,16 +77,24 @@ export default class LottoService extends BaseService {
 		return this._buildLottos(result.docs, true);
 	}
 
-	async getPageLottosByUserId(userId: string, status: number, page: number, limit: number)
+	async getPageLottosByUserId(userId: string, type: number | string, page: number, limit: number)
 		: Promise<PaginateResult<LottoDocument<any, AwardBaseVO>>> {
 		if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
-		if ([1, 2, 3].indexOf(status) < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[中奖状态]`));
 
-		let conditions = {
-				user: userId,
-				"attachInfo.status": {$in: StatusConfigs[status]}
-			},
-			options = {
+		let conditions = {user: userId};
+		if (typeof type === "string" && type !== "*") {
+			if (typeof type === "string" && type !== "*") return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
+		} else if (typeof type === "number") {
+			if ([1, 2, 3, 4].indexOf(type) < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
+			else {
+				let awardIds = await this.awardService.getAwardIdsByType(type);
+				if (awardIds.length > 0) {
+					conditions["award"] = {$in: awardIds};
+				}
+			}
+		}
+
+		let options = {
 				sort: {createTime: -1},
 				populate: this.populates,
 				page: page,
@@ -152,7 +166,7 @@ export default class LottoService extends BaseService {
 			awardType = award.type;
 		if (awardType === AwardType.Nothing) {
 			attachInfo = undefined;
-		} else if (awardType === AwardType.RedPacket) {
+		} else if (awardType === AwardType.RedPacket || awardType === AwardType.MovieTicket) {
 			let minimum = award.minimum,
 				maximum = award.maximum;
 			attachInfo = <RedPacketInfo>{
