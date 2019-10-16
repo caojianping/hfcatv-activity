@@ -18,14 +18,21 @@ const LottoSchema: Schema = new Schema({
 		required: true,
 		ref: "award"
 	},
+	status: {
+		type: Schema.Types.Number,
+		required: false
+	},
+	amount: {
+		type: Schema.Types.Number,
+		required: false
+	},
+	message: {
+		type: Schema.Types.String,
+		required: false
+	},
 	attachInfo: {
 		type: Schema.Types.Mixed,
 		required: false
-	},
-	handler: {
-		type: Schema.Types.ObjectId,
-		required: false,
-		ref: "manager"
 	},
 	createTime: {
 		type: Schema.Types.Date,

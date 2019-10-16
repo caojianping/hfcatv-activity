@@ -5,5 +5,5 @@ import koaError from "./error-middleware";
 export {
 	ErrorType,
 	BusinessError,
-    koaError
+	koaError
 };

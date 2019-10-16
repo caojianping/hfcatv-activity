@@ -18,16 +18,16 @@ export class ActivityService {
                 `${Urls.activity.list}/${page}/${limit}`, conditions);
 	}
 
-	addActivity(data: ActivityDocument<AwardVO>)
+	addActivity(activity: ActivityDocument<AwardVO>)
         : Observable<ActivityDocument<AwardVO>> {
 		return this.httpService
-            .post<ActivityDocument<AwardVO>>(Urls.activity.add, data);
+            .post<ActivityDocument<AwardVO>>(Urls.activity.add, activity);
 	}
 
-	updateActivity(data: ActivityDocument<AwardVO>)
+	updateActivity(activity: ActivityDocument<AwardVO>)
         : Observable<ActivityDocument<AwardVO>> {
 		return this.httpService
-            .post<ActivityDocument<AwardVO>>(Urls.activity.update, data);
+            .post<ActivityDocument<AwardVO>>(Urls.activity.update, activity);
 	}
 
 	removeActivity(id: string): Observable<boolean> {

@@ -35,6 +35,18 @@ const ErrorType = {
 		code: 805,
 		message: "数据删除失败"
 	},
+	LottoNoneCount: {
+		code: 900,
+		message: "您的抽奖机会已经用完"
+	},
+	LottoExpired: {
+		code: 901,
+		message: "中奖记录已过期"
+	},
+	LottoForbidReceive: {
+		code: 902,
+		message: "中奖状态禁止领取操作"
+	},
 	Others: {
 		code: 999,
 		message: "其它异常"

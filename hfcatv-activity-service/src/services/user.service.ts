@@ -79,7 +79,7 @@ export default class UserService extends BaseService {
 		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
 
 		let user = await this.model.findById(id);
-		if (!user) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[用户信息]`));
+		if (!user) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[用户]`));
 		return user.lottoCount;
 	}
 

@@ -10,7 +10,7 @@ export default class LottoController {
 		let {openId, activityId} = ctx.request.body,
 			userId = await userService.getUserIdByOpenId(openId),
 			data = await lottoService.addLotto(userId, activityId);
-		if (!data) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[中奖信息]`);
+		if (!data) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[中奖]`);
 		else {
 			data["lottos"] = await lottoService.getLastestLottos();
 			ctx.success(data);
@@ -21,7 +21,7 @@ export default class LottoController {
 		let lottos = await lottoService.getLastestLottos();
 		ctx.success(lottos);
 	}
-	
+
 	async getPageLottosByOpenId(ctx: Context, next: Function) {
 		let params = ctx.params,
 			page = Number(params.page || 1),

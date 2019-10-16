@@ -2,6 +2,7 @@ import {Context} from "koa";
 import {ErrorType} from "../error";
 import {AwardDocument} from "../interfaces";
 import {AwardService} from "../services";
+import {AwardType} from "../common/enums";
 
 const awardService = new AwardService();
 
@@ -9,13 +10,13 @@ export default class AwardController {
 	async getAwardTypes(ctx: Context, next: Function) {
 		ctx.success([
 			{type: "*", value: "全部类型"},
-			{type: 1, value: "充值卡券"},
-			{type: 2, value: "现金红包"},
-			{type: 3, value: "线下办"},
-			{type: 4, value: "观影券"}
+			{type: AwardType.Card, value: "充值卡券"},
+			{type: AwardType.RedPacket, value: "现金红包"},
+			{type: AwardType.Goods, value: "线下办"},
+			{type: AwardType.MovieTicket, value: "观影券"}
 		]);
 	}
-	
+
 	async getAwards(ctx: Context, next: Function) {
 		let awards = await awardService.getAwards();
 		ctx.success(awards);
@@ -36,9 +37,8 @@ export default class AwardController {
 	}
 
 	async addAward(ctx: Context, next: Function) {
-		let {name, type, minimum, maximum} = ctx.request.body,
-			award = await awardService.addAward(name, type, minimum, maximum);
-		if (!award) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[奖品信息]`);
+		let award = await awardService.addAward(ctx.request.body);
+		if (!award) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[奖品]`);
 		else ctx.success(award);
 	}
 

@@ -21,7 +21,7 @@ export default class ActivityController {
 
     async addActivity(ctx: Context, next: Function) {
         let activity = await activityService.addActivity(ctx.request.body);
-        if (!activity) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[活动信息]`);
+        if (!activity) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[活动]`);
         else ctx.success(activity);
     }
 

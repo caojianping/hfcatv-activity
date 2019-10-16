@@ -1,5 +1,6 @@
 import {Schema, PaginateModel, model} from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
+import {AwardTypeKeys} from "../common/keys";
 import {AwardDocument} from "../interfaces";
 
 const AwardSchema: Schema = new Schema({
@@ -10,22 +11,31 @@ const AwardSchema: Schema = new Schema({
 	type: {
 		type: Schema.Types.Number,
 		required: true,
-		enum: [0, 1, 2, 3, 4],// 参与奖、会员卡、红包、物品、观影券等
+		enum: AwardTypeKeys,
 		validate: [
 			function (value: number) {
-				return [0, 1, 2, 3, 4].indexOf(value) > -1;
+				return AwardTypeKeys.indexOf(value) > -1;
 			},
 			"无效的奖品类型"
 		]
 	},
-	minimum: {
+	title: {
+		type: Schema.Types.String,
+		required: false
+	},
+	desc: {
+		type: Schema.Types.String,
+		required: false
+	},
+	value: {
 		type: Schema.Types.Number,
 		required: false
 	},
-	maximum: {
-		type: Schema.Types.Number,
+	expire: {
+		type: Schema.Types.Mixed,
 		required: false
 	},
+	ranges: [Schema.Types.Number],
 	createTime: {
 		type: Schema.Types.Date,
 		required: true,

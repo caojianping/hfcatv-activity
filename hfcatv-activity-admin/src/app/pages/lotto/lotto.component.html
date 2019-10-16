@@ -41,6 +41,12 @@
                 <nz-form-item class="mb0" nzFlex>
                     <nz-form-label nzFor="status" title="奖品状态">状态</nz-form-label>
                     <nz-form-control>
+                        <nz-select *ngIf="queryForm.value.type === 1" formControlName="status"
+                                   nzAllowClear nzPlaceHolder="请选择状态">
+                            <nz-option *ngFor="let item of CardStatusMap | keyvalue"
+                                       [nzLabel]="item.value" [nzValue]="item.key"></nz-option>
+                        </nz-select>
+
                         <nz-select *ngIf="queryForm.value.type === 2" formControlName="status"
                                    nzAllowClear nzPlaceHolder="请选择状态">
                             <nz-option *ngFor="let item of RedPacketStatusMap | keyvalue"
@@ -50,6 +56,12 @@
                         <nz-select *ngIf="queryForm.value.type === 3" formControlName="status"
                                    nzAllowClear nzPlaceHolder="请选择状态">
                             <nz-option *ngFor="let item of GoodsStatusMap | keyvalue"
+                                       [nzLabel]="item.value" [nzValue]="item.key"></nz-option>
+                        </nz-select>
+
+                        <nz-select *ngIf="queryForm.value.type === 4" formControlName="status"
+                                   nzAllowClear nzPlaceHolder="请选择状态">
+                            <nz-option *ngFor="let item of MovieTicketStatusMap | keyvalue"
                                        [nzLabel]="item.value" [nzValue]="item.key"></nz-option>
                         </nz-select>
 
@@ -81,12 +93,14 @@
         <thead>
         <tr>
             <th>昵称</th>
-            <th>活动标题</th>
+            <th>活动名称</th>
             <th>活动状态</th>
             <th>奖品名称</th>
             <th>奖品等级</th>
+            <th>金额/价值</th>
             <th>状态</th>
             <th>消息</th>
+            <th>附加信息</th>
             <th>创建时间</th>
             <th>更新时间</th>
             <th>操作</th>
@@ -101,34 +115,48 @@
             </td>
             <td [title]="AwardTypes[$any(lotto.award || {}).type]">{{$any(lotto.award || {}).name}}</td>
             <td>{{AwardRanks[$any(lotto.award || {}).rank]}}</td>
+            <td>{{lotto.amount}}</td>
             <td>
+                <span *ngIf="$any(lotto.award || {}).type === 1">
+                    {{CardStatusMap[lotto.status]}}
+                </span>
                 <span *ngIf="$any(lotto.award || {}).type === 2">
-                    {{RedPacketStatusMap[lotto.attachInfo.status]}}
+                    {{RedPacketStatusMap[lotto.status]}}
                 </span>
                 <span *ngIf="$any(lotto.award || {}).type === 3">
-                    {{GoodsStatusMap[lotto.attachInfo.status]}}
+                    {{GoodsStatusMap[lotto.status]}}
+                </span>
+                <span *ngIf="$any(lotto.award || {}).type === 4">
+                    {{MovieTicketStatusMap[lotto.status]}}
                 </span>
             </td>
-            <td *ngIf="$any(lotto.award || {}).type === 2 || $any(lotto.award || {}).type === 3" [ngStyle]="{color: 'red'}">{{lotto.attachInfo.message}}</td>
+            <td [ngStyle]="{color: 'red'}">{{lotto.message}}</td>
+            <td>
+                <span *ngIf="$any(lotto.award || {}).type === 1">{{lotto.attachInfo.code}}</span>
+                <ul *ngIf="$any(lotto.award || {}).type === 3">
+                    <li>姓名：{{lotto.attachInfo.name}}</li>
+                    <li>地址：{{lotto.attachInfo.address}}</li>
+                    <li>手机号：{{lotto.attachInfo.mobile}}</li>
+                </ul>
+            </td>
             <td>{{lotto.createTime | date:"yyyy/MM/dd HH:mm"}}</td>
             <td>{{lotto.updateTime | date:"yyyy/MM/dd HH:mm"}}</td>
             <td>
-                <button class="btn-send" *ngIf="$any(lotto.award || {}).type === 2 && lotto.attachInfo.status === 1"
-                        nz-button nzType="primary" nzSize="small"
-                        (click)="sendRedPacket(lotto._id)">发放
-                </button>
-                <button class="btn-reject" *ngIf="$any(lotto.award || {}).type === 2 && lotto.attachInfo.status === 1"
+                <button class="btn-reject" *ngIf="
+                (($any(lotto.award || {}).type === 1 || $any(lotto.award || {}).type === 4) && lotto.status === 0) ||
+                (($any(lotto.award || {}).type === 2 || $any(lotto.award || {}).type === 3) && lotto.status === 1)"
                         nz-button nzType="danger" nzSize="small"
                         (click)="setStatus(lotto._id, -1)">驳回
                 </button>
 
-                <button class="btn-send" *ngIf="$any(lotto.award || {}).type === 3 && lotto.attachInfo.status === 1"
+                <button class="btn-send" *ngIf="$any(lotto.award || {}).type === 2 && lotto.status === 1"
+                        nz-button nzType="primary" nzSize="small"
+                        (click)="sendRedPacket(lotto._id)">发放
+                </button>
+
+                <button class="btn-send" *ngIf="$any(lotto.award || {}).type === 3 && lotto.status === 1"
                         nz-button nzType="primary" nzSize="small"
                         (click)="setStatus(lotto._id, 2)">发货
-                </button>
-                <button class="btn-reject" *ngIf="$any(lotto.award || {}).type === 3 && lotto.attachInfo.status === 1"
-                        nz-button nzType="danger" nzSize="small"
-                        (click)="setStatus(lotto._id, -1)">驳回
                 </button>
             </td>
         </tr>

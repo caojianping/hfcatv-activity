@@ -2,7 +2,10 @@ import {Component, OnInit} from "@angular/core";
 import {FormBuilder, FormControl} from "@angular/forms";
 import {NzMessageService, NzModalService} from "ng-zorro-antd";
 import {Utils} from "../../../ts/common/utils";
-import {ActivityStatuses, AwardRanks, AwardTypes, RedPacketStatusMap, GoodsStatusMap} from "../../../ts/common/names";
+import {
+	ActivityStatuses, AwardRanks, AwardTypes,
+	CardStatusMap, RedPacketStatusMap, GoodsStatusMap, MovieTicketStatusMap
+} from "../../../ts/common/names";
 import {AwardVO, LottoDocument, PaginateResult} from "../../../ts/interfaces";
 import {LottoService} from "../../../ts/services";
 
@@ -15,8 +18,11 @@ export class LottoComponent implements OnInit {
 	AwardTypes: Array<string> = AwardTypes;
 	AwardRanks: Array<string> = AwardRanks;
 	ActivityStatuses: Array<string> = ActivityStatuses;
+
+	CardStatusMap: any = CardStatusMap;
 	RedPacketStatusMap: any = RedPacketStatusMap;
 	GoodsStatusMap: any = GoodsStatusMap;
+	MovieTicketStatusMap: any = MovieTicketStatusMap;
 
 	queryForm: any;
 

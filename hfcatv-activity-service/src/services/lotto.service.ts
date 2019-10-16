@@ -1,16 +1,11 @@
 import {PaginateResult} from "mongoose";
+import uuidv1 from "uuid/v1";
 import {BusinessError, ErrorType} from "../error";
 import {Utils} from "../common/utils";
-import {AwardType, GoodsStatus, RedPacketStatus} from "../common/enums";
+import {AwardType, CardStatus, RedPacketStatus, GoodsStatus, MovieTicketStatus} from "../common/enums";
 import {
-	AwardBaseVO,
-	AwardDetailDocument,
-	AwardDocument,
-	AwardVO,
-	GoodsInfo,
-	LottoDocument,
-	MemberCardInfo,
-	RedPacketInfo
+	AwardDocument, AwardDetailDocument, AwardBaseVO, AwardVO,
+	LottoDocument, CardInfo, GoodsInfo
 } from "../interfaces";
 import {LottoModel} from "../models";
 import {AwardHelper, LottoHelper} from "../helpers";
@@ -19,12 +14,7 @@ import BaseService from "./base.service";
 import UserService from "./user.service";
 import AwardService from "./award.service";
 import ActivityService from "./activity.service";
-
-// const StatusConfigs = {
-// 	1: [0],			// 未领取
-// 	2: [1, 2, 3],	// 已领取：包含了待发放、已领取 或者 待发货、发货中、已收货状等状态
-// 	3: [-3, -2, -1] // 已过期：包含了已驳回、已过期、处理失败三种状态的信息
-// };
+import {AwardTypeWithoutNothingKeys} from "../common/keys";
 
 export default class LottoService extends BaseService {
 	private userService: UserService = new UserService();
@@ -77,15 +67,14 @@ export default class LottoService extends BaseService {
 		return this._buildLottos(result.docs, true);
 	}
 
-	async getPageLottosByUserId(userId: string, type: number | string, page: number, limit: number)
-		: Promise<PaginateResult<LottoDocument<any, AwardBaseVO>>> {
+	async getPageLottosByUserId(userId: string, type: number | string, page: number, limit: number): Promise<PaginateResult<LottoDocument<any, AwardBaseVO>>> {
 		if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
 
 		let conditions = {user: userId};
-		if (typeof type === "string" && type !== "*") {
-			if (typeof type === "string" && type !== "*") return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
+		if (typeof type === "string") {
+			if (type !== "*") return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
 		} else if (typeof type === "number") {
-			if ([1, 2, 3, 4].indexOf(type) < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
+			if (AwardTypeWithoutNothingKeys.indexOf(type) < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
 			else {
 				let awardIds = await this.awardService.getAwardIdsByType(type);
 				if (awardIds.length > 0) {
@@ -105,8 +94,7 @@ export default class LottoService extends BaseService {
 		return result;
 	}
 
-	async getPageLottosByConditions(conditions: any, page: number, limit: number)
-		: Promise<PaginateResult<LottoDocument<any, AwardVO>>> {
+	async getPageLottosByConditions(conditions: any, page: number, limit: number): Promise<PaginateResult<LottoDocument<any, AwardVO>>> {
 		if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
 
 		let tconditions = {},
@@ -130,7 +118,7 @@ export default class LottoService extends BaseService {
 			}
 		}
 		if (status) {
-			tconditions["status"] = {"attachInfo.status": status};
+			tconditions["status"] = status;
 		}
 
 		let options = {
@@ -144,12 +132,6 @@ export default class LottoService extends BaseService {
 		return result;
 	}
 
-	async getLottoCount(activityId: string, awardId: string): Promise<number> {
-		if (!activityId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
-		if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
-		return await this.model.count({activity: activityId, award: awardId});
-	}
-
 	async addLotto(userId: string, activityId: string): Promise<any> {
 		if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
 		if (!activityId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
@@ -158,38 +140,45 @@ export default class LottoService extends BaseService {
 		if (isFinished) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[活动已经结束]`));
 
 		let lottoCount = await this.userService.getLottoCount(userId);
-		if (lottoCount <= 0) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[您的抽奖机会已经用完啦]`));
+		if (lottoCount <= 0) return Promise.reject(new BusinessError(ErrorType.LottoNoneCount.code, ErrorType.LottoNoneCount.message));
 
-		let attachInfo: RedPacketInfo | GoodsInfo | MemberCardInfo | undefined;
+		let status = undefined,
+			amount = undefined,
+			attachInfo: CardInfo | GoodsInfo | undefined = undefined;
+
 		let award: AwardDocument = await LottoHelper.getRandomAward(activityId),
 			awardId = award._id,
 			awardType = award.type;
-		if (awardType === AwardType.Nothing) {
-			attachInfo = undefined;
-		} else if (awardType === AwardType.RedPacket || awardType === AwardType.MovieTicket) {
-			let minimum = award.minimum,
-				maximum = award.maximum;
-			attachInfo = <RedPacketInfo>{
-				amount: LottoHelper.getRandomRedPacket(minimum, maximum),
-				status: RedPacketStatus.UnReceived,
-				message: ""
-			};
+		console.log("getRandomAward:", award);
+		if (awardType === AwardType.Card) {
+			status = CardStatus.Default;
+			amount = award.value;
+			attachInfo = <CardInfo>{code: uuidv1()};
+		} else if (awardType === AwardType.RedPacket) {
+			let ranges = award.ranges;
+			if (!ranges || ranges.length !== 2) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:红包配置`));
+
+			status = RedPacketStatus.Default;
+			amount = LottoHelper.getRandomRedPacket(ranges[0], ranges[1]);
 		} else if (awardType === AwardType.Goods) {
+			status = GoodsStatus.Default;
+			amount = award.value;
 			attachInfo = <GoodsInfo>{
 				name: "",
 				mobile: "",
-				address: "",
-				status: GoodsStatus.UnReceived,
-				message: ""
+				address: ""
 			};
-		} else if (awardType === AwardType.MemberCard) {
-			attachInfo = <MemberCardInfo>{code: "123456789"};
+		} else if (awardType === AwardType.MovieTicket) {
+			status = MovieTicketStatus.Default;
+			amount = award.value;
 		}
 
 		let lotto = await this.model.create({
 			user: userId,
 			activity: activityId,
 			award: awardId,
+			status: status,
+			amount: amount,
 			attachInfo: attachInfo,
 			createTime: new Date()
 		});
@@ -203,32 +192,72 @@ export default class LottoService extends BaseService {
 	}
 
 	async receiveLotto(id: string, attachInfo: any): Promise<LottoDocument<AwardDetailDocument, AwardBaseVO>> {
-		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[抽奖编号]`));
-		if (!attachInfo) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[附加信息]`));
+		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[中奖编号]`));
 
-		let lotto = await this.model.findById(id);
-		if (!lotto) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖信息]`));
+		let lotto = await this.model.findById(id).populate(this.populates);
+		if (!lotto) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖]`));
 
-		let lottoAttachInfo = lotto.attachInfo;
-		for (let key in lottoAttachInfo) {
-			if (attachInfo.hasOwnProperty(key)) {
-				lottoAttachInfo[key] = attachInfo[key];
+		let award = lotto.award;
+		if (!award) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖奖品]`));
+
+		let update = {updateTime: new Date()},
+			{status, createTime} = lotto,
+			{type, expire} = award;
+		if (type === AwardType.Card) {
+			return Promise.reject(new BusinessError(ErrorType.LottoForbidReceive.code, `${ErrorType.LottoForbidReceive.message}:[充值卡券]`));
+		} else if (type === AwardType.RedPacket) {
+			if (status !== RedPacketStatus.Default)
+				return Promise.reject(new BusinessError(ErrorType.LottoForbidReceive.code, `${ErrorType.LottoForbidReceive.message}:[现金红包]`));
+
+			let result = await this.setExpired(id, createTime, expire);
+			if (result) return Promise.reject(new BusinessError(ErrorType.LottoExpired.code, ErrorType.LottoExpired.message));
+
+			update["status"] = RedPacketStatus.UnSended;
+		} else if (type === AwardType.Goods) {
+			if (!attachInfo)
+				return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[附加信息]`));
+
+			if (status !== GoodsStatus.Default)
+				return Promise.reject(new BusinessError(ErrorType.LottoForbidReceive.code, `${ErrorType.LottoForbidReceive.message}:[实物礼品]`));
+
+			let result = await this.setExpired(id, createTime, expire);
+			if (result) return Promise.reject(new BusinessError(ErrorType.LottoExpired.code, ErrorType.LottoExpired.message));
+
+			update["status"] = GoodsStatus.UnSended;
+			let updateAttachInfo = lotto.attachInfo;
+			for (let key in updateAttachInfo) {
+				if (attachInfo.hasOwnProperty(key)) {
+					updateAttachInfo[key] = attachInfo[key];
+				}
 			}
+			update["attachInfo"] = updateAttachInfo;
+		} else if (type === AwardType.MovieTicket) {
+			return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[待接入点播记录接口]`));
+			// todo: 调用合肥有线点播记录接口，如果有消费记录，则直接发送红包；如果没有，则提示先去点播，再进行使用；
+			// update["status"] = MovieTicketStatus.Used;
+		} else {
+			return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[未中奖，无需领取]`));
 		}
 
-		let update = {
-				$set: {
-					attachInfo: lottoAttachInfo,
-					updateTime: new Date()
-				}
-			},
-			doc = await this.model.findByIdAndUpdate(id, update, {new: true}).populate(this.populates);
-		if (!doc) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖信息]`));
+		let doc = await this.model.findByIdAndUpdate(id, {$set: update}, {new: true}).populate(this.populates);
+		if (!doc) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖]`));
 		return this._buildLotto(doc, true);
 	}
 
+	async setExpired(id: string, createTime: Date, expire?: number | Array<Date>): Promise<boolean> {
+		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[中奖编号]`));
+
+		let result = LottoHelper.isExpired(createTime, expire);
+		if (result) {
+			let update = {status: -2, updateTime: new Date()},
+				doc = await this.model.findByIdAndUpdate(id, {$set: update}, {new: true}).populate(this.populates);
+			if (!doc) return Promise.reject(new BusinessError(ErrorType.DataUpdateFailed.code, `${ErrorType.DataUpdateFailed.message}:[中奖状态]`));
+		}
+		return result;
+	}
+
 	async setStatus(id: string, status: number): Promise<LottoDocument<AwardDetailDocument, AwardVO>> {
-		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[抽奖编号]`));
+		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[中奖编号]`));
 
 		let update = {
 				$set: {
@@ -237,7 +266,7 @@ export default class LottoService extends BaseService {
 				}
 			},
 			doc = await this.model.findByIdAndUpdate(id, update, {new: true}).populate(this.populates);
-		if (!doc) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖信息]`));
+		if (!doc) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖]`));
 		return this._buildLotto(doc, false);
 	}
 

@@ -32,7 +32,11 @@
         <tr>
             <th>奖品名称</th>
             <th>奖品类型</th>
-            <th>奖品配置</th>
+            <th>奖品标题</th>
+            <th>奖品描述</th>
+            <th>奖品价值</th>
+            <th>有效期</th>
+            <th>红包范围</th>
             <th>创建时间</th>
             <th>更新时间</th>
             <th>
@@ -47,8 +51,19 @@
         <tr *ngFor="let award of awardPageResult.docs">
             <td>{{award.name}}</td>
             <td>{{AwardTypes[award.type]}}</td>
-            <td *ngIf="award.type === 2 || award.type === 4">红包最小额度：{{award.minimum}}，红包最大额度：{{award.maximum}}</td>
-            <td *ngIf="award.type !== 2 && award.type !== 4"></td>
+            <td>{{award.title}}</td>
+            <td>{{award.desc}}</td>
+            <td>{{award.value ? award.value + '元' : ''}}</td>
+            <td>
+                <span *ngIf="Utils.isArray(award.expire)">{{award.expire[0] | date:"yyyy/MM/dd"}}
+                    至{{award.expire[1] | date:"yyyy/MM/dd"}}</span>
+                <span *ngIf="Utils.isNumber(award.expire)">{{award.expire}}天</span>
+            </td>
+            <td *ngIf="award.type === 2">
+                <p>最小红包额度：{{award.ranges[0]}}</p>
+                <p>最大红包额度：{{award.ranges[1]}}</p>
+            </td>
+            <td *ngIf="award.type !== 2"></td>
             <td>{{award.createTime | date:"yyyy/MM/dd HH:mm"}}</td>
             <td>{{award.updateTime | date:"yyyy/MM/dd HH:mm"}}</td>
             <td>

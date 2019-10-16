@@ -8,6 +8,16 @@ function isEmptyObject(obj: any): boolean {
 	return !obj || JSON.stringify(obj) === "{}";
 }
 
+// 判断是不是数组
+function isArray(arrs: any): boolean {
+	return Array.isArray(arrs);
+}
+
+// 判断是不是数字
+function isNumber(num: any): boolean {
+	return typeof num === "number";
+}
+
 
 // 日期替换函数，返回yyyy/MM/dd hh:mm格式日期
 function dateReplace(date: string): string {
@@ -273,6 +283,8 @@ function filterUpdate(update: any, hasId: boolean = true): any {
 export const Utils = {
 	isDateString,           // 判断是不是日期字符串
 	isEmptyObject,          // 判断是不是空对象
+	isArray,				// 判断是不是数组
+	isNumber,				// 判断是不是数字
 
 	dateReplace,            // 日期替换函数，返回yyyy/MM/dd hh:mm格式日期
 	dateConvert,            // 日期转换函数

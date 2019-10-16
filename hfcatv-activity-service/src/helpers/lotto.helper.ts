@@ -1,8 +1,7 @@
-import {AwardDetailDocument, AwardDocument} from "../interfaces";
+import {Utils} from "../common/utils";
+import {BusinessError, ErrorType} from "../error";
+import {AwardDocument, AwardDetailDocument} from "../interfaces";
 import ActivityService from "../services/activity.service";
-import LottoService from "../services/lotto.service";
-import BusinessError from "../error/business-error";
-import ErrorType from "../error/error-type";
 
 export default class LottoHelper {
 	static async getRandomAward(activityId: string): Promise<AwardDocument> {
@@ -15,10 +14,6 @@ export default class LottoHelper {
 				award: AwardDocument = awardDetail.award;
 			if (!award) continue;
 
-			// let lottoCount = await new LottoService().getLottoCount(activityId, award._id);
-			// if (lottoCount < awardDetail.stock) {
-			//     filterDetails.push(awardDetail);
-			// }
 			if (awardDetail.stock > 0) {
 				filterDetails.push(awardDetail);
 			}
@@ -44,5 +39,20 @@ export default class LottoHelper {
 	static getRandomRedPacket(min: number, max: number): number {
 		let num = Math.random() * (max - min) + min;
 		return parseFloat(num.toFixed(2));
+	}
+
+	static isExpired(createTime: Date, expire?: number | Array<Date>): boolean {
+		if (!expire) return false;
+
+		const today = new Date().getTime();
+		if (typeof expire === "number") {
+			let expireTime = Utils.dateCalculate(createTime, 'd', expire).getTime();
+			return today > expireTime;
+		} else if (Array.isArray(expire)) {
+			let startTime = expire[0].getTime(),
+				endTime = expire[1].getTime();
+			return !(today >= startTime && today < endTime);
+		} else
+			throw new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[过期时间]`);
 	}
 };

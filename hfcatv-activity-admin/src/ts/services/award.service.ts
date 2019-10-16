@@ -1,7 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
 import {Urls} from "../common/urls";
-import {AwardType} from "../common/enums";
 import {AwardDocument, PaginateResult} from "../interfaces";
 import {HttpService} from "./http.service";
 
@@ -20,17 +19,12 @@ export class AwardService {
         return this.httpService.post<PaginateResult<AwardDocument>>(`${Urls.award.list}/${page}/${limit}`, conditions);
     }
 
-    addAward(name: string, type: AwardType, minimum?: number, maximum?: number): Observable<AwardDocument> {
-        return this.httpService.post<AwardDocument>(Urls.award.add, {
-            name: name,
-            type: type,
-            minimum: minimum,
-            maximum: maximum
-        });
+    addAward(award: AwardDocument): Observable<AwardDocument> {
+    	return this.httpService.post<AwardDocument>(Urls.award.add, award);
     }
 
-    updateAward(data: AwardDocument): Observable<AwardDocument> {
-        return this.httpService.post<AwardDocument>(Urls.award.update, data);
+    updateAward(award: AwardDocument): Observable<AwardDocument> {
+        return this.httpService.post<AwardDocument>(Urls.award.update, award);
     }
 
     removeAward(id: string): Observable<boolean> {

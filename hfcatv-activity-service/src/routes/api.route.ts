@@ -8,11 +8,12 @@ const awardController = new AwardController();
 
 export default (router: Router) => {
 	return router
-		.get("/activity/detail", activityController.getActivity)
 		.post("/user/detail", userController.getUser)
-		.post("/lotto/exec", lottoController.execLotto)
+		.get("/activity/detail", activityController.getActivity)
 		.get("/lotto/lastest", lottoController.getLastestLottos)
+		.post("/lotto/exec", lottoController.execLotto)
+
+		.get("/award/types", awardController.getAwardTypes)
 		.post("/lotto/list/:page/:limit", lottoController.getPageLottosByOpenId)
-		.post("/lotto/receive", lottoController.receiveLotto)
-		.get("/award/types", awardController.getAwardTypes);
+		.post("/lotto/receive", lottoController.receiveLotto);
 };

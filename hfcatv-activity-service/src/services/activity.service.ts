@@ -64,6 +64,8 @@ export default class ActivityService extends BaseService {
 	}
 
 	async getPageActivitiesByConditions(conditions: any, page: number, limit: number): Promise<PaginateResult<ActivityDocument<AwardVO>>> {
+		if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
+
 		let options = {
 				sort: {createTime: -1},
 				populate: this.populates,
@@ -86,10 +88,11 @@ export default class ActivityService extends BaseService {
 		if (!activity) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动]`));
 
 		let {startTime, endTime} = activity;
-		if (!startTime) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动开始时间]`));
-		if (!endTime) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动结束时间]`));
-		if (new Date(startTime).getTime() > new Date(endTime).getTime())
+		if (!startTime) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[开始时间]`));
+		if (!endTime) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[结束时间]`));
+		if (new Date(startTime).getTime() > new Date(endTime).getTime()) {
 			return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[开始时间不可以大于结束时间]`));
+		}
 
 		let result = await this.isExist({status: {$ne: ActivityStatus.Finished}, isDelete: false});
 		if (result.status) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[存在未结束的活动]`));
@@ -102,13 +105,12 @@ export default class ActivityService extends BaseService {
 	}
 
 	async updateActivity(id: string, update: any): Promise<ActivityDocument<AwardVO> | null> {
-		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
+		if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 		if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
 
 		update["updateTime"] = new Date();
-		let doc = await this.model.findByIdAndUpdate(id,
-			{$set: this._handleActivity(update)}, {new: true}).populate(this.populates);
-		if (!doc) Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动信息]`));
+		let doc = await this.model.findByIdAndUpdate(id, {$set: this._handleActivity(update)}, {new: true}).populate(this.populates);
+		if (!doc) Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
 		return this._buildActivity(doc, false);
 	}
 
@@ -122,7 +124,7 @@ export default class ActivityService extends BaseService {
 				}
 			},
 			doc = await this.model.findByIdAndUpdate(id, update, {new: true}).populate(this.populates);
-		if (!doc) Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动信息]`));
+		if (!doc) Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
 		return this._buildActivity(doc, false);
 	}
 
