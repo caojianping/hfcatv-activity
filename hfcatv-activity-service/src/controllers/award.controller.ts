@@ -10,10 +10,10 @@ export default class AwardController {
 	async getAwardTypes(ctx: Context, next: Function) {
 		ctx.success([
 			{type: "*", value: "全部类型"},
-			{type: AwardType.Card, value: "充值卡券"},
 			{type: AwardType.RedPacket, value: "现金红包"},
-			{type: AwardType.Goods, value: "线下办"},
-			{type: AwardType.MovieTicket, value: "观影券"}
+			{type: AwardType.MovieTicket, value: "观影券"},
+			{type: AwardType.Card, value: "充值卡"},
+			{type: AwardType.Goods, value: "线下办"}
 		]);
 	}
 

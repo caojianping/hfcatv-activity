@@ -26,7 +26,8 @@ export default class LottoService extends BaseService {
 		{
 			path: "activity", model: "activity", select: "-_id title status awards",
 			populate: {path: "awards.award", model: "award"}
-		}
+		},
+		{path: "award", model: "award"}
 	];
 
 	constructor() {
@@ -35,13 +36,14 @@ export default class LottoService extends BaseService {
 
 	private _buildLotto(lotto: LottoDocument<AwardDetailDocument, AwardDocument>, isBase: boolean = false) {
 		let lottoDup = Utils.duplicate<any>(lotto),
-			awardDetail = lottoDup.activity.awards
-				.filter((awardDetail: AwardDetailDocument) =>
-					String(lottoDup.award) === String(awardDetail.award._id))[0];
+			{activity, award} = lottoDup,
+			awardDetail = activity.awards.filter((item: AwardDetailDocument) => String(award._id) === String(item.award._id))[0];
+		delete activity.awards;
+		lottoDup["activity"] = activity;
 
-		delete lottoDup.activity.awards;
-		lottoDup["activity"] = lottoDup.activity;
-		lottoDup["award"] = AwardHelper.convertToAwardVO(awardDetail, isBase);
+		if (awardDetail) {
+			lottoDup["award"] = AwardHelper.convertToAwardVO(awardDetail, isBase);
+		}
 		return lottoDup;
 	}
 
@@ -64,6 +66,7 @@ export default class LottoService extends BaseService {
 				limit: 10
 			},
 			result: any = await this.getPage<LottoDocument<AwardDetailDocument, AwardDocument>>({}, options);
+		console.log("result:", result.docs[0].award);
 		return this._buildLottos(result.docs, true);
 	}
 
