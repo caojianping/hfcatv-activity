@@ -1,5 +1,6 @@
 import Koa from "koa";
 import config from "config";
+import {Console} from "./common/logger";
 import middleware from "./middleware";
 import routes from "./routes";
 
@@ -12,5 +13,5 @@ app.use(routes());
 
 const port = config.get<number>("port");
 app.listen(port, () => {
-    console.log(`Koa server listen on port ${port}.`);
+	Console.info(`Koa server listen on port ${port}.`);
 });

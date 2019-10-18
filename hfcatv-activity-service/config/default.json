@@ -14,5 +14,6 @@
     "jwt": {
         "secret": "hfcatv_activity_service"
     },
-    "salt": 10
+    "salt": 10,
+    "logPath": "./logs/"
 }

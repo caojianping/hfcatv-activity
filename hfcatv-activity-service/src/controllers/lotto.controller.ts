@@ -1,4 +1,5 @@
 import {Context} from "koa";
+import {Console, Logger} from "../common/logger";
 import {ErrorType} from "../error";
 import {LottoService, UserService} from "../services";
 
@@ -33,8 +34,11 @@ export default class LottoController {
 	}
 
 	async receiveLotto(ctx: Context, next: Function) {
-		let {id, attachInfo} = ctx.request.body,
-			lotto = await lottoService.receiveLotto(id, attachInfo);
+		let body = ctx.request.body,
+			{id, attachInfo} = body;
+		Console.info("/api/lotto/receive body:", body);
+		Logger.info("/api/lotto/receive body:", body);
+		let lotto = await lottoService.receiveLotto(id, attachInfo);
 		ctx.success(lotto);
 	}
 

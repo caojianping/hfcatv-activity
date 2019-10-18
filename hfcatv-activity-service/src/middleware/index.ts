@@ -11,8 +11,6 @@ import koaStatic from "koa-static";
 import {koaError} from "../error";
 import {koaResponse} from "../response";
 
-console.log("abc:", path.join(__dirname, "../../", "static"));
-
 export default function middlewares() {
     return koaCompose([
         koaError(),
