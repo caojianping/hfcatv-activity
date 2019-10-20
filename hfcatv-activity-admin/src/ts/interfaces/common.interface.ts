@@ -28,6 +28,8 @@ export interface AwardBaseVO {
 }
 
 export interface AwardVO extends AwardBaseVO {
-    stock: number;
     weight: number;
+    totalStock: number;
+    remainStock: number;
+    isDelete: boolean;
 }

@@ -2,7 +2,7 @@ import Koa from "koa";
 import config from "config";
 import {Console} from "./common/logger";
 import middleware from "./middleware";
-import routes from "./routes";
+import routes from "./app/routes";
 
 import Database from "./db";
 Database.connect();

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {NzMessageService} from "ng-zorro-antd";
 import {OperateType} from "../../../ts/common/enums";
@@ -6,6 +6,7 @@ import {ActivityStatuses, AwardRanks, OperateTypes} from "../../../ts/common/nam
 import {ActivityDocument, AwardDocument, AwardVO} from "../../../ts/interfaces";
 import {ActivityHelper} from "../../../ts/helpers";
 import {AwardService} from "../../../ts/services";
+import {Utils} from "../../../ts/common/utils";
 
 @Component({
     selector: 'app-activity-modal',
@@ -19,6 +20,7 @@ export class ActivityModalComponent implements OnInit {
 
     @Output() onCancel = new EventEmitter<void>();
     @Output() onOk = new EventEmitter<ActivityDocument<AwardVO>>();
+    @Output() onChange = new EventEmitter<any>();
 
     ActivityStatuses: Array<string> = ActivityStatuses;
     AwardRanks: Array<string> = AwardRanks;
@@ -55,17 +57,41 @@ export class ActivityModalComponent implements OnInit {
             return this.formBuilder.group({
                 id: new FormControl(award.id, Validators.required),
                 rank: new FormControl(award.rank, Validators.required),
-                stock: new FormControl(award.stock, Validators.min(0)),
-                weight: new FormControl(award.weight, [Validators.min(0), Validators.max(1)])
+                weight: new FormControl(award.weight, [Validators.required, Validators.min(0), Validators.max(1)]),
+                totalStock: new FormControl(award.totalStock, [Validators.required, Validators.min(0)]),
+                remainStock: new FormControl(award.remainStock, Validators.min(0)),
+                stock: new FormControl(null, Validators.min(0)),
+                isNew: new FormControl(false)
             });
         } else {
             return this.formBuilder.group({
                 id: new FormControl(null, Validators.required),
                 rank: new FormControl(null, Validators.required),
-                stock: new FormControl(null, [Validators.required, Validators.min(0)]),
-                weight: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(1)])
+                weight: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(1)]),
+                totalStock: new FormControl(null, [Validators.required, Validators.min(0)]),
+                remainStock: new FormControl(null, Validators.min(0)),
+                stock: new FormControl(null, Validators.min(0)),
+                isNew: new FormControl(true)
             });
         }
+    }
+
+    _handleActivity(formData: any) {
+        console.log("_handleActivity 111:", this.type, formData);
+        let formDataDup = Utils.duplicate(formData),
+            type = this.type;
+        if (type === OperateType.Add) {
+            formDataDup["awards"] = (formDataDup.awards || []).map((award: any) => {
+                award["remainStock"] = award["totalStock"];
+                delete award.stock;
+                delete award.isNew;
+                return award;
+            });
+        } else if (type === OperateType.Edit) {
+            delete formDataDup.awards;
+        }
+        console.log("_handleActivity 222:", formDataDup);
+        return formDataDup;
     }
 
     fetchAwards() {
@@ -126,10 +152,12 @@ export class ActivityModalComponent implements OnInit {
 
         let type = this.type;
         if (type === OperateType.Add) {
-            this.onOk.emit(<ActivityDocument<AwardVO>>formData);
+            let data = this._handleActivity(formData);
+            this.onOk.emit(<ActivityDocument<AwardVO>>data);
         } else if (type === OperateType.Edit) {
             formData["_id"] = this.activity._id;
-            this.onOk.emit(<ActivityDocument<AwardVO>>formData);
+            let data = this._handleActivity(formData);
+            this.onOk.emit(<ActivityDocument<AwardVO>>data);
         }
     }
 
@@ -138,8 +166,38 @@ export class ActivityModalComponent implements OnInit {
         awardsForms.push(this._buildAwardFormGroup());
     }
 
-    removeActivityAward(id: number) {
-        let awardsForms = this.activityForm.get("awards") as FormArray;
-        awardsForms.removeAt(id);
+    setActivityAward(index: number) {
+        let type = this.type;
+        if (type === OperateType.Edit) {
+            let formData = this.activityForm.value,
+                award = formData.awards[index],
+                awardId = award.id;
+            if (!awardId) {
+                award["remainStock"] = award["totalStock"];
+                delete award.stock;
+            } else {
+                delete award.totalStock;
+                delete award.remainStock;
+            }
+            this.onChange.emit({type: 0, id: this.activity._id, award: award});
+        }
+    }
+
+    removeActivityAward(index: number) {
+        let type = this.type;
+        if (type === OperateType.Add) {
+            let awardsForms = this.activityForm.get("awards") as FormArray;
+            awardsForms.removeAt(index);
+        } else if (type === OperateType.Edit) {
+            let formData = this.activityForm.value,
+                award = formData.awards[index],
+                awardId = award.id;
+            if (!awardId) {
+                let awardsForms = this.activityForm.get("awards") as FormArray;
+                awardsForms.removeAt(index);
+            } else {
+                this.onChange.emit({type: 1, id: this.activity._id, awardId: awardId});
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-import {ManagerService} from "../services/index";
+import {ManagerService} from "../app/services";
 import Database from "../db";
 
 Database.connect();
@@ -16,5 +16,3 @@ async function setPassword() {
 async function removeManagers() {
     await managerService.model.remove({});
 }
-
-// setPassword();

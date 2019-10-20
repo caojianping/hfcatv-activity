@@ -1,4 +1,4 @@
-import {UserService, ActivityService, LottoService} from "../services/index";
+import {UserService, ActivityService, LottoService} from "../app/services";
 import Database from "../db";
 
 Database.connect();
@@ -8,7 +8,7 @@ const activityService = new ActivityService();
 const lottoService = new LottoService();
 
 async function addLotto() {
-    let user = await userService.getUserByOpenId("test01");// 曹剑平
+    let user = await userService.getUserByWechat("unionId01", "openId01", "曹剑平");// 曹剑平
     if (!user) return;
 
     let activity = await activityService.getActivity();
@@ -20,5 +20,3 @@ async function addLotto() {
 async function removeLottos() {
     await lottoService.model.remove({});
 }
-
-// addLotto();

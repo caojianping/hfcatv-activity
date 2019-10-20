@@ -92,6 +92,21 @@ export class ActivityComponent implements OnInit {
         this.isVisible = true;
     }
 
+    setSwitch(id: string, switcher: boolean) {
+        const self = this;
+        const {message, activityService} = self;
+        activityService.setSwitch(id, switcher)
+            .subscribe({
+                next(result: boolean) {
+                    if (!result) message.error("活动设置失败");
+                    else self.fetchPageActivities();
+                },
+                error(err: any) {
+                    message.error(err);
+                }
+            });
+    }
+
     removeActivity(id: string) {
         const self = this;
         const {modal, message, activityService} = self;
@@ -141,6 +156,35 @@ export class ActivityComponent implements OnInit {
                     error(err: any) {
                         message.error(err);
                         self.isVisible = false;
+                    }
+                });
+        }
+    }
+
+    handleModalChange(data: any) {
+        const self = this;
+        const {message, activityService} = self;
+        const type = data.type;
+        if (type === 0) {
+            const {id, award} = data;
+            activityService.setAward(id, award)
+                .subscribe({
+                    next(result: boolean) {
+                        result && self.fetchPageActivities();
+                    },
+                    error(err: any) {
+                        message.error(err);
+                    }
+                });
+        } else if (type === 1) {
+            const {id, awardId} = data;
+            activityService.removeAward(id, awardId)
+                .subscribe({
+                    next(result: boolean) {
+                        result && self.fetchPageActivities();
+                    },
+                    error(err: any) {
+                        message.error(err);
                     }
                 });
         }

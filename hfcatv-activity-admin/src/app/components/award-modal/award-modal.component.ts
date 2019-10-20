@@ -58,7 +58,6 @@ export class AwardModalComponent implements OnInit {
 
 		let rangesData, expireData;
 		if (type === AwardType.RedPacket) {
-			console.log("min,max:", minimum, maximum);
 			if (minimum === undefined || minimum === null || maximum === undefined || maximum === null) {
 				this.message.warning("红包最小、最大额度不可以为空");
 				return;
@@ -69,7 +68,6 @@ export class AwardModalComponent implements OnInit {
 			}
 
 			rangesData = [minimum, maximum];
-			console.log("rangesData:", rangesData);
 		}
 
 		if (type !== AwardType.Nothing) {
@@ -103,7 +101,6 @@ export class AwardModalComponent implements OnInit {
 				delete formDataDup[key];
 			}
 		}
-		console.log("formDataDup:", formDataDup);
 		return formDataDup;
 	}
 
