@@ -1,7 +1,7 @@
 import {Utils} from "../common/utils";
-import {AwardDocument} from "../interfaces/index";
-import {ActivityHelper} from "../helpers/index";
-import {AwardService, ActivityService} from "../services/index";
+import {ActivityHelper} from "../helpers";
+import {AwardDocument} from "../app/interfaces";
+import {AwardService, ActivityService} from "../app/services";
 import Database from "../db";
 
 Database.connect();
@@ -14,8 +14,9 @@ async function addActivity() {
         mapAwards = awards.map((award: AwardDocument, index: number) => ({
             award: award._id,
             rank: index,
-            stock: 9999,
-            weight: 0.2
+            weight: 0.2,
+            totalStock: 9999,
+            remainStock: 9999
         })),
         startTime = Utils.dateCalculate(new Date(), "d", -7),
         endTime = Utils.dateCalculate(new Date(), "d", 7);

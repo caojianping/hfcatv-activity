@@ -1,5 +1,5 @@
 <app-layout>
-    <form class="query-form" nz-form [formGroup]="queryForm"
+    <form class="mb10px" nz-form [formGroup]="queryForm"
           (ngSubmit)="queryLottos()">
         <div nz-row [nzGutter]="24">
 
@@ -73,7 +73,7 @@
             </div>
 
             <div nz-col [nzSpan]="2">
-                <button class="btn-query" nz-button nzType="primary">查询</button>
+                <button class="mt4px" nz-button nzType="primary">查询</button>
             </div>
 
         </div>
@@ -102,7 +102,7 @@
             <th>消息</th>
             <th>附加信息</th>
             <th>创建时间</th>
-            <th>更新时间</th>
+            <!--<th>更新时间</th>-->
             <th>操作</th>
         </tr>
         </thead>
@@ -140,21 +140,21 @@
                 </ul>
             </td>
             <td>{{lotto.createTime | date:"yyyy/MM/dd HH:mm"}}</td>
-            <td>{{lotto.updateTime | date:"yyyy/MM/dd HH:mm"}}</td>
+            <!--<td>{{lotto.updateTime | date:"yyyy/MM/dd HH:mm"}}</td>-->
             <td>
-                <button class="btn-reject" *ngIf="
+                <button *ngIf="
                 (($any(lotto.award || {}).type === 1 || $any(lotto.award || {}).type === 4) && lotto.status === 0) ||
                 (($any(lotto.award || {}).type === 2 || $any(lotto.award || {}).type === 3) && lotto.status === 1)"
                         nz-button nzType="danger" nzSize="small"
                         (click)="setStatus(lotto._id, -1)">驳回
                 </button>
 
-                <button class="btn-send" *ngIf="$any(lotto.award || {}).type === 2 && lotto.status === 1"
+                <button class="ml4px" *ngIf="$any(lotto.award || {}).type === 2 && lotto.status === 1"
                         nz-button nzType="primary" nzSize="small"
                         (click)="sendRedPacket(lotto._id)">发放
                 </button>
 
-                <button class="btn-send" *ngIf="$any(lotto.award || {}).type === 3 && lotto.status === 1"
+                <button class="ml4px" *ngIf="$any(lotto.award || {}).type === 3 && lotto.status === 1"
                         nz-button nzType="primary" nzSize="small"
                         (click)="setStatus(lotto._id, 2)">发货
                 </button>

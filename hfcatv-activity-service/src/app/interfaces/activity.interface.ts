@@ -1,4 +1,4 @@
-import {ActivityStatus, AwardRank} from "../common/enums";
+import {ActivityStatus, AwardRank} from "../../common/enums";
 import {BaseDocument} from "./common.interface";
 import {AwardDocument} from "./award.interface";
 

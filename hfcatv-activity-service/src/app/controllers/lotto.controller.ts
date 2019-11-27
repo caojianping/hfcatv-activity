@@ -1,0 +1,92 @@
+import {Context} from "koa";
+import {Console, Logger} from "../../common/logger";
+import {ErrorType} from "../../error";
+import {LottoService, UserService} from "../services";
+
+const lottoService = new LottoService();
+const userService = new UserService();
+
+export default class LottoController {
+    /**
+     * for api
+     * 执行抽奖
+     * @param ctx
+     * @param next
+     */
+    async execLotto(ctx: Context, next: Function) {
+        let {unionId, openId, activityId} = ctx.request.body,
+            userId = await userService.getUserIdByWechat(unionId, openId),
+            data = await lottoService.addLotto(userId, activityId);
+        if (!data) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[中奖]`);
+        else {
+            data["lottos"] = await lottoService.getLastestLottos();
+            ctx.success(data);
+        }
+    }
+
+    /**
+     * for api
+     * 获取最新的中奖列表
+     * @param ctx
+     * @param next
+     */
+    async getLastestLottos(ctx: Context, next: Function) {
+        let lottos = await lottoService.getLastestLottos();
+        ctx.success(lottos);
+    }
+
+    /**
+     * for api
+     * 根据奖品类型获取分页中奖列表
+     * @param ctx
+     * @param next
+     */
+    async getPageLottosByWechat(ctx: Context, next: Function) {
+        let params = ctx.params,
+            page = Number(params.page || 1),
+            limit = Number(params.limit || 10),
+            {unionId, openId, type} = ctx.request.body,
+            userId = await userService.getUserIdByWechat(unionId, openId),
+            result = await lottoService.getPageLottosByUserId(userId, type || "*", page, limit);
+        ctx.success(result);
+    }
+
+    /**
+     * for api
+     * 领奖
+     * @param ctx
+     * @param next
+     */
+    async receiveLotto(ctx: Context, next: Function) {
+        let body = ctx.request.body,
+            {id, attachInfo} = body;
+        Console.info("/api/lotto/receive body:", body);
+        Logger.info("/api/lotto/receive body:", body);
+        let lotto = await lottoService.receiveLotto(id, attachInfo);
+        ctx.success(lotto);
+    }
+
+
+    // for admin
+    async getPageLottos(ctx: Context, next: Function) {
+        let params = ctx.params,
+            page = Number(params.page || 1),
+            limit = Number(params.limit || 10),
+            conditions = ctx.request.body || {},
+            result = await lottoService.getPageLottos(conditions, page, limit);
+        ctx.success(result);
+    }
+
+    // for admin
+    async setStatus(ctx: Context, next: Function) {
+        let {id, status} = ctx.request.body,
+            lotto = await lottoService.setStatus(id, status);
+        ctx.success(lotto);
+    }
+
+    // for admin
+    async sendRedPacket(ctx: Context, next: Function) {
+        let result = await lottoService.sendRedPacket(ctx.request.body.id);
+        ctx.success(result);
+    }
+};
