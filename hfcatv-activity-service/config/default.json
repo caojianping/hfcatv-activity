@@ -1,15 +1,17 @@
 {
-    "port": 80,
-    "mongodb": {
-        "user": "admin",
-        "password": "Cjp_1990",
-        "host": "47.96.11.15",
-        "port": 27017,
-        "database": "hfcatv_activity"
-    },
-    "redis": {
-        "host": "47.96.11.15",
-        "port": 6379
+    "services": {
+        "development": {
+            "mongodb": "mongodb://admin:Cjp_1990@47.96.11.15:27017/hfcatv_activity",
+            "redis": "47.96.11.15:6379"
+        },
+        "test": {
+            "mongodb": "mongodb://admin:Cjp_1990@47.96.11.15:27017/hfcatv_activity",
+            "redis": "47.96.11.15:6379"
+        },
+        "production": {
+            "mongodb": "mongodb://admin:Cjp_1990@47.96.11.15:27017/hfcatv_activity",
+            "redis": "47.96.11.15:6379"
+        }
     },
     "jwt": {
         "secret": "hfcatv_activity_service"

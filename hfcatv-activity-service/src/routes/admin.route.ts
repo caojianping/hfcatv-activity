@@ -1,24 +1,23 @@
 import {Context} from "koa";
 import Router from 'koa-router';
+import koaJwt from "koa-jwt";
+import config from "config";
 import {ManagerController, AwardController, ActivityController, LottoController} from "../controllers";
+import {Constants} from "../common/constants";
 
 const managerController = new ManagerController();
 const awardController = new AwardController();
 const activityController = new ActivityController();
 const lottoController = new LottoController();
 
-
-import koaJwt from "koa-jwt";
-import config from "config";
-
 const secret = config.get<string>("jwt.secret");
 const jwt = koaJwt({secret: secret})
 	.unless({
 		path: [
-			/^\/admin\/account\/login/,
-			/^\/admin\/account\/logout/,
-			/^\/admin\/token\/status/,
-			/^\/admin\/test/
+			new RegExp(`${Constants.VIRTUAL_PATH}/admin/account/login`),
+			new RegExp(`${Constants.VIRTUAL_PATH}/admin/account/logout`),
+			new RegExp(`${Constants.VIRTUAL_PATH}/admin/token/status`),
+			new RegExp(`${Constants.VIRTUAL_PATH}/admin/test`)
 		]
 	});
 

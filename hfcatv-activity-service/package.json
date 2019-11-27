@@ -6,7 +6,9 @@
     "scripts": {
         "start": "nodemon --watch src -e ts,tsx --exec ts-node src/app.ts",
         "tsc": "tsc",
-        "build": "npm run tsc && pm2 start ./dist/app.js --name=\"hfcatv-activity-service\" --watch"
+        "tsc:dev": "npm run tsc &&pm2 start ecosystem.config.js --env development",
+        "tsc:test": "npm run tsc &&pm2 start ecosystem.config.js --env test",
+        "tsc:prod": "npm run tsc &&pm2 start ecosystem.config.js --env production"
     },
     "author": "",
     "license": "ISC",
