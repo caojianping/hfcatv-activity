@@ -1,8 +1,8 @@
 import {BusinessError, ErrorType} from "../../error/index";
 import {AwardType} from "../../common/enums";
 import {AwardTypeKeys} from "../../common/keys";
-import {AwardDocument} from "../interfaces/index";
-import {AwardModel} from "../models/index";
+import {AwardDocument} from "../interfaces";
+import {AwardModel} from "../models";
 import BaseService from "./base.service";
 
 export default class AwardService extends BaseService {

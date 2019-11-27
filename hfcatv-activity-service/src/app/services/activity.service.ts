@@ -2,8 +2,8 @@ import {PaginateResult} from "mongoose";
 import {BusinessError, ErrorType} from "../../error/index";
 import {Utils} from "../../common/utils";
 import {ActivityStatus} from "../../common/enums";
-import {ActivityDocument, AwardBaseVO, AwardDetailDocument, AwardVO} from "../interfaces/index";
-import {ActivityModel} from "../models/index";
+import {ActivityDocument, AwardBaseVO, AwardDetailDocument, AwardVO} from "../interfaces";
+import {ActivityModel} from "../models";
 import {ActivityHelper, AwardHelper} from "../../helpers/index";
 import BaseService from "./base.service";
 

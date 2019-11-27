@@ -7,8 +7,8 @@ import {AwardType, CardStatus, RedPacketStatus, GoodsStatus, MovieTicketStatus} 
 import {
     AwardDocument, AwardDetailDocument, AwardBaseVO, AwardVO,
     LottoDocument, CardInfo, GoodsInfo
-} from "../interfaces/index";
-import {LottoModel} from "../models/index";
+} from "../interfaces";
+import {LottoModel} from "../models";
 import {AwardHelper, LottoHelper} from "../../helpers/index";
 
 import BaseService from "./base.service";

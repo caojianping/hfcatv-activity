@@ -1,6 +1,6 @@
 import Router from "koa-router";
 import compose from "koa-compose";
-import {Constants} from "../common/constants";
+import {Constants} from "../../common/constants";
 import apiRoute from "./api.route";
 import adminRoute from "./admin.route";
 import testRoute from "./test.route";
