@@ -1,7 +1,8 @@
 import {Schema, PaginateModel, model} from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
-import bcrypt from "bcrypt";
+import crypto from "crypto";
 import config from "config";
+import {Console} from "../../common/logger";
 import {ManagerDocument} from "../interfaces";
 
 const ManagerSchema: Schema = new Schema({
@@ -31,23 +32,12 @@ ManagerSchema.plugin(mongoosePaginate);
 
 ManagerSchema.pre("save", function (this: ManagerDocument, next: Function) {
     const user = this;
-    const salt = config.get<number>("salt");
     if (!user.isModified("password")) return next();
 
-    new Promise<string>((resolve, reject) => {
-        bcrypt.genSalt(salt, (err, salt) => {
-            if (err) return reject(err);
-            else resolve(salt);
-        });
-    }).then((salt: string) => {
-        bcrypt.hash(user.password, salt, (err, hash) => {
-            if (err) throw err;
-            else {
-                user.password = hash;
-                next(null);
-            }
-        });
-    });
+    let hmac = crypto.createHmac("sha512", config.get<string>("salt")),
+        encryptPassword = hmac.update(user.password).digest("hex");
+    user.password = encryptPassword;
+    return next();
 });
 
 ManagerSchema.pre("findOneAndUpdate", function (next) {
@@ -56,9 +46,10 @@ ManagerSchema.pre("findOneAndUpdate", function (next) {
 });
 
 ManagerSchema.methods.validatePassword = function (this: ManagerDocument, password: string) {
-    let result = bcrypt.compareSync(password, this.password);
-    console.log("validatePassword:", password, this.password, result);
-    return result;
+    let hmac = crypto.createHmac("sha512", config.get<string>("salt")),
+        comparePassword = hmac.update(this.password).digest("hex");
+    Console.info(`validatePassword: ${password}, ${comparePassword}, ${this.password}, ${comparePassword === this.password}`);
+    return this.password === comparePassword;
 };
 
 export const ManagerModel: PaginateModel<ManagerDocument> = model("manager", ManagerSchema, "manager");

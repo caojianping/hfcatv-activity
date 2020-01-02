@@ -10,14 +10,14 @@ module.exports = {
                 PORT: 9000,
                 NODE_ENV: "development"
             },
-            // 测试环境
-            env_test: {
-                PORT: 9000,
-                NODE_ENV: "test"
+            // 测试环境，阿里云ECS服务器
+            env_ecs: {
+                PORT: 80,
+                NODE_ENV: "ecs"
             },
-            // 生产环境
+            // 生产环境，Windows Server 2012 R2服务器
             env_production: {
-                PORT: 9000,
+                PORT: 80,
                 NODE_ENV: "production"
             }
         }

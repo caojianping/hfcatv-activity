@@ -98,11 +98,11 @@
                                 }
                             ]
                         },
-                        "proxy": {
+                        "ecs": {
                             "fileReplacements": [
                                 {
                                     "replace": "src/environments/environment.ts",
-                                    "with": "src/environments/environment.proxy.ts"
+                                    "with": "src/environments/environment.ecs.ts"
                                 }
                             ],
                             "optimization": true,
@@ -138,8 +138,8 @@
                         "production": {
                             "browserTarget": "hfcatv-activity-admin:build:production"
                         },
-                        "proxy": {
-                            "browserTarget": "hfcatv-activity-admin:build:proxy"
+                        "ecs": {
+                            "browserTarget": "hfcatv-activity-admin:build:ecs"
                         }
                     }
                 },

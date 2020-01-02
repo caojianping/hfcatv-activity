@@ -6,7 +6,7 @@ Database.connect();
 const managerService = new ManagerService();
 
 async function addManager() {
-    await managerService.addManager("admin", "123456");
+    await managerService.addManager("admin", "Admin_2020");
 }
 
 async function setPassword() {
@@ -16,3 +16,5 @@ async function setPassword() {
 async function removeManagers() {
     await managerService.model.remove({});
 }
+
+addManager();

@@ -4,18 +4,18 @@
             "mongodb": "mongodb://admin:Cjp_1990@47.96.11.15:27017/hfcatv_activity",
             "redis": "47.96.11.15:6379"
         },
-        "test": {
+        "ecs": {
             "mongodb": "mongodb://admin:Cjp_1990@47.96.11.15:27017/hfcatv_activity",
             "redis": "47.96.11.15:6379"
         },
         "production": {
-            "mongodb": "mongodb://admin:Cjp_1990@47.96.11.15:27017/hfcatv_activity",
-            "redis": "47.96.11.15:6379"
+            "mongodb": "mongodb://admin:Cjp_1990@127.0.0.1:27017/hfcatv_activity",
+            "redis": "127.0.0.1:6379"
         }
     },
     "jwt": {
         "secret": "hfcatv_activity_service"
     },
-    "salt": 10,
+    "salt": "hfcatv_activity",
     "logPath": "./logs/"
 }
