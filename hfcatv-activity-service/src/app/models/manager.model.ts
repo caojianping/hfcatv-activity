@@ -47,7 +47,7 @@ ManagerSchema.pre("findOneAndUpdate", function (next) {
 
 ManagerSchema.methods.validatePassword = function (this: ManagerDocument, password: string) {
     let hmac = crypto.createHmac("sha512", config.get<string>("salt")),
-        comparePassword = hmac.update(this.password).digest("hex");
+        comparePassword = hmac.update(password).digest("hex");
     Console.info(`validatePassword: ${password}, ${comparePassword}, ${this.password}, ${comparePassword === this.password}`);
     return this.password === comparePassword;
 };
