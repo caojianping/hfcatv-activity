@@ -84,6 +84,7 @@ typings/
 /hfcatv-activity-service/.idea
 /hfcatv-activity-service/node_modules
 /hfcatv-activity-service/dist
+/hfcatv-activity-service/static
 /hfcatv-activity-service/logs
 /hfcatv-activity-service/package-lock.json
 

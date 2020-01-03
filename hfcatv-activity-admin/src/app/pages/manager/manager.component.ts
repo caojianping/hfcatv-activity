@@ -1,67 +1,148 @@
 import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
-import {FormBuilder, FormGroup, FormControl, Validators} from "@angular/forms";
-import {NzMessageService} from "ng-zorro-antd";
+import {FormBuilder, FormControl} from "@angular/forms";
+import {NzMessageService, NzModalService} from "ng-zorro-antd";
+import {Utils} from "../../../ts/common/utils";
+import {OperateType} from "../../../ts/common/enums";
+import {OperateTypes, RoleTypes} from "../../../ts/common/names";
+import {ManagerDocument, PaginateResult} from "../../../ts/interfaces";
 import {ManagerService} from "../../../ts/services";
 
 @Component({
-    selector: "app-manager",
-    templateUrl: "./manager.component.html",
-    styleUrls: ["./manager.component.less"]
+	selector: "app-manager",
+	templateUrl: "./manager.component.html",
+	styleUrls: ["./manager.component.less"]
 })
 export class ManagerComponent implements OnInit {
-    managerForm: FormGroup;
+	Utils: any = Utils;
 
-    constructor(
-        private router: Router,
-        private formBuilder: FormBuilder,
-        private message: NzMessageService,
-        private managerService: ManagerService
-    ) {
-    }
+	RoleTypes: Array<string> = RoleTypes;
+	OperateTypes: Array<string> = OperateTypes;
+	
+	queryForm: any;
+	
+	isLoading: boolean = false;
+	managerPageResult: PaginateResult<ManagerDocument> = {
+		docs: [],
+		total: 0,
+		page: 1,
+		limit: 10
+	};
 
-    ngOnInit() {
-        this.managerForm = this.formBuilder.group({
-            password: new FormControl(null, Validators.required),
-            confirmPassword: new FormControl(null, Validators.required)
-        });
-    }
+	type: OperateType = OperateType.Add;
+	isVisible: boolean = false;
+	currentManager?: ManagerDocument;
 
-    modifyPassword(formData: any): void {
-        if (!this.managerForm.valid) {
-            for (const i in this.managerForm.controls) {
-                this.managerForm.controls[i].markAsDirty();
-                this.managerForm.controls[i].updateValueAndValidity();
-            }
-            return;
-        }
+	constructor(
+		private formBuilder: FormBuilder,
+		private modal: NzModalService,
+		private message: NzMessageService,
+		private managerService: ManagerService
+	) {
+		this.queryForm = this.formBuilder.group({
+			username: new FormControl(null)
+		});
+	}
 
-        const {router, message, managerService} = this;
-        const {password, confirmPassword} = formData;
-        if (password !== confirmPassword) {
-            message.warning("两次密码不一致");
-            return;
-        }
+	ngOnInit() {
+		this.fetchPageManagers();
+	}
 
-        let msgDf = message.loading("密码修改中……");
-        managerService.setPassword(password)
-            .subscribe({
-                next(result: boolean) {
-                    if (!result) {
-                        message.remove(msgDf.messageId);
-                        message.error("密码修改失败");
-                    } else {
-                        setTimeout(() => {
-                            message.remove(msgDf.messageId);
-                            message.success("密码修改成功，请重新登录");
-                            router.navigateByUrl("/login");
-                        }, 1688);
-                    }
-                },
-                error(err: any) {
-                    message.remove(msgDf.messageId);
-                    message.error(err);
-                }
-            });
-    }
+	fetchPageManagers(key?: string, $event?: number) {
+		const self = this;
+		if (key && $event) {
+			self.managerPageResult[key] = $event;
+		}
+
+		const {message, managerService, queryForm, managerPageResult} = self;
+		self.isLoading = true;
+		managerService.getPageManagers(Utils.filterConditions(queryForm.value), managerPageResult.page, managerPageResult.limit)
+			.subscribe({
+				next(result: PaginateResult<ManagerDocument>) {
+					self.isLoading = false;
+					self.managerPageResult = result;
+				},
+				error(err: any) {
+					self.isLoading = false;
+					message.error(err);
+				}
+			});
+	}
+
+	queryManagers() {
+		if (!this.queryForm.valid) {
+			for (const i in this.queryForm.controls) {
+				this.queryForm.controls[i].markAsDirty();
+				this.queryForm.controls[i].updateValueAndValidity();
+			}
+			return;
+		}
+
+		this.fetchPageManagers();
+	}
+
+	addManager() {
+		this.type = OperateType.Add;
+		this.currentManager = undefined;
+		this.isVisible = true;
+	}
+
+	editManager(award: ManagerDocument) {
+		this.type = OperateType.Edit;
+		this.currentManager = award;
+		this.isVisible = true;
+	}
+
+	removeManager(id: string) {
+		const self = this;
+		const {modal, message, managerService} = self;
+		modal.confirm({
+			nzTitle: "确定要删除此管理员吗？",
+			nzOnOk() {
+				managerService.removeManager(id)
+					.subscribe({
+						next(result: boolean) {
+							if (!result) message.error("删除失败");
+							else self.fetchPageManagers();
+						},
+						error(err: any) {
+							message.error(err);
+						}
+					});
+			}
+		});
+	}
+
+	handleModalCancel() {
+		this.isVisible = false;
+	}
+
+	handleModalOk(manager: ManagerDocument) {
+		const self = this;
+		const {message, managerService, type} = self;
+		if (type === OperateType.Add) {
+			managerService.addManager(manager)
+				.subscribe({
+					next() {
+						self.fetchPageManagers();
+						self.isVisible = false;
+					},
+					error(err: any) {
+						message.error(err);
+						self.isVisible = false;
+					}
+				});
+		} else if (type === OperateType.Edit) {
+			managerService.updateManager(manager)
+				.subscribe({
+					next(data: ManagerDocument) {
+						self.fetchPageManagers();
+						self.isVisible = false;
+					},
+					error(err: any) {
+						message.error(err);
+						self.isVisible = false;
+					}
+				});
+		}
+	}
 }

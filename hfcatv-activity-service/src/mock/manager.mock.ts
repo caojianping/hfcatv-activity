@@ -1,20 +1,17 @@
 import {ManagerService} from "../app/services";
 import Database from "../db";
+import {RoleType} from "../common/enums";
 
 Database.connect();
 
 const managerService = new ManagerService();
 
 async function addManager() {
-    await managerService.addManager("admin", "Admin_2020");
+    await managerService.addManager("admin", "Admin_2020", RoleType.Administrator);
 }
 
-async function setPassword() {
-    await managerService.setPassword({username: "admin"}, "123456");
-}
-
-async function removeManagers() {
-    await managerService.model.remove({});
+async function setPassword(username: string, password: string) {
+    await managerService.setPassword({username: username}, password);
 }
 
 addManager();

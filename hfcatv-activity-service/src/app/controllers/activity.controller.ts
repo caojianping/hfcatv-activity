@@ -5,13 +5,16 @@ import {ActivityService} from "../services";
 const activityService = new ActivityService();
 
 export default class ActivityController {
+    // for api：获取活动信息
     async getActivity(ctx: Context, next: Function) {
         let activity = await activityService.getActivity();
         ctx.success(activity);
     }
 
+
+    // for admin
     async getPageActivities(ctx: Context, next: Function) {
-        let params = ctx.params,
+        let params = ctx.params || {},
             page = Number(params.page || 1),
             limit = Number(params.limit || 10),
             conditions = ctx.request.body || {},
@@ -19,14 +22,16 @@ export default class ActivityController {
         ctx.success(result);
     }
 
+    // for admin
     async addActivity(ctx: Context, next: Function) {
-        let activity = await activityService.addActivity(ctx.request.body);
+        let activity = await activityService.addActivity(ctx.request.body || {});
         if (!activity) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[活动]`);
         else ctx.success(activity);
     }
 
+    // for admin
     async updateActivity(ctx: Context, next: Function) {
-        let data = ctx.request.body,
+        let data = ctx.request.body || {},
             id = data._id;
         delete data._id;
 
@@ -34,26 +39,30 @@ export default class ActivityController {
         ctx.success(activity);
     }
 
+    // for admin
     async removeActivity(ctx: Context, next: Function) {
-        let id = ctx.request.body.id,
+        let {id} = ctx.request.body || {},
             result = await activityService.softDelete(id);
         ctx.success(result);
     }
 
+    // for admin
     async setSwitch(ctx: Context, next: Function) {
-        let {id, switch: switcher} = ctx.request.body,
+        let {id, switch: switcher} = ctx.request.body || {},
             result = await activityService.setSwitch(id, switcher);
         ctx.success(result);
     }
 
+    // for admin
     async setAward(ctx: Context, next: Function) {
-        let {id, award} = ctx.request.body,
+        let {id, award} = ctx.request.body || {},
             result = await activityService.setAward(id, award);
         ctx.success(result);
     }
 
+    // for admin
     async removeAward(ctx: Context, next: Function) {
-        let {id, awardId} = ctx.request.body,
+        let {id, awardId} = ctx.request.body || {},
             result = await activityService.removeAward(id, awardId);
         ctx.success(result);
     }

@@ -7,6 +7,7 @@ import {AwardService} from "../services";
 const awardService = new AwardService();
 
 export default class AwardController {
+    // for api：获取奖品类型列表
     async getAwardTypes(ctx: Context, next: Function) {
         ctx.success([
             {type: "*", value: "全部类型"},
@@ -17,13 +18,15 @@ export default class AwardController {
         ]);
     }
 
+    // for admin
     async getAwards(ctx: Context, next: Function) {
         let awards = await awardService.getAwards();
         ctx.success(awards);
     }
 
+    // for admin
     async getPageAwards(ctx: Context, next: Function) {
-        let params = ctx.params,
+        let params = ctx.params || {},
             page = Number(params.page || 1),
             limit = Number(params.limit || 10),
             conditions = ctx.request.body || {},
@@ -36,14 +39,16 @@ export default class AwardController {
         ctx.success(result);
     }
 
+    // for admin
     async addAward(ctx: Context, next: Function) {
-        let award = await awardService.addAward(ctx.request.body);
+        let award = await awardService.addAward(ctx.request.body || {});
         if (!award) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[奖品]`);
         else ctx.success(award);
     }
 
+    // for admin
     async updateAward(ctx: Context, next: Function) {
-        let data = ctx.request.body,
+        let data = ctx.request.body || {},
             id = data._id;
         delete data._id;
 
@@ -51,8 +56,9 @@ export default class AwardController {
         ctx.success(award);
     }
 
+    // for admin
     async removeAward(ctx: Context, next: Function) {
-        let id = ctx.request.body.id,
+        let {id} = ctx.request.body || {},
             result = await awardService.softDelete(id);
         ctx.success(result);
     }

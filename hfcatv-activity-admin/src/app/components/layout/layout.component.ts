@@ -40,7 +40,6 @@ export class LayoutComponent implements OnInit {
 
     ngOnInit() {
 		let managerInfo = TokenHelper.getManagerInfo();
-		console.log("managerInfo:", managerInfo);
 		if (managerInfo) {
 			this.username = managerInfo.username;
 		}

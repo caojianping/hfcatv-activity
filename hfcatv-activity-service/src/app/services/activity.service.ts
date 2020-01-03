@@ -1,10 +1,10 @@
 import {PaginateResult} from "mongoose";
-import {BusinessError, ErrorType} from "../../error/index";
+import {BusinessError, ErrorType} from "../../error";
 import {Utils} from "../../common/utils";
 import {ActivityStatus} from "../../common/enums";
-import {ActivityDocument, AwardBaseVO, AwardDetailDocument, AwardVO} from "../interfaces";
 import {ActivityModel} from "../models";
-import {ActivityHelper, AwardHelper} from "../../helpers/index";
+import {ActivityDocument, AwardBaseVO, AwardDetailDocument, AwardVO} from "../interfaces";
+import {ActivityHelper, AwardHelper} from "../../helpers";
 import BaseService from "./base.service";
 
 export default class ActivityService extends BaseService {
@@ -125,7 +125,7 @@ export default class ActivityService extends BaseService {
 
     async updateActivity(id: string, update: any): Promise<ActivityDocument<AwardVO> | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
-        if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[更新数据]`));
+        if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动更新数据]`));
 
         let doc = await this.model.findByIdAndUpdate(id, {$set: this._handleActivity(update, true)}, {new: true}).populate(this.populates);
         if (!doc) Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));

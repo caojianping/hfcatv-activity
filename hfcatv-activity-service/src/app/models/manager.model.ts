@@ -2,6 +2,7 @@ import {Schema, PaginateModel, model} from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
 import crypto from "crypto";
 import config from "config";
+import {RoleTypeKeys} from "../../common/keys";
 import {Console} from "../../common/logger";
 import {ManagerDocument} from "../interfaces";
 
@@ -13,6 +14,17 @@ const ManagerSchema: Schema = new Schema({
     password: {
         type: Schema.Types.String,
         required: true
+    },
+    role: {
+        type: Schema.Types.Number,
+        required: true,
+        enum: RoleTypeKeys,
+        validate: [
+            function (value: number) {
+                return RoleTypeKeys.indexOf(value) > -1;
+            },
+            "无效的角色类型"
+        ]
     },
     createTime: {
         type: Schema.Types.Date,

@@ -1,47 +1,47 @@
 import {Context} from "koa";
 import {ErrorType} from "../../error";
-import {TokenHelper, ManagerToken} from "../../helpers";
 import {ManagerDocument} from "../interfaces";
 import {ManagerService} from "../services";
 
 const managerService = new ManagerService();
 
 export default class ManagerController {
-    async login(ctx: Context, next: Function) {
-        let {username, password} = ctx.request.body,
-            result = await managerService.isExist({username: username});
-        if (!result.status) ctx.failure(ErrorType.UsernameOrPasswordWrong);
-        else {
-            let manager: ManagerDocument = <ManagerDocument>result.data,
-                isEqual = manager.validatePassword(password);
-            if (!isEqual) ctx.failure(ErrorType.UsernameOrPasswordWrong);
-            else ctx.success(TokenHelper.createToken(new ManagerToken(manager._id, manager.username)));
-        }
+    // for admin
+    async getPageManagers(ctx: Context, next: Function) {
+        let params = ctx.params || {},
+            page = Number(params.page || 1),
+            limit = Number(params.limit || 10),
+            conditions = ctx.request.body || {},
+            options = {
+                sort: {createTime: -1},
+                page: page,
+                limit: limit
+            },
+            result = await managerService.getPage<ManagerDocument>(conditions, options);
+        ctx.success(result);
     }
 
-    async logout(ctx: Context, next: Function) {
-        delete ctx.state.user;
-        ctx.success(true);
+    // for admin
+    async addManager(ctx: Context, next: Function) {
+        let manager = await managerService.addManager(ctx.request.body || {});
+        if (!manager) ctx.failure(ErrorType.DataAddFailed.code, `${ErrorType.DataAddFailed.message}:[活动]`);
+        else ctx.success(manager);
     }
 
-    async setPassword(ctx: Context, next: Function) {
-        let managerId = TokenHelper.getManagerId(ctx.state.user),
-            password = ctx.request.body.password,
-            result = await managerService.setPassword({_id: managerId}, password);
-        ctx.success(!!result);
+    // for admin
+    async updateManager(ctx: Context, next: Function) {
+        let data = ctx.request.body || {},
+            id = data._id;
+        delete data._id;
+
+        let manager = await managerService.updateManager(id, data);
+        ctx.success(manager);
     }
 
-    async getTokenStatus(ctx: Context, next: Function) {
-        ctx.success(!!TokenHelper.getManagerId(ctx.state.user));
-    }
-
-    async refreshTokenStatus(ctx: Context, next: Function) {
-        let managerId = TokenHelper.getManagerId(ctx.state.user),
-            manager = await managerService.getManager(managerId);
-        if (!manager) ctx.failure(
-            ErrorType.DataInexistence.code,
-            `${ErrorType.DataInexistence.message}:[管理员]`
-        );
-        else ctx.success(TokenHelper.createToken(new ManagerToken(manager._id, manager.username)));
+    // for admin
+    async removeManager(ctx: Context, next: Function) {
+        let {id} = ctx.request.body || {},
+            result = await managerService.softDelete(id);
+        ctx.success(result);
     }
 };

@@ -23,9 +23,19 @@
                 </ul>
             </li>
             <li nz-submenu nzOpen nzTitle="用户中心" nzIcon="form">
+              <ul>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/user">用户管理</a>
+                </li>
+              </ul>
+              <ul>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/manager">管理员</a>
+                </li>
+              </ul>
                 <ul>
                     <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/manager">修改密码</a>
+                        <a routerLink="/password">修改密码</a>
                     </li>
                 </ul>
             </li>

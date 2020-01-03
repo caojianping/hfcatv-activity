@@ -1,5 +1,4 @@
 export const Constants = {
-	TOKEN_EXPIRE_TIME: 3600 * 24,
-	DEFAULT_LOTTO_COUNT: 999,
-	VIRTUAL_PATH: '/hfcatv-activity'
+    TOKEN_EXPIRE_TIME: 3600 * 24 * 2,
+    DEFAULT_LOTTO_COUNT: 1
 };

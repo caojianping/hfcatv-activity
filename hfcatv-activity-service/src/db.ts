@@ -9,7 +9,7 @@ class Database {
         let env = process.env.NODE_ENV || "development",
             uri = config.get<string>(`services.${env}.mongodb`);
         return mongoose.connect(uri, {useNewUrlParser: true, useCreateIndex: true})
-            .then(() => Console.info("Connected to MongoDB"))
+            .then(() => Console.info("Connected to MongoDB!"))
             .catch(err => Console.info(`MongoDB connection error: ${err}`));
     }
 }

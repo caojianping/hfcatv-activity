@@ -7,17 +7,14 @@ module.exports = {
             watch_ignore: ["./node_modules", "./logs"],
             // 开发环境
             env_development: {
-                PORT: 9000,
                 NODE_ENV: "development"
             },
-            // 测试环境，阿里云ECS服务器
+            // 测试环境，阿里云ECS服务器，有代理
             env_ecs: {
-                PORT: 80,
                 NODE_ENV: "ecs"
             },
-            // 生产环境，Windows Server 2012 R2服务器
+            // 生产环境，Windows Server 2012 R2服务器，无代理
             env_production: {
-                PORT: 80,
                 NODE_ENV: "production"
             }
         }

@@ -17,7 +17,7 @@ import {LoginComponent} from "./pages/login/login.component";
 import {AwardComponent} from "./pages/award/award.component";
 import {ActivityComponent} from "./pages/activity/activity.component";
 import {LottoComponent} from "./pages/lotto/lotto.component";
-import {ManagerComponent} from "./pages/manager/manager.component";
+import {PasswordComponent} from "./pages/password/manager.component";
 
 import {LayoutComponent} from "./components/layout/layout.component";
 import {AwardModalComponent} from "./components/award-modal/award-modal.component";
@@ -33,7 +33,7 @@ registerLocaleData(zh);
 		AwardComponent,
 		ActivityComponent,
 		LottoComponent,
-		ManagerComponent,
+		PasswordComponent,
 
 		LayoutComponent,
 		AwardModalComponent,

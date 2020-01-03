@@ -1,3 +1,5 @@
+export const RoleTypeKeys: Array<number> = [0, 1];
+
 export const AwardTypeKeys: Array<number> = [0, 1, 2, 3, 4];
 
 export const AwardTypeWithoutNothingKeys: Array<number> = [1, 2, 3, 4];

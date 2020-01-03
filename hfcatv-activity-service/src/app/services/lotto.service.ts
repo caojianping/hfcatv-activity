@@ -1,15 +1,15 @@
 import {PaginateResult} from "mongoose";
 import uuidv1 from "uuid/v1";
-import {BusinessError, ErrorType} from "../../error/index";
+import {BusinessError, ErrorType} from "../../error";
 import {Utils} from "../../common/utils";
-import {AwardTypeWithoutNothingKeys} from "../../common/keys";
 import {AwardType, CardStatus, RedPacketStatus, GoodsStatus, MovieTicketStatus} from "../../common/enums";
+import {AwardTypeWithoutNothingKeys} from "../../common/keys";
+import {LottoModel} from "../models";
 import {
     AwardDocument, AwardDetailDocument, AwardBaseVO, AwardVO,
     LottoDocument, CardInfo, GoodsInfo
 } from "../interfaces";
-import {LottoModel} from "../models";
-import {AwardHelper, LottoHelper} from "../../helpers/index";
+import {AwardHelper, LottoHelper} from "../../helpers";
 
 import BaseService from "./base.service";
 import UserService from "./user.service";

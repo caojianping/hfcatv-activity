@@ -1,6 +1,7 @@
 import {BusinessError, ErrorType} from "../../error";
-import {ManagerDocument} from "../interfaces";
+import {RoleTypeKeys} from "../../common/keys";
 import {ManagerModel} from "../models";
+import {AwardDocument, ManagerDocument} from "../interfaces";
 import BaseService from "./base.service";
 
 export default class ManagerService extends BaseService {
@@ -13,18 +14,29 @@ export default class ManagerService extends BaseService {
         return await this.model.findOne({_id: id, isDelete: false});
     }
 
-    async addManager(username: string, password: string): Promise<ManagerDocument> {
+    async addManager(manager: any): Promise<ManagerDocument | null> {
+        if (!manager) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员]`));
+
+        const {username, password, role} = manager;
         if (!username) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员姓名]`));
         if (!password) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员密码]`));
+        if (RoleTypeKeys.indexOf(role) < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[角色类型]`));
 
         let result = await this.isExist({username: username, isDelete: false});
         if (result.status) return Promise.reject(new BusinessError(ErrorType.DataExist.code, `${ErrorType.DataExist.message}:[管理员]`));
-        return await this.model.create({
-            username: username,
-            password: password,
-            createTime: new Date(),
-            isDelete: false
-        });
+        else {
+            manager["createTime"] = new Date();
+            manager["isDelete"] = false;
+            return await this.model.create(manager);
+        }
+    }
+
+    async updateManager(id: string, update: any): Promise<AwardDocument | null> {
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员编号]`));
+        if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员更新数据]`));
+
+        update["updateTime"] = new Date();
+        return await this.model.findByIdAndUpdate(id, {$set: update}, {new: true});
     }
 
     async setPassword(conditions: any, password: string): Promise<boolean> {

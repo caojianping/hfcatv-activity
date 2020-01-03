@@ -1,7 +1,7 @@
-import {BusinessError, ErrorType} from "../../error/index";
+import {BusinessError, ErrorType} from "../../error";
 import {Constants} from "../../common/constants";
-import {UserDocument} from "../interfaces/index";
-import {UserModel} from "../models/index";
+import {UserModel} from "../models";
+import {UserDocument} from "../interfaces";
 import BaseService from "./base.service";
 
 export default class UserService extends BaseService {
@@ -63,13 +63,18 @@ export default class UserService extends BaseService {
         return user.lottoCount;
     }
 
-    async setLottoCount(id: string, delta: number): Promise<UserDocument | null> {
+    async setLottoCount(id: string, lottoCount: number, isDelta: boolean = true): Promise<UserDocument | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
-        return await this.model.findByIdAndUpdate(id,
-            {
-                $inc: {lottoCount: delta},
-                $set: {updateTime: new Date()}
-            },
-            {new: true});
+
+        let update = isDelta ? {
+            $inc: {lottoCount: lottoCount},
+            $set: {updateTime: new Date()}
+        } : {
+            $set: {
+                lottoCount: lottoCount,
+                updateTime: new Date()
+            }
+        };
+        return await this.model.findByIdAndUpdate(id, update, {new: true});
     }
 };
