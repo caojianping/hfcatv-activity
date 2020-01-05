@@ -55,12 +55,15 @@
                 <button class="ml4px" nz-button nzType="danger" nzSize="small"
                         (click)="removeManager(manager._id)">删除
                 </button>
+                <button class="ml4px" nz-button nzType="default" nzSize="small"
+                        (click)="resetPassword(manager._id)">重置密码
+                </button>
             </td>
         </tr>
         </tbody>
     </nz-table>
 
-    <app-award-modal [type]="type" [visible]="isVisible" [award]="currentManager"
-                     (onCancel)="handleModalCancel()"
-                     (onOk)="handleModalOk($event)"></app-award-modal>
+    <app-manager-modal [type]="type" [visible]="isVisible" [manager]="currentManager"
+                       (onCancel)="handleModalCancel()"
+                       (onOk)="handleModalOk($event)"></app-manager-modal>
 </app-layout>

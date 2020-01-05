@@ -16,7 +16,7 @@ export default class AccountController {
             let manager: ManagerDocument = <ManagerDocument>result.data,
                 isEqual = manager.validatePassword(password);
             if (!isEqual) ctx.failure(ErrorType.UsernameOrPasswordWrong);
-            else ctx.success(TokenHelper.createToken(new ManagerToken(manager._id, manager.username)));
+            else ctx.success(TokenHelper.createToken(new ManagerToken(manager._id, manager.username, manager.role)));
         }
     }
 
@@ -48,6 +48,6 @@ export default class AccountController {
             ErrorType.DataInexistence.code,
             `${ErrorType.DataInexistence.message}:[管理员]`
         );
-        else ctx.success(TokenHelper.createToken(new ManagerToken(manager._id, manager.username)));
+        else ctx.success(TokenHelper.createToken(new ManagerToken(manager._id, manager.username, manager.role)));
     }
 };

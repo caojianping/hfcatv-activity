@@ -4,7 +4,9 @@ import {LoginComponent} from "./pages/login/login.component";
 import {AwardComponent} from "./pages/award/award.component";
 import {ActivityComponent} from "./pages/activity/activity.component";
 import {LottoComponent} from "./pages/lotto/lotto.component";
-import {PasswordComponent} from "./pages/password/manager.component";
+import {ManagerComponent} from "./pages/manager/manager.component";
+import {UserComponent} from "./pages/user/user.component";
+import {PasswordComponent} from "./pages/password/password.component";
 import {AuthGuard} from "./auth.guard";
 
 const routes: Routes = [
@@ -13,7 +15,9 @@ const routes: Routes = [
 	{path: "award", component: AwardComponent, canActivate: [AuthGuard]},
 	{path: "activity", component: ActivityComponent, canActivate: [AuthGuard]},
 	{path: "lotto", component: LottoComponent, canActivate: [AuthGuard]},
-	{path: "manager", component: PasswordComponent, canActivate: [AuthGuard]}
+  {path: "manager", component: ManagerComponent, canActivate: [AuthGuard]},
+  {path: "user", component: UserComponent, canActivate: [AuthGuard]},
+  {path: "password", component: PasswordComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

@@ -3,114 +3,114 @@ import {FormBuilder, FormControl} from "@angular/forms";
 import {NzMessageService, NzModalService} from "ng-zorro-antd";
 import {Utils} from "../../../ts/common/utils";
 import {
-	ActivityStatuses, AwardRanks, AwardTypes,
-	CardStatusMap, RedPacketStatusMap, GoodsStatusMap, MovieTicketStatusMap
+    ActivityStatuses, AwardRanks, AwardTypes,
+    CardStatusMap, RedPacketStatusMap, GoodsStatusMap, MovieTicketStatusMap
 } from "../../../ts/common/names";
 import {AwardVO, LottoDocument, PaginateResult} from "../../../ts/interfaces";
 import {LottoService} from "../../../ts/services";
 
 @Component({
-	selector: "app-lotto",
-	templateUrl: "./lotto.component.html",
-	styleUrls: ["./lotto.component.less"]
+    selector: "app-lotto",
+    templateUrl: "./lotto.component.html",
+    styleUrls: ["./lotto.component.less"]
 })
 export class LottoComponent implements OnInit {
-	AwardTypes: Array<string> = AwardTypes;
-	AwardRanks: Array<string> = AwardRanks;
-	ActivityStatuses: Array<string> = ActivityStatuses;
+    AwardTypes: Array<string> = AwardTypes;
+    AwardRanks: Array<string> = AwardRanks;
+    ActivityStatuses: Array<string> = ActivityStatuses;
 
-	CardStatusMap: any = CardStatusMap;
-	RedPacketStatusMap: any = RedPacketStatusMap;
-	GoodsStatusMap: any = GoodsStatusMap;
-	MovieTicketStatusMap: any = MovieTicketStatusMap;
+    CardStatusMap: any = CardStatusMap;
+    RedPacketStatusMap: any = RedPacketStatusMap;
+    GoodsStatusMap: any = GoodsStatusMap;
+    MovieTicketStatusMap: any = MovieTicketStatusMap;
 
-	queryForm: any;
+    queryForm: any;
 
-	isLoading: boolean = false;
-	lottoPageResult: PaginateResult<LottoDocument<any, AwardVO>> = {
-		docs: [],
-		total: 0,
-		page: 1,
-		limit: 10
-	};
+    isLoading: boolean = false;
+    lottoPageResult: PaginateResult<LottoDocument<any, AwardVO>> = {
+        docs: [],
+        total: 0,
+        page: 1,
+        limit: 10
+    };
 
-	constructor(
-		private formBuilder: FormBuilder,
-		private modal: NzModalService,
-		private message: NzMessageService,
-		private lottoService: LottoService
-	) {
-		this.queryForm = this.formBuilder.group({
-			nickname: new FormControl(null),
-			title: new FormControl(null),
-			type: new FormControl(null),
-			status: new FormControl(null)
-		});
-	}
+    constructor(
+        private formBuilder: FormBuilder,
+        private modal: NzModalService,
+        private message: NzMessageService,
+        private lottoService: LottoService
+    ) {
+        this.queryForm = this.formBuilder.group({
+            nickname: new FormControl(null),
+            title: new FormControl(null),
+            type: new FormControl(null),
+            status: new FormControl(null)
+        });
+    }
 
-	ngOnInit() {
-		this.fetchPageLottos();
-	}
+    ngOnInit() {
+        this.fetchPageLottos();
+    }
 
-	fetchPageLottos(key?: string, $event?: number) {
-		const self = this;
-		if (key && $event) {
-			self.lottoPageResult[key] = $event;
-		}
+    fetchPageLottos(key?: string, $event?: number) {
+        const self = this;
+        if (key && $event) {
+            self.lottoPageResult[key] = $event;
+        }
 
-		const {message, lottoService, queryForm, lottoPageResult} = self;
-		self.isLoading = true;
-		queryForm.value["status"] = Number(queryForm.value.status);
-		lottoService.getPageLottos(Utils.filterConditions(queryForm.value, false), lottoPageResult.page, lottoPageResult.limit)
-			.subscribe({
-				next(result: PaginateResult<LottoDocument<any, AwardVO>>) {
-					self.isLoading = false;
-					self.lottoPageResult = result;
-				},
-				error(err: any) {
-					self.isLoading = false;
-					message.error(err);
-				}
-			})
-	}
+        const {message, lottoService, queryForm, lottoPageResult} = self;
+        self.isLoading = true;
+        queryForm.value["status"] = Number(queryForm.value.status);
+        lottoService.getPageLottos(Utils.filterConditions(queryForm.value, false), lottoPageResult.page, lottoPageResult.limit)
+        .subscribe({
+            next(result: PaginateResult<LottoDocument<any, AwardVO>>) {
+                self.isLoading = false;
+                self.lottoPageResult = result;
+            },
+            error(err: any) {
+                self.isLoading = false;
+                message.error(err);
+            }
+        })
+    }
 
-	queryLottos() {
-		if (!this.queryForm.valid) {
-			for (const i in this.queryForm.controls) {
-				this.queryForm.controls[i].markAsDirty();
-				this.queryForm.controls[i].updateValueAndValidity();
-			}
-			return;
-		}
+    queryLottos() {
+        if (!this.queryForm.valid) {
+            for (const i in this.queryForm.controls) {
+                this.queryForm.controls[i].markAsDirty();
+                this.queryForm.controls[i].updateValueAndValidity();
+            }
+            return;
+        }
 
-		this.fetchPageLottos();
-	}
+        this.fetchPageLottos();
+    }
 
-	setStatus(id: string, status: number) {
-		const self = this;
-		const {message, lottoService} = self;
-		lottoService.setStatus(id, status)
-			.subscribe({
-				next(data: LottoDocument<any, AwardVO>) {
-					self.fetchPageLottos();
-				},
-				error(err: any) {
-					message.error(err);
-				}
-			});
-	}
+    setStatus(id: string, status: number) {
+        const self = this;
+        const {message, lottoService} = self;
+        lottoService.setStatus(id, status)
+        .subscribe({
+            next(data: LottoDocument<any, AwardVO>) {
+                self.fetchPageLottos();
+            },
+            error(err: any) {
+                message.error(err);
+            }
+        });
+    }
 
-	sendRedPacket(id: string) {
-		const self = this;
-		const {message, lottoService} = self;
-		lottoService.sendRedPacket(id)
-			.subscribe({
-				next(result: boolean) {
-					result && self.fetchPageLottos();
-				},
-				error(err: any) {
-					message.error(err);
-				}
-			});
-	}
+    sendRedPacket(id: string) {
+        const self = this;
+        const {message, lottoService} = self;
+        lottoService.sendRedPacket(id)
+        .subscribe({
+            next(result: boolean) {
+                result && self.fetchPageLottos();
+            },
+            error(err: any) {
+                message.error(err);
+            }
+        });
+    }
 }

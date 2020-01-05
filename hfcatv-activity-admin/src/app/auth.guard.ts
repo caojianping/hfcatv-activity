@@ -4,29 +4,27 @@ import {Observable} from "rxjs";
 import {ManagerService} from "../ts/services";
 
 @Injectable({
-	providedIn: "root"
+    providedIn: "root"
 })
 export class AuthGuard implements CanActivate {
-	constructor(
-		private router: Router,
-		private managerService: ManagerService
-	) {
-	}
+    constructor(
+        private router: Router,
+        private managerService: ManagerService
+    ) {
+    }
 
-	canActivate(
-		next: ActivatedRouteSnapshot,
-		state: RouterStateSnapshot
-	): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-		console.log("AuthGuard url:", state.url);
-		return this.checkStatus(state.url);
-	}
+    canActivate(
+        next: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot
+    ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+        return this.checkStatus(state.url);
+    }
 
-	checkStatus(url: string): boolean {
-		console.log("AuthGuard loginStatus:", this.managerService.loginStatus);
-		if (this.managerService.loginStatus) return true;
+    checkStatus(url: string): boolean {
+        if (this.managerService.loginStatus) return true;
 
-		this.managerService.redirectUrl = url;
-		this.router.navigateByUrl("/login");
-		return false;
-	}
+        this.managerService.redirectUrl = url;
+        this.router.navigateByUrl("/login");
+        return false;
+    }
 }

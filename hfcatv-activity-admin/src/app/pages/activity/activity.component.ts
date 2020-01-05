@@ -56,16 +56,16 @@ export class ActivityComponent implements OnInit {
         const {message, activityService, queryForm, activityPageResult} = self;
         self.isLoading = true;
         activityService.getPageActivities(Utils.filterConditions(queryForm.value), activityPageResult.page, activityPageResult.limit)
-            .subscribe({
-                next(result: PaginateResult<ActivityDocument<AwardVO>>) {
-                    self.isLoading = false;
-                    self.activityPageResult = result;
-                },
-                error(err: any) {
-                    self.isLoading = false;
-                    message.error(err);
-                }
-            })
+        .subscribe({
+            next(result: PaginateResult<ActivityDocument<AwardVO>>) {
+                self.isLoading = false;
+                self.activityPageResult = result;
+            },
+            error(err: any) {
+                self.isLoading = false;
+                message.error(err);
+            }
+        })
     }
 
     queryActivities() {
@@ -96,15 +96,15 @@ export class ActivityComponent implements OnInit {
         const self = this;
         const {message, activityService} = self;
         activityService.setSwitch(id, switcher)
-            .subscribe({
-                next(result: boolean) {
-                    if (!result) message.error("活动设置失败");
-                    else self.fetchPageActivities();
-                },
-                error(err: any) {
-                    message.error(err);
-                }
-            });
+        .subscribe({
+            next(result: boolean) {
+                if (!result) message.error("活动设置失败");
+                else self.fetchPageActivities();
+            },
+            error(err: any) {
+                message.error(err);
+            }
+        });
     }
 
     removeActivity(id: string) {
@@ -114,15 +114,15 @@ export class ActivityComponent implements OnInit {
             nzTitle: "确定要删除此活动吗？",
             nzOnOk() {
                 activityService.removeActivity(id)
-                    .subscribe({
-                        next(result: boolean) {
-                            if (!result) message.error("删除失败");
-                            else self.fetchPageActivities();
-                        },
-                        error(err: any) {
-                            message.error(err);
-                        }
-                    });
+                .subscribe({
+                    next(result: boolean) {
+                        if (!result) message.error("删除失败");
+                        else self.fetchPageActivities();
+                    },
+                    error(err: any) {
+                        message.error(err);
+                    }
+                });
             }
         });
     }
@@ -136,28 +136,28 @@ export class ActivityComponent implements OnInit {
         const {message, activityService, type} = self;
         if (type === OperateType.Add) {
             activityService.addActivity(activity)
-                .subscribe({
-                    next(data: ActivityDocument<AwardVO>) {
-                        self.fetchPageActivities();
-                        self.isVisible = false;
-                    },
-                    error(err: any) {
-                        message.error(err);
-                        self.isVisible = false;
-                    }
-                });
+            .subscribe({
+                next(data: ActivityDocument<AwardVO>) {
+                    self.fetchPageActivities();
+                    self.isVisible = false;
+                },
+                error(err: any) {
+                    message.error(err);
+                    self.isVisible = false;
+                }
+            });
         } else if (type === OperateType.Edit) {
             activityService.updateActivity(<ActivityDocument<AwardVO>>activity)
-                .subscribe({
-                    next(data: ActivityDocument<AwardVO>) {
-                        self.fetchPageActivities();
-                        self.isVisible = false;
-                    },
-                    error(err: any) {
-                        message.error(err);
-                        self.isVisible = false;
-                    }
-                });
+            .subscribe({
+                next(data: ActivityDocument<AwardVO>) {
+                    self.fetchPageActivities();
+                    self.isVisible = false;
+                },
+                error(err: any) {
+                    message.error(err);
+                    self.isVisible = false;
+                }
+            });
         }
     }
 
@@ -168,25 +168,25 @@ export class ActivityComponent implements OnInit {
         if (type === 0) {
             const {id, award} = data;
             activityService.setAward(id, award)
-                .subscribe({
-                    next(result: boolean) {
-                        result && self.fetchPageActivities();
-                    },
-                    error(err: any) {
-                        message.error(err);
-                    }
-                });
+            .subscribe({
+                next(result: boolean) {
+                    result && self.fetchPageActivities();
+                },
+                error(err: any) {
+                    message.error(err);
+                }
+            });
         } else if (type === 1) {
             const {id, awardId} = data;
             activityService.removeAward(id, awardId)
-                .subscribe({
-                    next(result: boolean) {
-                        result && self.fetchPageActivities();
-                    },
-                    error(err: any) {
-                        message.error(err);
-                    }
-                });
+            .subscribe({
+                next(result: boolean) {
+                    result && self.fetchPageActivities();
+                },
+                error(err: any) {
+                    message.error(err);
+                }
+            });
         }
     }
 }

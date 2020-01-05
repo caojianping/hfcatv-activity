@@ -19,7 +19,7 @@
                 <nz-select id="type" formControlName="type"
                            nzAllowClear nzPlaceHolder="请选择奖品类型">
                     <nz-option *ngFor="let item of AwardTypes; index as i;"
-                               [nzLabel]="item" [nzValue]="i"></nz-option>
+                               [nzDisabled]="[1, 2, 4].indexOf(i) > -1" [nzLabel]="item" [nzValue]="i"></nz-option>
                 </nz-select>
             </nz-form-control>
         </nz-form-item>

@@ -3,6 +3,7 @@ import {RoleTypeKeys} from "../../common/keys";
 import {ManagerModel} from "../models";
 import {AwardDocument, ManagerDocument} from "../interfaces";
 import BaseService from "./base.service";
+import {Constants} from "../../common/constants";
 
 export default class ManagerService extends BaseService {
     constructor() {
@@ -48,6 +49,19 @@ export default class ManagerService extends BaseService {
 
         let manager: ManagerDocument = result.data;
         manager["password"] = password;
+        manager["updateTime"] = new Date();
+        await manager.save();
+        return true;
+    }
+
+    async resetPassword(id: string): Promise<boolean> {
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员编号]`));
+
+        let result = await this.isExist({_id: id});
+        if (!result.status) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[管理员]`));
+
+        let manager: ManagerDocument = result.data;
+        manager["password"] = manager.username + Constants.PASSWORD_SUFFIX;
         manager["updateTime"] = new Date();
         await manager.save();
         return true;

@@ -44,4 +44,11 @@ export default class ManagerController {
             result = await managerService.softDelete(id);
         ctx.success(result);
     }
+
+    // for admin
+    async resetPassword(ctx: Context, next: Function) {
+        let {id} = ctx.request.body || {},
+            result = await managerService.resetPassword(id);
+        ctx.success(!!result);
+    }
 };

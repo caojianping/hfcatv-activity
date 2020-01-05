@@ -9,33 +9,10 @@
             </a>
         </div>
         <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-            <li nz-submenu nzOpen nzTitle="产品管理" nzIcon="dashboard">
+            <li *ngFor="let menu of menus" nz-submenu nzOpen [nzTitle]="menu.name" [nzIcon]="menu.icon">
                 <ul>
-                    <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/award">奖品管理</a>
-                    </li>
-                    <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/activity">活动管理</a>
-                    </li>
-                    <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/lotto">中奖管理</a>
-                    </li>
-                </ul>
-            </li>
-            <li nz-submenu nzOpen nzTitle="用户中心" nzIcon="form">
-              <ul>
-                <li nz-menu-item nzMatchRouter>
-                  <a routerLink="/user">用户管理</a>
-                </li>
-              </ul>
-              <ul>
-                <li nz-menu-item nzMatchRouter>
-                  <a routerLink="/manager">管理员</a>
-                </li>
-              </ul>
-                <ul>
-                    <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/password">修改密码</a>
+                    <li *ngFor="let item of menu.items" nz-menu-item nzMatchRouter>
+                        <a [routerLink]="item.route">{{item.name}}</a>
                     </li>
                 </ul>
             </li>
@@ -59,7 +36,7 @@
                             <a href="javascript:void(0)" (click)="logout()">退出登录</a>
                         </li>
                         <li nz-menu-item>
-                            <a routerLink="/manager">修改密码</a>
+                            <a routerLink="/password">修改密码</a>
                         </li>
                     </ul>
                 </nz-dropdown-menu>

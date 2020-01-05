@@ -77,7 +77,6 @@ export class ActivityModalComponent implements OnInit {
     }
 
     _handleActivity(formData: any) {
-        console.log("_handleActivity 111:", this.type, formData);
         let formDataDup = Utils.duplicate(formData),
             type = this.type;
         if (type === OperateType.Add) {
@@ -90,7 +89,6 @@ export class ActivityModalComponent implements OnInit {
         } else if (type === OperateType.Edit) {
             delete formDataDup.awards;
         }
-        console.log("_handleActivity 222:", formDataDup);
         return formDataDup;
     }
 
@@ -98,14 +96,14 @@ export class ActivityModalComponent implements OnInit {
         let self = this;
         const {message, awardService} = self;
         awardService.getAwards()
-            .subscribe({
-                next(awards: Array<AwardDocument>) {
-                    self.awards = awards;
-                },
-                error(err: any) {
-                    message.error(err);
-                }
-            });
+        .subscribe({
+            next(awards: Array<AwardDocument>) {
+                self.awards = awards;
+            },
+            error(err: any) {
+                message.error(err);
+            }
+        });
     }
 
     openActivity() {

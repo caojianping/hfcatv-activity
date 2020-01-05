@@ -10,7 +10,7 @@ import {ManagerService} from "../../../ts/services";
     styleUrls: ["./password.component.less"]
 })
 export class PasswordComponent implements OnInit {
-    managerForm: FormGroup;
+    passwordForm: FormGroup;
 
     constructor(
         private router: Router,
@@ -21,17 +21,17 @@ export class PasswordComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.managerForm = this.formBuilder.group({
+        this.passwordForm = this.formBuilder.group({
             password: new FormControl(null, Validators.required),
             confirmPassword: new FormControl(null, Validators.required)
         });
     }
 
     modifyPassword(formData: any): void {
-        if (!this.managerForm.valid) {
-            for (const i in this.managerForm.controls) {
-                this.managerForm.controls[i].markAsDirty();
-                this.managerForm.controls[i].updateValueAndValidity();
+        if (!this.passwordForm.valid) {
+            for (const i in this.passwordForm.controls) {
+                this.passwordForm.controls[i].markAsDirty();
+                this.passwordForm.controls[i].updateValueAndValidity();
             }
             return;
         }
@@ -45,23 +45,23 @@ export class PasswordComponent implements OnInit {
 
         let msgDf = message.loading("密码修改中……");
         managerService.setPassword(password)
-            .subscribe({
-                next(result: boolean) {
-                    if (!result) {
-                        message.remove(msgDf.messageId);
-                        message.error("密码修改失败");
-                    } else {
-                        setTimeout(() => {
-                            message.remove(msgDf.messageId);
-                            message.success("密码修改成功，请重新登录");
-                            router.navigateByUrl("/login");
-                        }, 1688);
-                    }
-                },
-                error(err: any) {
+        .subscribe({
+            next(result: boolean) {
+                if (!result) {
                     message.remove(msgDf.messageId);
-                    message.error(err);
+                    message.error("密码修改失败");
+                } else {
+                    setTimeout(() => {
+                        message.remove(msgDf.messageId);
+                        message.success("密码修改成功，请重新登录");
+                        router.navigateByUrl("/login");
+                    }, 1688);
                 }
-            });
+            },
+            error(err: any) {
+                message.remove(msgDf.messageId);
+                message.error(err);
+            }
+        });
     }
 }

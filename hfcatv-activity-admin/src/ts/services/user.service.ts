@@ -5,19 +5,19 @@ import {PaginateResult, UserDocument} from "../interfaces";
 import {HttpService} from "./http.service";
 
 @Injectable({
-  providedIn: "root"
+    providedIn: "root"
 })
 export class UserService {
-  constructor(private httpService: HttpService) {
-  }
+    constructor(private httpService: HttpService) {
+    }
 
-  getPageUsers(conditions: any, page: number, limit: number): Observable<PaginateResult<UserDocument>> {
-    return this.httpService.post<PaginateResult<UserDocument>>(`${Urls.user.list}/${page}/${limit}`, conditions);
-  }
+    getPageUsers(conditions: any, page: number, limit: number): Observable<PaginateResult<UserDocument>> {
+        return this.httpService.post<PaginateResult<UserDocument>>(`${Urls.user.list}/${page}/${limit}`, conditions);
+    }
 
-  setLottoCount(id: string, lottoCount: number)
-    : Observable<UserDocument> {
-    return this.httpService
-      .post<UserDocument>(Urls.user.setLottoCount, {id: id, lottoCount: lottoCount});
-  }
+    setLottoCount(id: string, lottoCount: number)
+        : Observable<UserDocument> {
+        return this.httpService
+        .post<UserDocument>(Urls.user.setLottoCount, {id: id, lottoCount: lottoCount});
+    }
 }

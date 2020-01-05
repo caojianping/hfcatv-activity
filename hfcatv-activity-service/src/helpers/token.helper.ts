@@ -2,6 +2,7 @@ import config from "config";
 import jwt from "jsonwebtoken";
 import done from "../common/done";
 import {Constants} from "../common/constants";
+import {RoleType} from "../common/enums";
 
 const secret = config.get<string>("jwt.secret");
 
@@ -14,10 +15,12 @@ function verifyPromise(token: string): Promise<any> {
 export class ManagerToken {
     managerId: string;
     username: string;
+    role: RoleType;
 
-    constructor(managerId: string, username: string) {
+    constructor(managerId: string, username: string, role: RoleType) {
         this.managerId = managerId;
         this.username = username;
+        this.role = role;
     }
 }
 

@@ -11,15 +11,15 @@
                     </nz-form-control>
                 </nz-form-item>
             </div>
-          <div nz-col [nzSpan]="8">
-            <nz-form-item class="mb0" nzFlex>
-              <nz-form-label nzFor="nickname">微信昵称</nz-form-label>
-              <nz-form-control>
-                <input id="nickname" nz-input formControlName="nickname"
-                       placeholder="请输入微信昵称"/>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
+            <div nz-col [nzSpan]="8">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="nickname">微信昵称</nz-form-label>
+                    <nz-form-control>
+                        <input id="nickname" nz-input formControlName="nickname"
+                               placeholder="请输入微信昵称"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
             <div nz-col [nzSpan]="8">
                 <button class="mt4px" nz-button nzType="primary">查询</button>
             </div>
@@ -66,6 +66,6 @@
     </nz-table>
 
     <app-user-modal [visible]="isVisible" [user]="currentUser"
-                     (onCancel)="handleModalCancel()"
-                     (onOk)="handleModalOk($event)"></app-user-modal>
+                    (onCancel)="handleModalCancel()"
+                    (onOk)="handleModalOk($event)"></app-user-modal>
 </app-layout>

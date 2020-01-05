@@ -5,9 +5,9 @@ import {LottoService} from "./lotto.service";
 import {UserService} from "./user.service";
 
 export {
-  ManagerService,
-  AwardService,
-  ActivityService,
-  LottoService,
-  UserService
+    ManagerService,
+    AwardService,
+    ActivityService,
+    LottoService,
+    UserService
 };

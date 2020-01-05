@@ -69,7 +69,7 @@
                 {{ActivityStatuses[activity.status]}}
             </td>
             <td [ngStyle]="{color: ['green','red'][activity.switch ? 0: 1]}">
-                {{activity.switch ? "已开启": "未开启"}}
+                {{activity.switch ? "已开启" : "未开启"}}
             </td>
             <td>
                 <nz-list class="award-list" [nzDataSource]="activity.awards"
@@ -89,7 +89,7 @@
             <td>
                 <button nz-button nzType="default" nzSize="small"
                         (click)="setSwitch(activity._id, !activity.switch)">
-                    {{activity.switch ? "关闭": "开启"}}
+                    {{activity.switch ? "关闭" : "开启"}}
                 </button>
 
                 <button class="ml4px" nz-button
