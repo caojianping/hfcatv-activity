@@ -7,7 +7,11 @@ Database.connect();
 const managerService = new ManagerService();
 
 async function addManager() {
-    await managerService.addManager("admin", "Admin_2020", RoleType.Administrator);
+    await managerService.addManager({
+        username: "admin",
+        password: "admin_2020",
+        role: RoleType.Administrator
+    });
 }
 
 async function setPassword(username: string, password: string) {
