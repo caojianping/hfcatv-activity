@@ -86,12 +86,10 @@ typings/
 /hfcatv-activity-service/dist
 /hfcatv-activity-service/static
 /hfcatv-activity-service/logs
-/hfcatv-activity-service/package-lock.json
 
 /hfcatv-activity-admin/.idea
 /hfcatv-activity-admin/node_modules
 /hfcatv-activity-admin/dist
-/hfcatv-activity-admin/package-lock.json
 
 /hfcatv-activity-applet/.idea
 /hfcatv-activity-applet/node_modules

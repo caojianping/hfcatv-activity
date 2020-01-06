@@ -5,7 +5,8 @@ import {UserDocument} from "../interfaces";
 const UserSchema: Schema = new Schema({
     unionId: {
         type: Schema.Types.String,
-        required: true
+        // required: true,
+        required: false
     },
     openId: {
         type: Schema.Types.String,

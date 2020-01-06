@@ -15,11 +15,13 @@ export default class LottoController {
 
     // for api：执行抽奖
     async execLotto(ctx: Context, next: Function) {
-        let {unionId, openId, activityId} = ctx.request.body || {};
-        Console.info("/api/lotto/exec unionId, openId, activityId:", unionId, openId, activityId);
-        Logger.info("/api/lotto/exec unionId, openId, activityId:", unionId, openId, activityId);
+        // let {unionId, openId, activityId} = ctx.request.body || {};
+        let {openId, activityId} = ctx.request.body || {};
+        Console.info("/api/lotto/exec openId, activityId:", openId, activityId);
+        Logger.info("/api/lotto/exec openId, activityId:", openId, activityId);
 
-        let userId = await userService.getUserIdByWechat(unionId, openId),
+        // let userId = await userService.getUserIdByWechat(unionId, openId),
+        let userId = await userService.getUserIdByWechat(openId),
             data = await lottoService.addLotto(userId, activityId);
         Console.info("/api/lotto/exec userId, data:", userId, data);
         Logger.info("/api/lotto/exec userId, data:", userId, data);
@@ -35,8 +37,10 @@ export default class LottoController {
         let params = ctx.params || {},
             page = Number(params.page || 1),
             limit = Number(params.limit || 10),
-            {unionId, openId, type} = ctx.request.body || {},
-            userId = await userService.getUserIdByWechat(unionId, openId),
+            // {unionId, openId, type} = ctx.request.body || {},
+            {openId, type} = ctx.request.body || {},
+            // userId = await userService.getUserIdByWechat(unionId, openId),
+            userId = await userService.getUserIdByWechat(openId),
             result = await lottoService.getPageLottosByUserId(userId, type || "*", page, limit);
         ctx.success(result);
     }

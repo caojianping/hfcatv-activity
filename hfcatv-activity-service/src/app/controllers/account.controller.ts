@@ -3,6 +3,7 @@ import {ErrorType} from "../../error";
 import {TokenHelper, ManagerToken} from "../../helpers";
 import {ManagerDocument} from "../interfaces";
 import {ManagerService} from "../services";
+import {Console, Logger} from "../../common/logger";
 
 const managerService = new ManagerService();
 
@@ -29,8 +30,11 @@ export default class AccountController {
     // for admin
     async setPassword(ctx: Context, next: Function) {
         let managerId = TokenHelper.getManagerId(ctx.state.user),
-            {password} = ctx.request.body || {},
-            result = await managerService.setPassword({_id: managerId}, password);
+            {password} = ctx.request.body || {};
+        Console.info("/api/account/setPassword managerId, password:", managerId, password);
+        Logger.info("/api/account/setPassword managerId, password:", managerId, password);
+
+        let result = await managerService.setPassword({_id: managerId}, password);
         ctx.success(!!result);
     }
 

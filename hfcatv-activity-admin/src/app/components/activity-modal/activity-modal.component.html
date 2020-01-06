@@ -107,15 +107,15 @@
                                              [ngStyle]="{width: '60px'}"></nz-input-number>
                         </td>
                         <td>
-                            <button *ngIf="type === 1" class="btn-small"
+                            <a *ngIf="type === 1" class="btn-small"
                                     nz-button nzType="primary" nzSize="small"
                                     (click)="setActivityAward(i)">保存
-                            </button>
+                            </a>
 
-                            <button class="btn-small ml4px"
+                            <a class="btn-small ml4px"
                                     nz-button nzType="danger" nzSize="small"
                                     (click)="removeActivityAward(i)">删除
-                            </button>
+                            </a>
                         </td>
                     </tr>
                     </tbody>

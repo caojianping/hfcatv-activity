@@ -14,12 +14,14 @@ export default class UserService extends BaseService {
         return await this.model.findOne({_id: id, isDelete: false});
     }
 
-    async getUserByWechat(unionId: string, openId: string, nickname: string): Promise<UserDocument | null> {
-        if (!unionId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信unionId]`));
+    // async getUserByWechat(unionId: string, openId: string, nickname: string): Promise<UserDocument | null> {
+    async getUserByWechat(openId: string, nickname: string): Promise<UserDocument | null> {
+        // if (!unionId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信unionId]`));
         if (!openId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信openId]`));
         if (!nickname) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信昵称]`));
 
-        let result = await this.isExist({unionId: unionId, openId: openId, isDelete: false});
+        // let result = await this.isExist({unionId: unionId, openId: openId, isDelete: false});
+        let result = await this.isExist({openId: openId, isDelete: false});
         if (result.status) {
             let user = result.data;
             if (user.nickname !== nickname) {
@@ -29,7 +31,6 @@ export default class UserService extends BaseService {
             return user;
         } else {
             return await this.model.create({
-                unionId: unionId,
                 openId: openId,
                 nickname: nickname,
                 lottoCount: Constants.DEFAULT_LOTTO_COUNT,
@@ -39,11 +40,13 @@ export default class UserService extends BaseService {
         }
     }
 
-    async getUserIdByWechat(unionId: string, openId: string): Promise<string> {
-        if (!unionId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信unionId]`));
+    // async getUserIdByWechat(unionId: string, openId: string): Promise<string> {
+    async getUserIdByWechat(openId: string): Promise<string> {
+        // if (!unionId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信unionId]`));
         if (!openId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信openId]`));
 
-        let result = await this.isExist({unionId: unionId, openId: openId, isDelete: false});
+        // let result = await this.isExist({unionId: unionId, openId: openId, isDelete: false});
+        let result = await this.isExist({openId: openId, isDelete: false});
         if (!result.status) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[用户]`));
         return result.data._id;
     }

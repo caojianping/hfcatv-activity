@@ -171,9 +171,11 @@ export class ActivityComponent implements OnInit {
             .subscribe({
                 next(result: boolean) {
                     result && self.fetchPageActivities();
+                    self.isVisible = false;
                 },
                 error(err: any) {
                     message.error(err);
+                    self.isVisible = false;
                 }
             });
         } else if (type === 1) {
@@ -182,9 +184,11 @@ export class ActivityComponent implements OnInit {
             .subscribe({
                 next(result: boolean) {
                     result && self.fetchPageActivities();
+                    self.isVisible = false;
                 },
                 error(err: any) {
                     message.error(err);
+                    self.isVisible = false;
                 }
             });
         }

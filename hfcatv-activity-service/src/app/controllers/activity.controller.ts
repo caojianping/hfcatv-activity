@@ -1,6 +1,7 @@
 import {Context} from "koa";
 import {ErrorType} from "../../error";
 import {ActivityService} from "../services";
+import {Console, Logger} from "../../common/logger";
 
 const activityService = new ActivityService();
 
@@ -55,8 +56,11 @@ export default class ActivityController {
 
     // for admin
     async setAward(ctx: Context, next: Function) {
-        let {id, award} = ctx.request.body || {},
-            result = await activityService.setAward(id, award);
+        let {id, award} = ctx.request.body || {};
+        Console.info("/admin/activity/setAward id, award:", id, award);
+        Logger.info("/admin/activity/setAward id, award:", id, award);
+
+        let result = await activityService.setAward(id, award);
         ctx.success(result);
     }
 

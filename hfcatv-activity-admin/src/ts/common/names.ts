@@ -1,4 +1,4 @@
-export const RoleTypes: Array<string> = ["管理员", "审核人员"];
+export const RoleTypes: Array<string> = ["管理员", "营业员"];
 
 export const AwardTypes: Array<string> = ["参与奖", "充值卡券", "现金红包", "实物礼品", "观影券"];
 

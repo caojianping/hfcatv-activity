@@ -2,8 +2,8 @@
  * 角色类型
  */
 export enum RoleType {
-    Administrator = 0,	// 超级管理员
-    Auditor = 1			// 审核人员
+    Administrator = 0,	// 管理员
+    Assistant = 1		// 营业员
 }
 
 /**

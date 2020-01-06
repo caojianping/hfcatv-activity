@@ -2,6 +2,7 @@ import {PaginateResult} from "mongoose";
 import {BusinessError, ErrorType} from "../../error";
 import {Utils} from "../../common/utils";
 import {ActivityStatus} from "../../common/enums";
+import {AwardRankKeys} from "../../common/keys";
 import {ActivityModel} from "../models";
 import {ActivityDocument, AwardBaseVO, AwardDetailDocument, AwardVO} from "../interfaces";
 import {ActivityHelper, AwardHelper} from "../../helpers";
@@ -59,6 +60,34 @@ export default class ActivityService extends BaseService {
         return activity;
     }
 
+    private async _getActivityById(id: string): Promise<ActivityDocument<AwardDetailDocument> | null> {
+        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
+
+        let result = await this.isExist({_id: id, isDelete: false});
+        if (!result.status) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
+
+        let activity = result.data,
+            status = ActivityHelper.getActivityStatus(activity.startTime, activity.endTime);
+        if (status !== activity.status) {
+            let update = {status: status, updateTime: new Date()};
+            activity = await this.model.findByIdAndUpdate(id, {$set: update}, {new: true});
+        }
+        return activity;
+    }
+
+
+    async isClosedOrFinished(id: string): Promise<boolean> {
+        let activity = await this._getActivityById(id);
+        if (!activity) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
+        return !activity.switch || activity.status === ActivityStatus.Finished;
+    }
+
+    async isEditable(id: string): Promise<boolean> {
+        let activity = await this._getActivityById(id);
+        if (!activity) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
+        // 活动未开始或者进行中并且关闭时，活动数据才可以进行编辑
+        return activity.status !== ActivityStatus.Finished && !activity.switch;
+    }
 
     async getActivity(): Promise<ActivityDocument<AwardBaseVO> | null> {
         let conditions = {status: {$ne: ActivityStatus.Finished}, switch: true, isDelete: false},
@@ -127,24 +156,12 @@ export default class ActivityService extends BaseService {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
         if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动更新数据]`));
 
+        let isEditable = await this.isEditable(id);
+        if (!isEditable) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[当前活动状态不可以编辑]`));
+
         let doc = await this.model.findByIdAndUpdate(id, {$set: this._handleActivity(update, true)}, {new: true}).populate(this.populates);
         if (!doc) Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
         return this._buildActivity(doc, false);
-    }
-
-    async isClosedOrFinished(id: string): Promise<boolean> {
-        if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
-
-        let result = await this.isExist({_id: id, isDelete: false});
-        if (!result.status) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
-
-        let activity = result.data,
-            status = ActivityHelper.getActivityStatus(activity.startTime, activity.endTime);
-        if (status !== activity.status) {
-            let update = {status: status, updateTime: new Date()};
-            await this.model.findByIdAndUpdate(id, {$set: update});
-        }
-        return !activity.switch || status === ActivityStatus.Finished;
     }
 
     async setSwitch(id: string, switcher: boolean): Promise<boolean> {
@@ -171,23 +188,29 @@ export default class ActivityService extends BaseService {
 
     async setAward(id: string, award: any): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
+
+        let isEditable = await this.isEditable(id);
+        if (!isEditable) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[当前活动状态不可以编辑]`));
+
         if (!award) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动奖品]`));
 
-        const {id: awardId, rank, weight, stock} = award;
-        let activity = await this.model.findOneAndUpdate(
-            {_id: id, "awards.award": awardId},
-            {
-                $set: {
-                    "awards.$.award": awardId,
-                    "awards.$.rank": rank,
-                    "awards.$.weight": weight
-                },
-                $inc: {
-                    "awards.$.totalStock": stock,
-                    "awards.$.remainStock": stock
-                }
-            }
-        );
+        let {id: awardId, rank, weight, stock} = award;
+        if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
+
+        let update = {$set: {"awards.$.award": awardId}};
+        if (rank !== undefined && rank !== null && AwardRankKeys.indexOf(rank) > -1) {
+            update["$set"]["awards.$.rank"] = rank;
+        }
+        if (weight !== undefined && weight !== null && weight >= 0) {
+            update["$set"]["awards.$.weight"] = weight;
+        }
+        if (stock !== undefined && stock !== null && stock >= 0) {
+            update["$inc"] = {
+                "awards.$.totalStock": stock,
+                "awards.$.remainStock": stock
+            };
+        }
+        let activity = await this.model.findOneAndUpdate({_id: id, "awards.award": awardId}, update);
         return !!activity;
     }
 
@@ -205,6 +228,9 @@ export default class ActivityService extends BaseService {
     async reduceStock(id: string, awardId: string): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
         if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
+
+        let isEditable = await this.isEditable(id);
+        if (!isEditable) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[当前活动状态不可以编辑]`));
 
         let activity = await this.model.findOneAndUpdate(
             {_id: id, "awards.award": awardId},

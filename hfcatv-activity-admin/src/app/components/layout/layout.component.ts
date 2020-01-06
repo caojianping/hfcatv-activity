@@ -52,14 +52,14 @@ export class LayoutComponent implements OnInit {
                         items: [
                             {name: "奖品管理", route: "/award", icon: null},
                             {name: "活动管理", route: "/activity", icon: null},
+                            {name: "用户管理", route: "/user", icon: null},
                             {name: "中奖管理", route: "/lotto", icon: null}
                         ]
                     },
                     {
-                        name: "用户中心", route: null, icon: "form",
+                        name: "系统管理", route: null, icon: "form",
                         items: [
-                            {name: "用户管理", route: "/user", icon: null},
-                            {name: "管理员", route: "/manager", icon: null},
+                            {name: "操作员", route: "/manager", icon: null},
                             {name: "修改密码", route: "/password", icon: null}
                         ]
                     }
@@ -72,7 +72,7 @@ export class LayoutComponent implements OnInit {
                         ]
                     },
                     {
-                        name: "用户中心", route: null, icon: "form",
+                        name: "系统管理", route: null, icon: "form",
                         items: [
                             {name: "修改密码", route: "/password", icon: null}
                         ]
