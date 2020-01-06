@@ -12,8 +12,7 @@ const app = new Koa();
 app.use(middleware());
 app.use(routes());
 
-let env = process.env.NODE_ENV || "development",
-    port = config.get<number>(`services.${env}.port`);
+let port = config.get<number>("services.port");
 app.listen(port, () => {
     Console.info(`Koa server listen on port ${port}.`);
 });

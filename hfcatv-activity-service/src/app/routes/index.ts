@@ -5,13 +5,13 @@ import apiRoute from "./api.route";
 import adminRoute from "./admin.route";
 import testRoute from "./test.route";
 
-let env = process.env.NODE_ENV || "development",
-    virtual = config.get<string>(`services.${env}.virtual`),
+let virtual = config.get<string>("services.virtual"),
     childrens: Array<any> = [
         {prefix: `${virtual}/api`, routes: apiRoute},
         {prefix: `${virtual}/admin`, routes: adminRoute},
         {prefix: `${virtual}/test`, routes: testRoute}
     ];
+console.log("virtual:", virtual);
 
 export default function routes() {
     const router = new Router();

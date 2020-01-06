@@ -18,8 +18,7 @@ const activityController = new ActivityController();
 const lottoController = new LottoController();
 const userController = new UserController();
 
-let env = process.env.NODE_ENV || "development",
-    virtual = config.get<string>(`services.${env}.virtual`),
+let virtual = config.get<string>("services.virtual"),
     secret = config.get<string>("jwt.secret"),
     jwt = koaJwt({secret: secret})
     .unless({
