@@ -62,16 +62,16 @@ export class LottoComponent implements OnInit {
         self.isLoading = true;
         queryForm.value["status"] = Number(queryForm.value.status);
         lottoService.getPageLottos(Utils.filterConditions(queryForm.value, false), lottoPageResult.page, lottoPageResult.limit)
-        .subscribe({
-            next(result: PaginateResult<LottoDocument<any, AwardVO>>) {
-                self.isLoading = false;
-                self.lottoPageResult = result;
-            },
-            error(err: any) {
-                self.isLoading = false;
-                message.error(err);
-            }
-        })
+            .subscribe({
+                next(result: PaginateResult<LottoDocument<any, AwardVO>>) {
+                    self.isLoading = false;
+                    self.lottoPageResult = result;
+                },
+                error(err: any) {
+                    self.isLoading = false;
+                    message.error(err);
+                }
+            })
     }
 
     queryLottos() {
@@ -88,29 +88,46 @@ export class LottoComponent implements OnInit {
 
     setStatus(id: string, status: number) {
         const self = this;
-        const {message, lottoService} = self;
-        lottoService.setStatus(id, status)
-        .subscribe({
-            next(data: LottoDocument<any, AwardVO>) {
-                self.fetchPageLottos();
-            },
-            error(err: any) {
-                message.error(err);
-            }
-        });
+        const {modal, message, lottoService} = self;
+        if (status === -1) {
+            modal.confirm({
+                nzTitle: "确定要驳回此中奖记录吗？",
+                nzOnOk() {
+                    lottoService.setStatus(id, status)
+                        .subscribe({
+                            next(data: LottoDocument<any, AwardVO>) {
+                                self.fetchPageLottos();
+                            },
+                            error(err: any) {
+                                message.error(err);
+                            }
+                        });
+                }
+            });
+        } else {
+            lottoService.setStatus(id, status)
+                .subscribe({
+                    next(data: LottoDocument<any, AwardVO>) {
+                        self.fetchPageLottos();
+                    },
+                    error(err: any) {
+                        message.error(err);
+                    }
+                });
+        }
     }
 
     sendRedPacket(id: string) {
         const self = this;
         const {message, lottoService} = self;
         lottoService.sendRedPacket(id)
-        .subscribe({
-            next(result: boolean) {
-                result && self.fetchPageLottos();
-            },
-            error(err: any) {
-                message.error(err);
-            }
-        });
+            .subscribe({
+                next(result: boolean) {
+                    result && self.fetchPageLottos();
+                },
+                error(err: any) {
+                    message.error(err);
+                }
+            });
     }
 }

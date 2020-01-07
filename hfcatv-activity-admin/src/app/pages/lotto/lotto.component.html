@@ -144,7 +144,7 @@
             <td>
                 <button *ngIf="
                 (($any(lotto.award || {}).type === 1 || $any(lotto.award || {}).type === 4) && lotto.status === 0) ||
-                (($any(lotto.award || {}).type === 2 || $any(lotto.award || {}).type === 3) && lotto.status === 1)"
+                (($any(lotto.award || {}).type === 2 || $any(lotto.award || {}).type === 3) && (lotto.status === 0 || lotto.status === 1))"
                         nz-button nzType="danger" nzSize="small"
                         (click)="setStatus(lotto._id, -1)">驳回
                 </button>
@@ -154,9 +154,10 @@
                         (click)="sendRedPacket(lotto._id)">发放
                 </button>
 
-                <button class="ml4px" *ngIf="$any(lotto.award || {}).type === 3 && lotto.status === 1"
+                <button class="ml4px"
+                        *ngIf="$any(lotto.award || {}).type === 3 && (lotto.status === 0 || lotto.status === 1)"
                         nz-button nzType="primary" nzSize="small"
-                        (click)="setStatus(lotto._id, 2)">发货
+                        (click)="setStatus(lotto._id, 2)">发放
                 </button>
             </td>
         </tr>

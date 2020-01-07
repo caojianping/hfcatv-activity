@@ -229,9 +229,6 @@ export default class ActivityService extends BaseService {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
         if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
 
-        let isEditable = await this.isEditable(id);
-        if (!isEditable) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[当前活动状态不可以编辑]`));
-
         let activity = await this.model.findOneAndUpdate(
             {_id: id, "awards.award": awardId},
             {$inc: {"awards.$.remainStock": -1}}
