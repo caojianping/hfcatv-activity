@@ -13,7 +13,7 @@ export enum AwardType {
     Nothing = 0,		// 参与奖
     Card = 1,			// 充值卡券，备注：视频会员、有线电视费
     RedPacket = 2,		// 现金红包
-    Goods = 3,			// 实物礼品，备注：别名“线下办”
+    Goods = 3,			// 实物礼品，备注：别名“线下办”，又换了别名“营业厅办理”
     MovieTicket = 4		// 观影券，备注：点播返现（类似固定红包）
 }
 

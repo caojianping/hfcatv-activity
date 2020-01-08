@@ -38,9 +38,12 @@ export default class LottoController {
             page = Number(params.page || 1),
             limit = Number(params.limit || 10),
             // {unionId, openId, type} = ctx.request.body || {},
-            {openId, type} = ctx.request.body || {},
-            // userId = await userService.getUserIdByWechat(unionId, openId),
-            userId = await userService.getUserIdByWechat(openId),
+            {openId, type} = ctx.request.body || {};
+        // userId = await userService.getUserIdByWechat(unionId, openId),
+        Console.info("/api/lotto/list/:page/:limit page, limit, body:", page, limit, ctx.request.body);
+        Logger.info("/api/lotto/list/:page/:limit page, limit, body:", page, limit, ctx.request.body);
+
+        let userId = await userService.getUserIdByWechat(openId),
             result = await lottoService.getPageLottosByUserId(userId, type || "*", page, limit);
         ctx.success(result);
     }

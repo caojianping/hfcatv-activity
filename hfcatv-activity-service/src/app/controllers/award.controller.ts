@@ -14,7 +14,8 @@ export default class AwardController {
             {type: AwardType.RedPacket, value: "现金红包"},
             {type: AwardType.MovieTicket, value: "观影券"},
             {type: AwardType.Card, value: "充值卡"},
-            {type: AwardType.Goods, value: "线下办"}
+            // {type: AwardType.Goods, value: "线下办"},
+            {type: AwardType.Goods, value: "营业厅办理"}
         ]);
     }
 

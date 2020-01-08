@@ -1,5 +1,6 @@
 import {PaginateResult} from "mongoose";
 import uuidv1 from "uuid/v1";
+import {Console, Logger} from "../../common/logger";
 import {BusinessError, ErrorType} from "../../error";
 import {Utils} from "../../common/utils";
 import {AwardType, CardStatus, RedPacketStatus, GoodsStatus, MovieTicketStatus} from "../../common/enums";
@@ -84,7 +85,9 @@ export default class LottoService extends BaseService {
                 }
             }
         }
-
+        Console.info("getPageLottosByUserId type, conditions:", type, conditions);
+        Logger.info("getPageLottosByUserId type, conditions:", type, conditions);
+        
         let options = {
                 sort: {createTime: -1},
                 populate: this.populates,
