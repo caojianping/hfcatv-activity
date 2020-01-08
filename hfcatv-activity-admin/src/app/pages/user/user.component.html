@@ -39,7 +39,7 @@
               (nzPageSizeChange)="fetchPageUsers('limit', $event)">
         <thead>
         <tr>
-            <th>微信unionId</th>
+            <!--<th>微信unionId</th>-->
             <th>微信openId</th>
             <th>微信昵称</th>
             <th>抽奖次数</th>
@@ -50,7 +50,7 @@
         </thead>
         <tbody>
         <tr *ngFor="let user of userPageResult.docs">
-            <td>{{user.unionId}}</td>
+            <!--<td>{{user.unionId}}</td>-->
             <td>{{user.openId}}</td>
             <td>{{user.nickname}}</td>
             <td>{{user.lottoCount}}</td>

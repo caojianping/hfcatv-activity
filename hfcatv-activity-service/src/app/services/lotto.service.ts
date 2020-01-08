@@ -4,7 +4,7 @@ import {Console, Logger} from "../../common/logger";
 import {BusinessError, ErrorType} from "../../error";
 import {Utils} from "../../common/utils";
 import {AwardType, CardStatus, RedPacketStatus, GoodsStatus, MovieTicketStatus} from "../../common/enums";
-import {AwardTypeWithoutNothingKeys} from "../../common/keys";
+import {AwardTypeKeys, AwardTypeWithoutNothingKeys} from "../../common/keys";
 import {LottoModel} from "../models";
 import {
     AwardDocument, AwardDetailDocument, AwardBaseVO, AwardVO,
@@ -77,17 +77,16 @@ export default class LottoService extends BaseService {
         if (typeof type === "string") {
             if (type !== "*") return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
         } else if (typeof type === "number") {
+            Console.info("getPageLottosByUserId 111:", AwardTypeWithoutNothingKeys.indexOf(type));
             if (AwardTypeWithoutNothingKeys.indexOf(type) < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
             else {
                 let awardIds = await this.awardService.getAwardIdsByType(type);
-                if (awardIds.length > 0) {
-                    conditions["award"] = {$in: awardIds};
-                }
+                conditions["award"] = {$in: awardIds};
             }
         }
         Console.info("getPageLottosByUserId type, conditions:", type, conditions);
         Logger.info("getPageLottosByUserId type, conditions:", type, conditions);
-        
+
         let options = {
                 sort: {createTime: -1},
                 populate: this.populates,
@@ -95,6 +94,8 @@ export default class LottoService extends BaseService {
                 limit: limit
             },
             result: any = await this.getPage<LottoDocument<AwardDetailDocument, AwardDocument>>(conditions, options);
+        Console.info("getPageLottosByUserId docs:", result.docs.length);
+        Logger.info("getPageLottosByUserId docs:", result.docs.length);
         result["docs"] = this._buildLottos(result.docs, true);
         return result;
     }
@@ -103,28 +104,30 @@ export default class LottoService extends BaseService {
         if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
 
         let tconditions = {},
-            {nickname, title, type, status} = conditions;
-        if (nickname) {
-            let userIds = await this.userService.getUserIdsByNickname(nickname);
-            if (userIds.length > 0) {
-                tconditions["user"] = {$in: userIds};
-            }
+            {nickname, openId, title, type, status} = conditions;
+        Console.info("getPageLottos conditions:", conditions);
+        Logger.info("getPageLottos conditions:", conditions);
+
+        if (nickname || openId) {
+            let userIds = await this.userService.getUserIdsByConditions(nickname, openId);
+            tconditions["user"] = {$in: userIds};
         }
         if (title) {
             let activityIds = await this.activityService.getActivityIdsByTitle(title);
-            if (activityIds.length > 0) {
-                tconditions["activity"] = {$in: activityIds};
-            }
+            tconditions["activity"] = {$in: activityIds};
         }
-        if (type) {
-            let awardIds = await this.awardService.getAwardIdsByType(type);
-            if (awardIds.length > 0) {
+        if (typeof type === "number") {
+            if (AwardTypeKeys.indexOf(type) < 0) return Promise.reject(new BusinessError(ErrorType.InvalidType.code, `${ErrorType.InvalidType.message}:[奖品类型]`));
+            else {
+                let awardIds = await this.awardService.getAwardIdsByType(type);
                 tconditions["award"] = {$in: awardIds};
             }
         }
-        if (status) {
+        if (typeof status === "number") {
             tconditions["status"] = status;
         }
+        Console.info("getPageLottos tconditions:", tconditions);
+        Logger.info("getPageLottos tconditions:", tconditions);
 
         let options = {
                 sort: {createTime: -1},
@@ -272,7 +275,10 @@ export default class LottoService extends BaseService {
     async setStatus(id: string, status: number): Promise<LottoDocument<AwardDetailDocument, AwardVO>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[中奖编号]`));
 
-        let update = {"attachInfo.status": status, updateTime: new Date()},
+        let update = {
+                status: status,
+                updateTime: new Date()
+            },
             doc = await this.model.findByIdAndUpdate(id, {$set: update}, {new: true}).populate(this.populates);
         if (!doc) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[中奖]`));
         return this._buildLotto(doc, false);
@@ -286,7 +292,7 @@ export default class LottoService extends BaseService {
 
         let data = result.data,
             userInfo = await this.userService.getUserById(data.user),
-            money = Number((data.attachInfo.amount * 100).toFixed(2));
+            money = Number((data.amount * 100).toFixed(2));
         if (isNaN(money) || money <= 0) return Promise.reject(new BusinessError(ErrorType.Others.code, `${ErrorType.Others.message}:[无效的红包金额]`));
 
         try {
@@ -294,7 +300,7 @@ export default class LottoService extends BaseService {
             // await wxPay.sendRedPacket(userInfo.openId, money, "合肥有线活动抽奖现场", null, "合肥有线抽奖活动，现金奖红包");
 
             let update = {
-                    "attachInfo.status": RedPacketStatus.Received,
+                    status: RedPacketStatus.Received,
                     updateTime: new Date()
                 },
                 doc = await this.model.findByIdAndUpdate(id, {$set: update}, {new: true}).populate(this.populates);
@@ -303,8 +309,8 @@ export default class LottoService extends BaseService {
         } catch (err) {
             let message = typeof err === "string" ? err : JSON.stringify(err),
                 update = {
-                    "attachInfo.status": RedPacketStatus.SendFailed,
-                    "attachInfo.message": message,
+                    status: RedPacketStatus.SendFailed,
+                    message: message,
                     updateTime: new Date()
                 };
             await this.model.findByIdAndUpdate(id, {$set: update}, {new: true});

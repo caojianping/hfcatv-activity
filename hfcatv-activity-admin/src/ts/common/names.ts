@@ -31,7 +31,8 @@ export const GoodsStatusMap: any = {
     "0": "未领取",
     "1": "待发货",
     "2": "发货中",
-    "3": "已收货"
+    // "3": "已收货"
+    "3": "已发放"
 };
 
 export const MovieTicketStatusMap: any = {

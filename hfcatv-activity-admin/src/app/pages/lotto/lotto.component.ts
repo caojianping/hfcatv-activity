@@ -42,6 +42,7 @@ export class LottoComponent implements OnInit {
     ) {
         this.queryForm = this.formBuilder.group({
             nickname: new FormControl(null),
+            openId: new FormControl(null),
             title: new FormControl(null),
             type: new FormControl(null),
             status: new FormControl(null)
@@ -60,18 +61,26 @@ export class LottoComponent implements OnInit {
 
         const {message, lottoService, queryForm, lottoPageResult} = self;
         self.isLoading = true;
-        queryForm.value["status"] = Number(queryForm.value.status);
+
+        let {type, status} = queryForm.value;
+        if (type !== undefined && type !== null) {
+            queryForm.value["type"] = Number(type);
+        }
+        if (status !== undefined && status !== null) {
+            queryForm.value["status"] = Number(status);
+        }
+
         lottoService.getPageLottos(Utils.filterConditions(queryForm.value, false), lottoPageResult.page, lottoPageResult.limit)
-            .subscribe({
-                next(result: PaginateResult<LottoDocument<any, AwardVO>>) {
-                    self.isLoading = false;
-                    self.lottoPageResult = result;
-                },
-                error(err: any) {
-                    self.isLoading = false;
-                    message.error(err);
-                }
-            })
+        .subscribe({
+            next(result: PaginateResult<LottoDocument<any, AwardVO>>) {
+                self.isLoading = false;
+                self.lottoPageResult = result;
+            },
+            error(err: any) {
+                self.isLoading = false;
+                message.error(err);
+            }
+        })
     }
 
     queryLottos() {
@@ -89,23 +98,10 @@ export class LottoComponent implements OnInit {
     setStatus(id: string, status: number) {
         const self = this;
         const {modal, message, lottoService} = self;
-        if (status === -1) {
-            modal.confirm({
-                nzTitle: "确定要驳回此中奖记录吗？",
-                nzOnOk() {
-                    lottoService.setStatus(id, status)
-                        .subscribe({
-                            next(data: LottoDocument<any, AwardVO>) {
-                                self.fetchPageLottos();
-                            },
-                            error(err: any) {
-                                message.error(err);
-                            }
-                        });
-                }
-            });
-        } else {
-            lottoService.setStatus(id, status)
+        modal.confirm({
+            nzTitle: status === -1 ? "确定要驳回此中奖记录吗？" : "确定要发放此奖品吗？",
+            nzOnOk() {
+                lottoService.setStatus(id, status)
                 .subscribe({
                     next(data: LottoDocument<any, AwardVO>) {
                         self.fetchPageLottos();
@@ -114,20 +110,26 @@ export class LottoComponent implements OnInit {
                         message.error(err);
                     }
                 });
-        }
+            }
+        });
     }
 
     sendRedPacket(id: string) {
         const self = this;
-        const {message, lottoService} = self;
-        lottoService.sendRedPacket(id)
-            .subscribe({
-                next(result: boolean) {
-                    result && self.fetchPageLottos();
-                },
-                error(err: any) {
-                    message.error(err);
-                }
-            });
+        const {modal, message, lottoService} = self;
+        modal.confirm({
+            nzTitle: "确定要发放此现金奖品吗？",
+            nzOnOk() {
+                lottoService.sendRedPacket(id)
+                .subscribe({
+                    next(result: boolean) {
+                        result && self.fetchPageLottos();
+                    },
+                    error(err: any) {
+                        message.error(err);
+                    }
+                });
+            }
+        });
     }
 }

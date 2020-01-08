@@ -51,10 +51,17 @@ export default class UserService extends BaseService {
         return result.data._id;
     }
 
-    async getUserIdsByNickname(nickname: string): Promise<Array<string>> {
-        if (!nickname) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[昵称]`));
+    async getUserIdsByConditions(nickname?: string, openId?: string): Promise<Array<string>> {
+        if (!nickname && !openId) return [];
 
-        let users = await this.model.find({nickname: {$regex: nickname}, isDelete: false});
+        let conditions = {isDelete: false};
+        if (nickname) {
+            conditions["nickname"] = {$regex: nickname};
+        }
+        if (openId) {
+            conditions["openId"] = {$regex: openId};
+        }
+        let users = await this.model.find(conditions);
         return users.map((user: UserDocument) => user._id);
     }
 
