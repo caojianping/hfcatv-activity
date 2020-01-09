@@ -9,11 +9,13 @@ export default class UserService extends BaseService {
         super(UserModel);
     }
 
+    // 根据编号获取用户
     async getUserById(id: string): Promise<UserDocument | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
         return await this.model.findOne({_id: id, isDelete: false});
     }
 
+    // 根据微信信息获取用户
     // async getUserByWechat(unionId: string, openId: string, nickname: string): Promise<UserDocument | null> {
     async getUserByWechat(openId: string, nickname: string): Promise<UserDocument | null> {
         // if (!unionId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信unionId]`));
@@ -40,6 +42,7 @@ export default class UserService extends BaseService {
         }
     }
 
+    // 根据微信信息获取用户编号
     // async getUserIdByWechat(unionId: string, openId: string): Promise<string> {
     async getUserIdByWechat(openId: string): Promise<string> {
         // if (!unionId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[微信unionId]`));
@@ -51,6 +54,7 @@ export default class UserService extends BaseService {
         return result.data._id;
     }
 
+    // 根据指定条件获取用户编号列表
     async getUserIdsByConditions(nickname?: string, openId?: string): Promise<Array<string>> {
         if (!nickname && !openId) return [];
 
@@ -65,6 +69,7 @@ export default class UserService extends BaseService {
         return users.map((user: UserDocument) => user._id);
     }
 
+    // 获取抽奖次数
     async getLottoCount(id: string): Promise<number> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
 
@@ -73,6 +78,7 @@ export default class UserService extends BaseService {
         return user.lottoCount;
     }
 
+    // 设置抽奖次数
     async setLottoCount(id: string, lottoCount: number, isDelta: boolean = true): Promise<UserDocument | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
 

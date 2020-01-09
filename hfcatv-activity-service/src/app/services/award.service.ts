@@ -10,15 +10,25 @@ export default class AwardService extends BaseService {
         super(AwardModel);
     }
 
+    // 获取参与奖奖品编号
+    async getAwardIdByNothing(): Promise<string | undefined> {
+        let awards: any = await this.model.find({type: AwardType.Nothing, isDelete: false}),
+            award: any = (awards || [])[0] || {};
+        return award._id;
+    }
+
+    // 获取奖品列表
     async getAwards(): Promise<Array<AwardDocument>> {
         return await this.model.find({isDelete: false});
     }
 
+    // 根据类型获取奖品编号列表
     async getAwardIdsByType(type: number): Promise<Array<string>> {
         let awards = await this.model.find({type: type, isDelete: false});
         return awards.map((award: AwardDocument) => award._id);
     }
 
+    // 添加奖品
     async addAward(award: any): Promise<AwardDocument | null> {
         if (!award) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品]`));
 
@@ -39,6 +49,7 @@ export default class AwardService extends BaseService {
         }
     }
 
+    // 更新奖品
     async updateAward(id: string, update: any): Promise<AwardDocument | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
         if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品更新数据]`));

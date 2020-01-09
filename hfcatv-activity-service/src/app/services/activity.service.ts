@@ -76,12 +76,14 @@ export default class ActivityService extends BaseService {
     }
 
 
+    // 活动是否已关闭或已结束
     async isClosedOrFinished(id: string): Promise<boolean> {
         let activity = await this._getActivityById(id);
         if (!activity) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
         return !activity.switch || activity.status === ActivityStatus.Finished;
     }
 
+    // 活动是否可编辑
     async isEditable(id: string): Promise<boolean> {
         let activity = await this._getActivityById(id);
         if (!activity) return Promise.reject(new BusinessError(ErrorType.DataInexistence.code, `${ErrorType.DataInexistence.message}:[活动]`));
@@ -89,6 +91,7 @@ export default class ActivityService extends BaseService {
         return activity.status !== ActivityStatus.Finished && !activity.switch;
     }
 
+    // 获取活动
     async getActivity(): Promise<ActivityDocument<AwardBaseVO> | null> {
         let conditions = {status: {$ne: ActivityStatus.Finished}, switch: true, isDelete: false},
             projection = "_id title startTime endTime status switch awards",
@@ -104,6 +107,7 @@ export default class ActivityService extends BaseService {
         else return this._buildActivity(activity, true);
     }
 
+    // 获取分页活动列表
     async getPageActivities(conditions: any, page: number, limit: number): Promise<PaginateResult<ActivityDocument<AwardVO>>> {
         if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
 
@@ -118,6 +122,7 @@ export default class ActivityService extends BaseService {
         return <PaginateResult<ActivityDocument<AwardVO>>>result;
     }
 
+    // 根据标题获取活动编号列表
     async getActivityIdsByTitle(title: string): Promise<Array<string>> {
         if (!title) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动标题]`));
 
@@ -125,6 +130,7 @@ export default class ActivityService extends BaseService {
         return activities.map((activity: any) => activity._id);
     }
 
+    // 获取活动的奖品详情
     async getAwardDetails(id: string): Promise<Array<AwardDetailDocument>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 
@@ -133,6 +139,7 @@ export default class ActivityService extends BaseService {
         return activity.awards || [];
     }
 
+    // 添加活动
     async addActivity(activity: any): Promise<ActivityDocument<AwardVO> | null> {
         if (!activity) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动]`));
 
@@ -152,6 +159,7 @@ export default class ActivityService extends BaseService {
         }
     }
 
+    // 更新活动
     async updateActivity(id: string, update: any): Promise<ActivityDocument<AwardVO> | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
         if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动更新数据]`));
@@ -164,6 +172,7 @@ export default class ActivityService extends BaseService {
         return this._buildActivity(doc, false);
     }
 
+    // 设置活动开启或关闭
     async setSwitch(id: string, switcher: boolean): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 
@@ -186,6 +195,7 @@ export default class ActivityService extends BaseService {
         }
     }
 
+    // 设置活动奖品
     async setAward(id: string, award: any): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
 
@@ -214,6 +224,7 @@ export default class ActivityService extends BaseService {
         return !!activity;
     }
 
+    // 删除活动奖品
     async removeAward(id: string, awardId: string): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
         if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));
@@ -225,6 +236,7 @@ export default class ActivityService extends BaseService {
         return !!activity;
     }
 
+    // 减少活动奖品库存
     async reduceStock(id: string, awardId: string): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
         if (!awardId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[奖品编号]`));

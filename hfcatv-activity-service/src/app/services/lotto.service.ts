@@ -59,17 +59,24 @@ export default class LottoService extends BaseService {
     }
 
 
+    // 获取最新的中奖列表
     async getLastestLottos(): Promise<Array<LottoDocument<any, AwardBaseVO>>> {
-        let options = {
+        let nothingId = await this.awardService.getAwardIdByNothing(),
+            conditions = {
+                award: {$ne: nothingId},
+                isDelete: false
+            },
+            options = {
                 sort: {createTime: -1},
                 populate: this.populates,
                 page: 1,
                 limit: 10
             },
-            result: any = await this.getPage<LottoDocument<AwardDetailDocument, AwardDocument>>({isDelete: false}, options);
+            result: any = await this.getPage<LottoDocument<AwardDetailDocument, AwardDocument>>(conditions, options);
         return this._buildLottos(result.docs, true);
     }
 
+    // 根据用户编号获取分页中奖列表
     async getPageLottosByUserId(userId: string, type: number | string, page: number, limit: number): Promise<PaginateResult<LottoDocument<any, AwardBaseVO>>> {
         if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
 
@@ -83,6 +90,12 @@ export default class LottoService extends BaseService {
                 let awardIds = await this.awardService.getAwardIdsByType(type);
                 conditions["award"] = {$in: awardIds};
             }
+        }
+
+        // 如果查询条件中没有奖品类型的过滤，那么默认的过滤条件就是过滤掉参与奖
+        if (!conditions.hasOwnProperty("award")) {
+            let nothingId = await this.awardService.getAwardIdByNothing();
+            conditions["award"] = {$ne: nothingId};
         }
         Console.info("getPageLottosByUserId type, conditions:", type, conditions);
         Logger.info("getPageLottosByUserId type, conditions:", type, conditions);
@@ -100,6 +113,7 @@ export default class LottoService extends BaseService {
         return result;
     }
 
+    // 获取分页中奖列表
     async getPageLottos(conditions: any, page: number, limit: number): Promise<PaginateResult<LottoDocument<any, AwardVO>>> {
         if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
 
@@ -126,6 +140,12 @@ export default class LottoService extends BaseService {
         if (typeof status === "number") {
             tconditions["status"] = status;
         }
+
+        // 如果查询条件中没有奖品类型的过滤，那么默认的过滤条件就是过滤掉参与奖
+        if (!tconditions.hasOwnProperty("award")) {
+            let nothingId = await this.awardService.getAwardIdByNothing();
+            tconditions["award"] = {$ne: nothingId};
+        }
         Console.info("getPageLottos tconditions:", tconditions);
         Logger.info("getPageLottos tconditions:", tconditions);
 
@@ -140,12 +160,7 @@ export default class LottoService extends BaseService {
         return result;
     }
 
-    /**
-     * 添加中奖记录
-     * todo: 处理复杂的事务
-     * @param userId
-     * @param activityId
-     */
+    // 添加中奖记录；todo：需要优化事务处理逻辑
     async addLotto(userId: string, activityId: string): Promise<any> {
         if (!userId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[用户编号]`));
         if (!activityId) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[活动编号]`));
@@ -207,6 +222,7 @@ export default class LottoService extends BaseService {
         return {lottoCount: user.lottoCount, awardId: awardId};
     }
 
+    // 领取中奖记录
     async receiveLotto(id: string, attachInfo: any): Promise<LottoDocument<AwardDetailDocument, AwardBaseVO>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[中奖编号]`));
 
@@ -260,6 +276,7 @@ export default class LottoService extends BaseService {
         return this._buildLotto(doc, true);
     }
 
+    // 设置过期
     async setExpired(id: string, createTime: Date, expire?: number | Array<Date>): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[中奖编号]`));
 
@@ -272,6 +289,7 @@ export default class LottoService extends BaseService {
         return result;
     }
 
+    // 设置状态
     async setStatus(id: string, status: number): Promise<LottoDocument<AwardDetailDocument, AwardVO>> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[中奖编号]`));
 
@@ -284,6 +302,7 @@ export default class LottoService extends BaseService {
         return this._buildLotto(doc, false);
     }
 
+    // 发送红包
     async sendRedPacket(id: string): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[抽奖编号]`));
 

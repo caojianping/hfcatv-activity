@@ -10,11 +10,13 @@ export default class ManagerService extends BaseService {
         super(ManagerModel);
     }
 
+    // 获取管理员
     async getManager(id: string): Promise<ManagerDocument | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员编号]`));
         return await this.model.findOne({_id: id, isDelete: false});
     }
 
+    // 添加管理员
     async addManager(manager: any): Promise<ManagerDocument | null> {
         if (!manager) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员]`));
 
@@ -32,6 +34,7 @@ export default class ManagerService extends BaseService {
         }
     }
 
+    // 更新管理员
     async updateManager(id: string, update: any): Promise<AwardDocument | null> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员编号]`));
         if (!update) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员更新数据]`));
@@ -40,6 +43,7 @@ export default class ManagerService extends BaseService {
         return await this.model.findByIdAndUpdate(id, {$set: update}, {new: true});
     }
 
+    // 设置密码
     async setPassword(conditions: any, password: string): Promise<boolean> {
         if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
         if (!password) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员密码]`));
@@ -54,6 +58,7 @@ export default class ManagerService extends BaseService {
         return true;
     }
 
+    // 重置密码
     async resetPassword(id: string): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[管理员编号]`));
 

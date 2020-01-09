@@ -8,17 +8,20 @@ export default class BaseService {
         this.model = model;
     }
 
+    // 获取分页列表
     async getPage<T>(conditions: any, options: any): Promise<PaginateResult<T>> {
         if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
         conditions["isDelete"] = false;
         return await this.model.paginate(conditions, options);
     }
 
+    // 软删除
     async softDelete(id: string): Promise<boolean> {
         if (!id) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[文档编号]`));
         return !!(await this.model.findByIdAndUpdate(id, {isDelete: true}, {new: true}));
     }
 
+    // 指定数据是否存在
     async isExist(conditions: any): Promise<any> {
         if (!conditions) return Promise.reject(new BusinessError(ErrorType.ParameterRequired.code, `${ErrorType.ParameterRequired.message}:[查询条件]`));
         conditions["isDelete"] = false;
