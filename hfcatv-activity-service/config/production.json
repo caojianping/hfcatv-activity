@@ -1,0 +1,8 @@
+{
+    "services": {
+        "port": 80,
+        "mongodb": "mongodb://admin:Cjp_1990@127.0.0.1:27017/hfcatv_activity",
+        "redis": "127.0.0.1:6379",
+        "virtual": ""
+    }
+}

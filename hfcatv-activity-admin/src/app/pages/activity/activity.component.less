@@ -1,0 +1,41 @@
+:host {
+    width: 100%;
+    min-height: 100%;
+
+    nz-select {
+        width: 150px;
+    }
+
+    .award-list {
+        margin: auto;
+        width: 300px;
+
+        nz-list-item {
+            margin: 0;
+            padding: 4px 0;
+
+            span {
+                font-size: 12px;
+                text-align: center;
+
+                &:first-child {
+                    width: 32%;
+                }
+
+                &:nth-child(2) {
+                    width: 18%;
+                }
+
+                &:nth-child(3) {
+                    width: 14%;
+                }
+
+                &:nth-child(4),
+                &:nth-child(5),
+                &:last-child {
+                    width: 12%;
+                }
+            }
+        }
+    }
+}

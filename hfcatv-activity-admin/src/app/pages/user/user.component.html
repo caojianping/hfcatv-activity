@@ -1,0 +1,71 @@
+<app-layout>
+    <form class="mb10px" nz-form [formGroup]="queryForm"
+          (ngSubmit)="queryUsers()">
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="8">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="openId">微信openId</nz-form-label>
+                    <nz-form-control>
+                        <input id="openId" nz-input formControlName="openId"
+                               placeholder="请输入微信openId"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div nz-col [nzSpan]="8">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="nickname">微信昵称</nz-form-label>
+                    <nz-form-control>
+                        <input id="nickname" nz-input formControlName="nickname"
+                               placeholder="请输入微信昵称"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div nz-col [nzSpan]="8">
+                <button class="mt4px" nz-button nzType="primary">查询</button>
+            </div>
+        </div>
+    </form>
+
+    <nz-table [nzData]="userPageResult.docs"
+              [nzFrontPagination]="false"
+              [nzTotal]="userPageResult.total"
+              [nzPageIndex]="userPageResult.page"
+              [nzPageSize]="userPageResult.limit"
+              [nzPaginationPosition]="'both'"
+              [nzLoading]="isLoading"
+              [nzPageSizeOptions]="[5,10,20,30]"
+              [nzShowSizeChanger]="true"
+              (nzPageIndexChange)="fetchPageUsers('page', $event)"
+              (nzPageSizeChange)="fetchPageUsers('limit', $event)">
+        <thead>
+        <tr>
+            <!--<th>微信unionId</th>-->
+            <th>微信openId</th>
+            <th>微信昵称</th>
+            <th>抽奖次数</th>
+            <th>创建时间</th>
+            <th>更新时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user of userPageResult.docs">
+            <!--<td>{{user.unionId}}</td>-->
+            <td>{{user.openId}}</td>
+            <td>{{user.nickname}}</td>
+            <td>{{user.lottoCount}}</td>
+            <td>{{user.createTime | date:"yyyy/MM/dd HH:mm"}}</td>
+            <td>{{user.updateTime | date:"yyyy/MM/dd HH:mm"}}</td>
+            <td>
+                <button nz-button nzType="primary" nzSize="small"
+                        (click)="editUser(user)">编辑
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </nz-table>
+
+    <app-user-modal [visible]="isVisible" [user]="currentUser"
+                    (onCancel)="handleModalCancel()"
+                    (onOk)="handleModalOk($event)"></app-user-modal>
+</app-layout>

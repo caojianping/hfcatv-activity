@@ -1,0 +1,69 @@
+<app-layout>
+    <form class="mb10px" nz-form [formGroup]="queryForm"
+          (ngSubmit)="queryManagers()">
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="8">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="username">管理员姓名</nz-form-label>
+                    <nz-form-control>
+                        <input id="username" nz-input formControlName="username"
+                               placeholder="请输入管理员姓名"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div nz-col [nzSpan]="8">
+                <button class="mt4px" nz-button nzType="primary">查询</button>
+            </div>
+        </div>
+    </form>
+
+    <nz-table [nzData]="managerPageResult.docs"
+              [nzFrontPagination]="false"
+              [nzTotal]="managerPageResult.total"
+              [nzPageIndex]="managerPageResult.page"
+              [nzPageSize]="managerPageResult.limit"
+              [nzPaginationPosition]="'both'"
+              [nzLoading]="isLoading"
+              [nzPageSizeOptions]="[5,10,20,30]"
+              [nzShowSizeChanger]="true"
+              (nzPageIndexChange)="fetchPageManagers('page', $event)"
+              (nzPageSizeChange)="fetchPageManagers('limit', $event)">
+        <thead>
+        <tr>
+            <th>管理员姓名</th>
+            <th>角色类型</th>
+            <th>创建时间</th>
+            <th>更新时间</th>
+            <th>
+                <span>操作</span>
+                <button class="btn-small ml4px" nz-button nzSize="small"
+                        (click)="addManager()">添加
+                </button>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let manager of managerPageResult.docs">
+            <td>{{manager.username}}</td>
+            <td>{{RoleTypes[manager.role]}}</td>
+            <td>{{manager.createTime | date:"yyyy/MM/dd HH:mm"}}</td>
+            <td>{{manager.updateTime | date:"yyyy/MM/dd HH:mm"}}</td>
+            <td>
+                <button nz-button nzType="primary" nzSize="small"
+                        (click)="editManager(manager)">编辑
+                </button>
+                <button class="ml4px" nz-button nzType="danger" nzSize="small"
+                        (click)="removeManager(manager._id)">删除
+                </button>
+                <button class="ml4px" nz-button nzType="default" nzSize="small"
+                        (click)="resetPassword(manager._id)">重置密码
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </nz-table>
+
+    <app-manager-modal [type]="type" [visible]="isVisible" [manager]="currentManager"
+                       (onCancel)="handleModalCancel()"
+                       (onOk)="handleModalOk($event)"></app-manager-modal>
+</app-layout>

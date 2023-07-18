@@ -1,0 +1,86 @@
+@import "./vars.less";
+@import "./mixins.less";
+
+// 清除浮动样式
+.clearfix {
+    *zoom: 1;
+
+    &:after {
+        display: block;
+        height: 0;
+        content: "";
+        clear: both;
+        visibility: hidden;
+        overflow: hidden;
+    }
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+// 显示、消失样式
+.show {
+    display: block !important;
+}
+
+.hide {
+    display: none !important;
+}
+
+// 错误样式
+.error {
+    margin: 2rem 0;
+    height: 4rem;
+    .font-styles(1rem, normal, 4rem, orange, center);
+}
+
+// 全局内外边距样式
+.mt4px {
+    margin-top: 4px;
+}
+
+.ml4px {
+    margin-left: 4px;
+}
+
+.mb0 {
+    margin-bottom: 0;
+}
+
+.mb10px {
+    margin-bottom: 10px;
+}
+
+// 全局通用样式
+.btn-small {
+    height: 20px;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.btn-block {
+    display: block;
+    margin: auto;
+    width: 120px;
+}
+
+.ant-table {
+    thead > tr > th,
+    tbody > tr > td {
+        text-align: center;
+    }
+}
+
+.award-table {
+    thead > tr > th,
+    tbody > tr > td {
+        padding: 4px 8px;
+        .font-styles(12px, normal, 1, @font-black, center);
+        border: 1px solid #d9d9d9;
+    }
+}

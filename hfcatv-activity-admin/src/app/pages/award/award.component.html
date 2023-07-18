@@ -1,0 +1,84 @@
+<app-layout>
+    <form class="mb10px" nz-form [formGroup]="queryForm"
+          (ngSubmit)="queryAwards()">
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="8">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="name">奖品名称</nz-form-label>
+                    <nz-form-control>
+                        <input id="name" nz-input formControlName="name"
+                               placeholder="请输入奖品名称"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+            <div nz-col [nzSpan]="8">
+                <button class="mt4px" nz-button nzType="primary">查询</button>
+            </div>
+        </div>
+    </form>
+
+    <nz-table [nzData]="awardPageResult.docs"
+              [nzFrontPagination]="false"
+              [nzTotal]="awardPageResult.total"
+              [nzPageIndex]="awardPageResult.page"
+              [nzPageSize]="awardPageResult.limit"
+              [nzPaginationPosition]="'both'"
+              [nzLoading]="isLoading"
+              [nzPageSizeOptions]="[5,10,20,30]"
+              [nzShowSizeChanger]="true"
+              (nzPageIndexChange)="fetchPageAwards('page', $event)"
+              (nzPageSizeChange)="fetchPageAwards('limit', $event)">
+        <thead>
+        <tr>
+            <th>奖品名称</th>
+            <th>奖品类型</th>
+            <th>奖品标题</th>
+            <th>奖品描述</th>
+            <th>奖品价值</th>
+            <th>有效期</th>
+            <th>红包范围</th>
+            <!--<th>创建时间</th>-->
+            <!--<th>更新时间</th>-->
+            <th>
+                <span>操作</span>
+                <button class="btn-small ml4px" nz-button nzSize="small"
+                        (click)="addAward()">添加
+                </button>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let award of awardPageResult.docs">
+            <td>{{award.name}}</td>
+            <td>{{AwardTypes[award.type]}}</td>
+            <td>{{award.title}}</td>
+            <td>{{award.desc}}</td>
+            <td>{{award.value ? award.value + '元' : ''}}</td>
+            <td>
+                <span *ngIf="Utils.isArray(award.expire)">{{award.expire[0] | date:"yyyy/MM/dd"}}
+                    至{{award.expire[1] | date:"yyyy/MM/dd"}}</span>
+                <span *ngIf="Utils.isNumber(award.expire)">{{award.expire}}天</span>
+            </td>
+            <td *ngIf="award.type === 2">
+                <p>最小红包额度：{{award.ranges[0]}}</p>
+                <p>最大红包额度：{{award.ranges[1]}}</p>
+            </td>
+            <td *ngIf="award.type !== 2"></td>
+            <!--<td>{{award.createTime | date:"yyyy/MM/dd HH:mm"}}</td>-->
+            <!--<td>{{award.updateTime | date:"yyyy/MM/dd HH:mm"}}</td>-->
+            <td>
+                <button nz-button nzType="primary" nzSize="small"
+                        (click)="editAward(award)">编辑
+                </button>
+                <button class="ml4px" nz-button nzType="danger" nzSize="small"
+                        (click)="removeAward(award._id)">删除
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </nz-table>
+
+    <app-award-modal [type]="type" [visible]="isVisible" [award]="currentAward"
+                     (onCancel)="handleModalCancel()"
+                     (onOk)="handleModalOk($event)"></app-award-modal>
+</app-layout>

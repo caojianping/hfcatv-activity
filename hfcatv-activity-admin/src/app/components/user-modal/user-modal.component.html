@@ -1,0 +1,30 @@
+<nz-modal [nzVisible]="visible"
+          nzTitle="用户抽奖次数配置"
+          [nzWidth]="500" [nzFooter]="null"
+          (nzAfterOpen)="openUser()"
+          (nzOnCancel)="closeUser()">
+    <form nz-form [formGroup]="userForm"
+          (ngSubmit)="saveAward(userForm.value)">
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired nzFor="nickname">微信昵称</nz-form-label>
+            <nz-form-control [nzSpan]="14" nzErrorTip="请输入微信昵称">
+                <input id="nickname" nz-input formControlName="nickname" [readOnly] [disabled]/>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired nzFor="lottoCount">抽奖次数</nz-form-label>
+            <nz-form-control [nzSpan]="14" nzErrorTip="请输入抽奖次数">
+                <nz-input-number id="lottoCount" formControlName="lottoCount"
+                                 [nzMin]="0" [nzStep]="1" [nzPrecision]="0"
+                                 [ngStyle]="{width: '265px'}"></nz-input-number>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <button class="btn-block" nz-button nzType="primary"
+                    [disabled]="!userForm.valid">保存
+            </button>
+        </nz-form-item>
+    </form>
+</nz-modal>

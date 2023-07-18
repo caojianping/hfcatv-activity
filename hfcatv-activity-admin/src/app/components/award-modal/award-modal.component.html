@@ -1,0 +1,116 @@
+<nz-modal [nzVisible]="visible"
+          [nzTitle]="OperateTypes[type] + '奖品'"
+          [nzWidth]="500" [nzFooter]="null"
+          (nzAfterOpen)="openAward()"
+          (nzOnCancel)="closeAward()">
+    <form nz-form [formGroup]="awardForm"
+          (ngSubmit)="saveAward(awardForm.value)">
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired nzFor="name">奖品名称</nz-form-label>
+            <nz-form-control [nzSpan]="14" nzErrorTip="请输入奖品名称">
+                <input id="name" nz-input formControlName="name"
+                       placeholder="请输入奖品名称"/>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired nzFor="type">奖品类型</nz-form-label>
+            <nz-form-control [nzSpan]="14" nzErrorTip="请选择奖品类型">
+                <nz-select id="type" formControlName="type"
+                           nzAllowClear nzPlaceHolder="请选择奖品类型">
+                    <nz-option *ngFor="let item of AwardTypes; index as i;"
+                               [nzDisabled]="[1, 2, 4].indexOf(i) > -1" [nzLabel]="item" [nzValue]="i"></nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzFor="title">奖品标题</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <input id="title" nz-input formControlName="title"
+                       placeholder="请输入奖品标题"/>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzFor="desc">奖品描述</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <input id="desc" nz-input formControlName="desc"
+                       placeholder="请输入奖品描述"/>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item *ngIf="awardForm.value.type !== 2">
+            <nz-form-label [nzSpan]="6" nzFor="value">奖品价值</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <nz-input-number id="value" formControlName="value"
+                                 [nzMin]="0" [nzStep]="1" [nzPrecision]="0"
+                                 [ngStyle]="{width: '260px'}"></nz-input-number>
+            </nz-form-control>
+        </nz-form-item>
+
+        <div *ngIf="awardForm.value.type !== 0" formGroupName="expire">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="expireType">有效期类型</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                    <nz-select id="expireType" formControlName="type"
+                               nzAllowClear nzPlaceHolder="请选择有效期类型">
+                        <nz-option *ngFor="let item of AwardExpireTypes; index as i;"
+                                   [nzLabel]="item" [nzValue]="i"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item *ngIf="awardForm.value.expire.type === 0">
+                <nz-form-label [nzSpan]="6" nzRequired nzFor="expireDays">有效期天数</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请输入天数">
+                    <nz-input-number id="expireDays" formControlName="days"
+                                     [nzMin]="0" [nzStep]="1" [nzPrecision]="0"
+                                     [ngStyle]="{width: '260px'}"></nz-input-number>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item *ngIf="awardForm.value.expire.type === 1">
+                <nz-form-label [nzSpan]="6" nzRequired nzFor="expireStartDate">有效期开始日期</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请输入开始日期">
+                    <nz-date-picker id="expireStartDate" formControlName="startDate"
+                                    nzFormat="yyyy/MM/dd" nzPlaceHolder="请输入开始日期"
+                                    [nzStyle]="{width: '260px'}"></nz-date-picker>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item *ngIf="awardForm.value.expire.type === 1">
+                <nz-form-label [nzSpan]="6" nzRequired nzFor="expireEndDate">有效期结束日期</nz-form-label>
+                <nz-form-control [nzSpan]="14" nzErrorTip="请输入结束日期">
+                    <nz-date-picker id="expireEndDate" formControlName="endDate"
+                                    nzFormat="yyyy/MM/dd" nzPlaceHolder="请输入结束日期"
+                                    [nzStyle]="{width: '260px'}"></nz-date-picker>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+
+        <nz-form-item *ngIf="awardForm.value.type === 2">
+            <nz-form-label [nzSpan]="6" nzRequired nzFor="minimum">最小红包额度</nz-form-label>
+            <nz-form-control [nzSpan]="14" nzErrorTip="请输入最小红包额度">
+                <nz-input-number id="minimum" formControlName="minimum"
+                                 [nzMin]="0" [nzStep]="1" [nzPrecision]="2"
+                                 [ngStyle]="{width: '260px'}"></nz-input-number>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item *ngIf="awardForm.value.type === 2">
+            <nz-form-label [nzSpan]="6" nzRequired nzFor="maximum">最大红包额度</nz-form-label>
+            <nz-form-control [nzSpan]="14" nzErrorTip="请输入最大红包额度">
+                <nz-input-number id="maximum" formControlName="maximum"
+                                 [nzMin]="0" [nzStep]="1" [nzPrecision]="2"
+                                 [ngStyle]="{width: '260px'}"></nz-input-number>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <button class="btn-block" nz-button nzType="primary"
+                    [disabled]="!awardForm.valid">保存
+            </button>
+        </nz-form-item>
+    </form>
+</nz-modal>

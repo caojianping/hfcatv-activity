@@ -1,0 +1,7 @@
+{
+    "jwt": {
+        "secret": "hfcatv_activity_service"
+    },
+    "salt": "hfcatv_activity",
+    "logPath": "./logs/"
+}

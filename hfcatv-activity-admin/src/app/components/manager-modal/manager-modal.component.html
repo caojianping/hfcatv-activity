@@ -1,0 +1,45 @@
+<nz-modal [nzVisible]="visible"
+          [nzTitle]="OperateTypes[type] + '管理员'"
+          [nzWidth]="500" [nzFooter]="null"
+          (nzAfterOpen)="openManager()"
+          (nzOnCancel)="closeManager()">
+    <form nz-form [formGroup]="managerForm"
+          (ngSubmit)="saveManager(managerForm.value)">
+        <nz-form-item *ngIf="type === 0">
+            <nz-alert nzType="info" nzMessage="温馨提示：默认密码为管理员姓名+‘_2020’"></nz-alert>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired nzFor="username">管理员姓名</nz-form-label>
+            <nz-form-control [nzSpan]="14" nzErrorTip="请输入管理员姓名">
+                <input id="username" nz-input formControlName="username"
+                       placeholder="请输入管理员姓名"/>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item *ngIf="type === 0">
+            <nz-form-label [nzSpan]="6" nzFor="password">管理员密码</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+                <input id="password" type="password" nz-input formControlName="password"
+                       placeholder="请输入管理员密码"/>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired nzFor="role">角色类型</nz-form-label>
+            <nz-form-control [nzSpan]="14" nzErrorTip="请选择角色类型">
+                <nz-select id="role" formControlName="role"
+                           nzAllowClear nzPlaceHolder="请选择角色类型">
+                    <nz-option *ngFor="let item of RoleTypes; index as i;"
+                               [nzLabel]="item" [nzValue]="i"></nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <button class="btn-block" nz-button nzType="primary"
+                    [disabled]="!managerForm.valid">保存
+            </button>
+        </nz-form-item>
+    </form>
+</nz-modal>

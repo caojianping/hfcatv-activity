@@ -1,0 +1,38 @@
+<nz-layout>
+    <div nz-row nzType="flex" nzJustify="center" nzAlign="middle">
+        <div nz-col [nzXs]="20" [nzSm]="16" [nzMd]="12" [nzLg]="10" [nzXl]="8" [nzXXl]="6">
+
+            <div class="login-main">
+                <h1 class="login-title">合肥有线抽奖活动CMS系统</h1>
+                <form nz-form class="login-form" [formGroup]="loginForm"
+                      (ngSubmit)="login(loginForm.value)">
+                    <nz-form-item>
+                        <nz-form-control nzErrorTip="请输入管理员账号">
+                            <nz-input-group nzPrefixIcon="user">
+                                <input type="text" nz-input formControlName="username" placeholder="管理员账号"/>
+                            </nz-input-group>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <nz-form-item>
+                        <nz-form-control nzErrorTip="请输入管理员密码">
+                            <nz-input-group nzPrefixIcon="lock">
+                                <input type="password" nz-input formControlName="password" placeholder="请输入管理员密码"/>
+                            </nz-input-group>
+                        </nz-form-control>
+                    </nz-form-item>
+
+                    <nz-form-item>
+                        <nz-form-control>
+                            <!--<label nz-checkbox formControlName="remember">-->
+                                <!--<span>记住我</span>-->
+                            <!--</label>-->
+                            <button class="btn-login" nz-button nzType="primary">登录</button>
+                        </nz-form-control>
+                    </nz-form-item>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</nz-layout>

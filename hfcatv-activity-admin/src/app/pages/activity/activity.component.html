@@ -1,0 +1,114 @@
+<app-layout>
+    <form class="mb10px" nz-form [formGroup]="queryForm"
+          (ngSubmit)="queryActivities()">
+        <div nz-row [nzGutter]="24">
+
+            <div nz-col [nzSpan]="7">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="title">活动标题</nz-form-label>
+                    <nz-form-control>
+                        <input id="title" nz-input formControlName="title"
+                               placeholder="请输入活动标题"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col [nzSpan]="6">
+                <nz-form-item class="mb0" nzFlex>
+                    <nz-form-label nzFor="status">活动状态</nz-form-label>
+                    <nz-form-control>
+                        <nz-select id="status" formControlName="status"
+                                   nzAllowClear nzPlaceHolder="请选择活动状态">
+                            <nz-option *ngFor="let item of ActivityStatuses; index as i;"
+                                       [nzLabel]="item" [nzValue]="i"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+            </div>
+
+            <div nz-col [nzSpan]="4">
+                <button class="mt4px" nz-button nzType="primary">查询</button>
+            </div>
+
+        </div>
+    </form>
+
+    <nz-table [nzData]="activityPageResult.docs"
+              [nzFrontPagination]="false"
+              [nzTotal]="activityPageResult.total"
+              [nzPageIndex]="activityPageResult.page"
+              [nzPageSize]="activityPageResult.limit"
+              [nzPaginationPosition]="'both'"
+              [nzLoading]="isLoading"
+              [nzPageSizeOptions]="[5,10,20,30]"
+              [nzShowSizeChanger]="true"
+              (nzPageIndexChange)="fetchPageActivities('page', $event)"
+              (nzPageSizeChange)="fetchPageActivities('limit', $event)">
+        <thead>
+        <tr>
+            <th>名称</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>状态</th>
+            <th>开关</th>
+            <th>奖品列表</th>
+            <th>
+                <span>操作</span>
+                <button class="btn-small ml4px" nz-button nzSize="small"
+                        (click)="addActivity()">添加
+                </button>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let activity of activityPageResult.docs">
+            <td>{{activity.title}}</td>
+            <td>{{activity.createTime | date:"yyyy/MM/dd HH:mm"}}</td>
+            <td>{{activity.endTime | date:"yyyy/MM/dd HH:mm"}}</td>
+            <td [ngStyle]="{color: ['gray','green','red'][activity.status]}">
+                {{ActivityStatuses[activity.status]}}
+            </td>
+            <td [ngStyle]="{color: ['green','red'][activity.switch ? 0: 1]}">
+                {{activity.switch ? "已开启" : "未开启"}}
+            </td>
+            <td>
+                <nz-list class="award-list" [nzDataSource]="activity.awards"
+                         [nzRenderItem]="awardItem">
+                    <ng-template #awardItem let-item>
+                        <nz-list-item>
+                            <span>{{item.name}}</span>
+                            <span>{{AwardTypes[item.type]}}</span>
+                            <span>{{AwardRanks[item.rank]}}</span>
+                            <span>{{item.weight}}</span>
+                            <span>{{item.totalStock}}</span>
+                            <span>{{item.remainStock}}</span>
+                        </nz-list-item>
+                    </ng-template>
+                </nz-list>
+            </td>
+            <td>
+                <button *ngIf="activity.status !== 2" nz-button nzType="default" nzSize="small"
+                        (click)="setSwitch(activity._id, !activity.switch)">
+                    {{activity.switch ? "关闭" : "开启"}}
+                </button>
+
+                <button *ngIf="activity.status !== 2" class="ml4px" nz-button
+                        nzType="primary" nzSize="small"
+                        [disabled]="activity.switch"
+                        (click)="editActivity(activity)">编辑
+                </button>
+
+                <button class="ml4px" nz-button nzType="danger" nzSize="small"
+                        (click)="removeActivity(activity._id)">删除
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </nz-table>
+
+    <app-activity-modal [type]="type" [visible]="isVisible"
+                        [activity]="currentActivity"
+                        (onCancel)="handleModalCancel()"
+                        (onOk)="handleModalOk($event)"
+                        (onChange)="handleModalChange($event)"></app-activity-modal>
+</app-layout>
